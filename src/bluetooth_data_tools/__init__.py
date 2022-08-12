@@ -9,6 +9,12 @@ from struct import Struct
 L_PACK = Struct(">L")
 
 
+def short_address(address: str) -> str:
+    """Convert a Bluetooth address to a short address."""
+    results = address.replace("-", ":").split(":")
+    return f"{results[-2].upper()}{results[-1].upper()}"[-4:]
+
+
 def newest_manufacturer_data(manufacturer_data: dict[int, bytes]) -> bytes | None:
     """Return the raw data from manufacturer data."""
     if manufacturer_data and (last_id := list(manufacturer_data)[-1]):
