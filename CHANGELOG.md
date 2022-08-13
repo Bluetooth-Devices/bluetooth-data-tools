@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.2 (2022-08-13)
+### Fix
+* Ci release process ([#4](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/4)) ([`1726d16`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/1726d1617ad0fceda2dee3945f12bf43768a3fe2))
+
 ## v0.1.1 (2022-08-12)
 ### Fix
 * Release process ([#3](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/3)) ([`0a2f45b`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/0a2f45b7cba9fe71f20e2030b7712d13c330072c))
