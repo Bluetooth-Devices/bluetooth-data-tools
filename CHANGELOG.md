@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.0 (2022-10-27)
+### Feature
+* Add human_readable_name function ([#5](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/5)) ([`bb408cd`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/bb408cddb5f043314ec802c8b6a8a306c84fa2a3))
+
 ## v0.1.2 (2022-08-13)
 ### Fix
 * Ci release process ([#4](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/4)) ([`1726d16`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/1726d1617ad0fceda2dee3945f12bf43768a3fe2))

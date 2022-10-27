@@ -1,7 +1,7 @@
 """Bluetooth data tools."""
 from __future__ import annotations
 
-__version__ = "0.1.2"
+__version__ = "0.2.0"
 
 
 from struct import Struct
