@@ -8,11 +8,24 @@ from struct import Struct
 
 L_PACK = Struct(">L")
 
+__all__ = [
+    "address_to_bytes",
+    "manufacturer_data_to_raw",
+    "newest_manufacturer_data",
+    "human_readable_name",
+    "short_address",
+]
+
 
 def short_address(address: str) -> str:
     """Convert a Bluetooth address to a short address."""
     results = address.replace("-", ":").split(":")
     return f"{results[-2].upper()}{results[-1].upper()}"[-4:]
+
+
+def human_readable_name(name: str | None, local_name: str, address: str) -> str:
+    """Return a human readable name for the given name, local_name, and address."""
+    return f"{name or local_name} ({short_address(address)})"
 
 
 def newest_manufacturer_data(manufacturer_data: dict[int, bytes]) -> bytes | None:
