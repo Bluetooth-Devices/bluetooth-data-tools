@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.0 (2022-11-13)
+### Feature
+* Add gap parser ([#6](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/6)) ([`dcb1d86`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/dcb1d86a15e9387385128ebaf32498d4af268963))
+
 ## v0.2.0 (2022-10-27)
 ### Feature
 * Add human_readable_name function ([#5](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/5)) ([`bb408cd`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/bb408cddb5f043314ec802c8b6a8a306c84fa2a3))
