@@ -5,11 +5,22 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Iterable
+from dataclasses import dataclass
 from enum import IntEnum
 from uuid import UUID
 
 BLE_UUID = "0000-1000-8000-00805f9b34fb"
 _LOGGER = logging.getLogger(__name__)
+
+
+@dataclass
+class BLEGAPAdvertisement:
+
+    local_name: str | None
+    service_uuids: list[str]
+    service_data: dict[str, bytes]
+    manufacturer_data: dict[int, bytes]
+    tx_power: int | None
 
 
 class BLEGAPType(IntEnum):
@@ -84,7 +95,7 @@ def decode_advertisement_data(
 
 def parse_advertisement_data(
     data: Iterable[bytes],
-) -> tuple[str | None, list[str], dict[str, bytes], dict[int, bytes], int | None]:
+) -> BLEGAPAdvertisement:
     """Parse advertisement data."""
     manufacturer_data: dict[int, bytes] = {}
     service_data: dict[str, bytes] = {}
@@ -111,7 +122,8 @@ def parse_advertisement_data(
                 BLEGAPType.TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
                 BLEGAPType.TYPE_128BIT_SERVICE_UUID_COMPLETE,
             }:
-                service_uuids.append(str(UUID(bytes=gap_value[:16])))
+                uuid_str = str(UUID(int=int.from_bytes(gap_value[:16], "little")))
+                service_uuids.append(uuid_str)
             elif gap_type == BLEGAPType.TYPE_SERVICE_DATA:
                 uuid_int = int.from_bytes(gap_value[:2], "little")
                 service_data[f"0000{uuid_int:04x}-{BLE_UUID}"] = gap_value[2:]
@@ -119,11 +131,12 @@ def parse_advertisement_data(
                 uuid_int = int.from_bytes(gap_value[:4], "little")
                 service_data[f"{uuid_int:08x}-{BLE_UUID}"] = gap_value[4:]
             elif gap_type == BLEGAPType.TYPE_SERVICE_DATA_128BIT_UUID:
-                service_data[str(UUID(bytes=gap_value[:16]))] = gap_value[16:]
+                uuid_str = str(UUID(int=int.from_bytes(gap_value[:16], "little")))
+                service_data[uuid_str] = gap_value[16:]
             elif gap_type == BLEGAPType.TYPE_TX_POWER_LEVEL:
                 tx_power = int.from_bytes(gap_value, "little", signed=True)
 
-    return (
+    return BLEGAPAdvertisement(
         local_name,
         service_uuids,
         service_data,

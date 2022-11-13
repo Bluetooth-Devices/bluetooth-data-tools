@@ -3,7 +3,12 @@ from __future__ import annotations
 
 from struct import Struct
 
-from .gap import BLEGAPType, decode_advertisement_data, parse_advertisement_data
+from .gap import (
+    BLEGAPAdvertisement,
+    BLEGAPType,
+    decode_advertisement_data,
+    parse_advertisement_data,
+)
 
 __version__ = "0.2.0"
 
@@ -16,6 +21,7 @@ __all__ = [
     "human_readable_name",
     "short_address",
     "BLEGAPType",
+    "BLEGAPAdvertisement",
     "decode_advertisement_data",
     "parse_advertisement_data",
 ]
