@@ -1,0 +1,200 @@
+import base64
+
+from bluetooth_data_tools import parse_advertisement_data
+
+
+def test_parse_advertisement_data_Prodigio_D83567A4F5A5():
+    data = [
+        base64.b64decode("AgoEFglQcm9kaWdpb19EODM1NjdBNEY1QTU="),
+        base64.b64decode("AgEGEQYbxdWlAgCqneMRKvIQGaoGCf8CJUQJgAcAAg=="),
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name == "Prodigio_D83567A4F5A5"
+    assert adv.service_uuids == ["06aa1910-f22a-11e3-9daa-0002a5d5c51b"]
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {9474: b"D\t\x80\x07\x00\x02"}
+    assert adv.tx_power == 4
+
+
+def test_parse_advertisement_data_unknown_apple_device():
+    data = [
+        base64.b64decode("AgEaAgoFCv9MABAFChx3+Vs="),
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {76: b"\x10\x05\n\x1cw\xf9["}
+    assert adv.tx_power == 5
+
+
+def test_parse_advertisement_data_empty():
+    data = [
+        b"\x00",
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_flags_only():
+    data = [
+        b"\x01\x01\x06",
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_ignores_invalid():
+    data = [
+        b"\x02\x01\x1a\x02\n\x05\n\xffL\x00\x10\x05\n\x1cw\xf9[\x02\x01",
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {76: b"\x10\x05\n\x1cw\xf9["}
+    assert adv.tx_power == 5
+
+
+def test_parse_advertisement_data_ignores_zero_type():
+    data = [
+        b"\x02\x01\x1a\x02\n\x05\n\xffL\x00\x10\x05\n\x1cw\xf9[\x02\x00",
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {76: b"\x10\x05\n\x1cw\xf9["}
+    assert adv.tx_power == 5
+
+
+def test_parse_advertisement_data_unknown_fd3d():
+    data = [
+        base64.b64decode("AgEGD/9pCWBV+Tw02tgAEDEAAA=="),
+        base64.b64decode("BhY9/WcAZA=="),
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {"0000fd3d-0000-1000-8000-00805f9b34fb": b"g\x00d"}
+    assert adv.manufacturer_data == {2409: b"`U\xf9<4\xda\xd8\x00\x101\x00\x00"}
+    assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_moat():
+    data = [
+        base64.b64decode("AgEGAwMAEBUWABDfeeOmErMVUHBjVGIcb7kL//8="),
+        base64.b64decode("AgoAAwMAIAsWAFDfeeOmErO5CwgJTW9hdF9TMg=="),
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name == "Moat_S2"
+    assert adv.service_uuids == [
+        "00001000-0000-1000-8000-00805f9b34fb",
+        "00002000-0000-1000-8000-00805f9b34fb",
+    ]
+    assert adv.service_data == {
+        "00001000-0000-1000-8000-00805f9b34fb": b"\xdfy\xe3\xa6\x12\xb3\x15PpcTb"
+        b"\x1co\xb9\x0b\xff\xff",
+        "00005000-0000-1000-8000-00805f9b34fb": b"\xdfy\xe3\xa6\x12\xb3\xb9\x0b",
+    }
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power == 0
+
+
+def test_parse_advertisement_data_unknown_apple_215():
+    data = [
+        base64.b64decode("AgEGGv9MAAIV1Ubfl0dXR+++CT4ty90MdxU2zcm1"),
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {
+        76: b"\x02\x15\xd5F\xdf\x97GWG\xef\xbe\t>-\xcb\xdd\x0cw\x156\xcd\xc9\xb5"
+    }
+    assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_oral_b_toothbrush():
+    data = [
+        base64.b64decode("AgEGDv/cAAYyawNSAAEECQAEAwIN/g=="),
+        base64.b64decode("EglPcmFsLUIgVG9vdGhicnVzaAUSEABQAAIKAA=="),
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name == "Oral-B Toothbrush"
+    assert adv.service_uuids == ["0000fe0d-0000-1000-8000-00805f9b34fb"]
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {220: b"\x062k\x03R\x00\x01\x04\t\x00\x04"}
+    assert adv.tx_power == 0
+
+
+def test_parse_advertisement_short_local_name():
+    data = [
+        base64.b64decode("AgEGFv9MAAYxAOTEm+77PgUADQABAmMRIGUECE5hbg=="),
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name == "Nan"
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {
+        76: b"\x061\x00\xe4\xc4\x9b\xee\xfb>\x05\x00\r\x00\x01\x02c\x11 e"
+    }
+    assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_32bit_service_data():
+    data = [
+        b"\x07\x20\x1a\x02\n\x05\n\xff",
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {"050a021a-0000-1000-8000-00805f9b34fb": b"\n\xff"}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_128bit_service_data():
+    data = [
+        b"\x12\x21\x1a\x02\n\x05\n\xff\x062k\x03R\x00\x01\x04\t\x00\x04",
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {"00090401-0052-036b-3206-ff0a050a021a": b"\x04"}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None

@@ -1,10 +1,16 @@
 """Bluetooth data tools."""
 from __future__ import annotations
 
-__version__ = "0.2.0"
-
-
 from struct import Struct
+
+from .gap import (
+    BLEGAPAdvertisement,
+    BLEGAPType,
+    decode_advertisement_data,
+    parse_advertisement_data,
+)
+
+__version__ = "0.2.0"
 
 L_PACK = Struct(">L")
 
@@ -14,6 +20,10 @@ __all__ = [
     "newest_manufacturer_data",
     "human_readable_name",
     "short_address",
+    "BLEGAPType",
+    "BLEGAPAdvertisement",
+    "decode_advertisement_data",
+    "parse_advertisement_data",
 ]
 
 
