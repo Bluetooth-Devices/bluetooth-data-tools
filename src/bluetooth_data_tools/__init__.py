@@ -10,7 +10,7 @@ from .gap import (
     parse_advertisement_data,
 )
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 L_PACK = Struct(">L")
 

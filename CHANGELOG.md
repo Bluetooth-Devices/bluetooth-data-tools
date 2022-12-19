@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.1 (2022-12-19)
+### Fix
+* Handle zero padding in adv data ([#9](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/9)) ([`65fb26b`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/65fb26b5197d6cf1bd262eab98d52b159f89db9f))
+
 ## v0.3.0 (2022-11-13)
 ### Feature
 * Add gap parser ([#6](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/6)) ([`dcb1d86`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/dcb1d86a15e9387385128ebaf32498d4af268963))
