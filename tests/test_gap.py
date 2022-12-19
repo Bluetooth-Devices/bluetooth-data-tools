@@ -198,3 +198,38 @@ def test_parse_advertisement_data_128bit_service_data():
     assert adv.service_data == {"00090401-0052-036b-3206-ff0a050a021a": b"\x04"}
     assert adv.manufacturer_data == {}
     assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_zero_padded():
+    data = [
+        bytes.fromhex(
+            "02.01.06.0E.FF.69.09.FA.62.0F.CF.2D.F2.DA.0F"
+            ".00.22.04.00.09.16.3D.FD.63.C0.56.00.22.04".replace(".", "")
+        )
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {
+        "0000fd3d-0000-1000-8000-00805f9b34fb": b'c\xc0V\x00"\x04'
+    }
+    assert adv.manufacturer_data == {2409: b'\xfab\x0f\xcf-\xf2\xda\x0f\x00"\x04'}
+    assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_zero_padded_scan_included():
+    data = [
+        b"\x02\x01\x06\t\xffY\x00\xfe\x024\x9e\xa6\xba\x00\x00\x00\x00\x00\x00\x00\x00"
+        b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x11\x07\x1b\xc5\xd5\xa5\x02\x00\xb8"
+        b'\x9f\xe6\x11M"\x00\r\xa2\xcb\x06\x16\x00\rH\x10\x00\x00\x00\x00\x00\x00\x00'
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == ["cba20d00-224d-11e6-9fb8-0002a5d5c51b"]
+    assert adv.service_data == {"00000d00-0000-1000-8000-00805f9b34fb": b"H\x10\x00"}
+    assert adv.manufacturer_data == {89: b"\xfe\x024\x9e\xa6\xba"}
+    assert adv.tx_power is None

@@ -69,10 +69,15 @@ def decode_advertisement_data(
 ) -> Iterable[tuple[BLEGAPType, bytes]]:
     """Decode a BLE GAP AD structure."""
     offset = 0
-    while offset < len(encoded_struct):
+    total_length = len(encoded_struct)
+    while offset < total_length:
         try:
             length = encoded_struct[offset]
             if not length:
+                if offset + 2 < total_length:
+                    # Maybe zero padding
+                    offset += 1
+                    continue
                 return
             type_ = encoded_struct[offset + 1]
             if not type_:
