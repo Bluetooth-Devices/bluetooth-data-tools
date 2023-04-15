@@ -9,6 +9,7 @@ from .gap import (
     decode_advertisement_data,
     parse_advertisement_data,
 )
+from .utils import int_to_bluetooth_address
 
 __version__ = "0.3.1"
 
@@ -19,6 +20,7 @@ __all__ = [
     "manufacturer_data_to_raw",
     "newest_manufacturer_data",
     "human_readable_name",
+    "int_to_bluetooth_address",
     "short_address",
     "BLEGAPType",
     "BLEGAPAdvertisement",
