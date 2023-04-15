@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.0 (2023-04-15)
+### Feature
+* Add cython implementation ([#10](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/10)) ([`7fd349d`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/7fd349d0dd83bbcb51ade87ee8dc94fa2db67742))
+
 ## v0.3.1 (2022-12-19)
 ### Fix
 * Handle zero padding in adv data ([#9](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/9)) ([`65fb26b`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/65fb26b5197d6cf1bd262eab98d52b159f89db9f))
