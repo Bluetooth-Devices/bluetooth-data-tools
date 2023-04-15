@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <memory>
 
 #define BDADDR_SIZE 18  // 17 + '\0'
 
