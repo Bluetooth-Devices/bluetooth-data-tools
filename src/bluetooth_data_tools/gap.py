@@ -1,26 +1,38 @@
 """GATT Advertisement and Scan Response Data (GAP)."""
-
-
-from __future__ import annotations
-
 import logging
-from collections.abc import Iterable
-from dataclasses import dataclass
 from enum import IntEnum
+from typing import Dict, Iterable, List, Tuple
 from uuid import UUID
 
 BLE_UUID = "0000-1000-8000-00805f9b34fb"
 _LOGGER = logging.getLogger(__name__)
 
 
-@dataclass
 class BLEGAPAdvertisement:
+    """GATT Advertisement and Scan Response Data (GAP)."""
 
-    local_name: str | None
-    service_uuids: list[str]
-    service_data: dict[str, bytes]
-    manufacturer_data: dict[int, bytes]
-    tx_power: int | None
+    __slots__ = (
+        "local_name",
+        "service_uuids",
+        "service_data",
+        "manufacturer_data",
+        "tx_power",
+    )
+
+    def __init__(
+        self,
+        local_name: str | None,
+        service_uuids: List[str],
+        service_data: Dict[str, bytes],
+        manufacturer_data: Dict[int, bytes],
+        tx_power: int | None,
+    ) -> None:
+        """Initialize GAP Advertisement."""
+        self.local_name = local_name
+        self.service_uuids = service_uuids
+        self.service_data = service_data
+        self.manufacturer_data = manufacturer_data
+        self.tx_power = tx_power
 
 
 class BLEGAPType(IntEnum):
@@ -63,10 +75,12 @@ class BLEGAPType(IntEnum):
 
 _BLEGAPType_MAP = {gap_ad.value: gap_ad for gap_ad in BLEGAPType}
 
+_bytes = bytes
+
 
 def decode_advertisement_data(
-    encoded_struct: bytes,
-) -> Iterable[tuple[BLEGAPType, bytes]]:
+    encoded_struct: _bytes,
+) -> Iterable[Tuple[BLEGAPType, bytes]]:
     """Decode a BLE GAP AD structure."""
     offset = 0
     total_length = len(encoded_struct)
@@ -98,47 +112,65 @@ def decode_advertisement_data(
         offset += 1 + length
 
 
+TYPE_SHORT_LOCAL_NAME = BLEGAPType.TYPE_SHORT_LOCAL_NAME.value
+TYPE_COMPLETE_LOCAL_NAME = BLEGAPType.TYPE_COMPLETE_LOCAL_NAME.value
+TYPE_MANUFACTURER_SPECIFIC_DATA = BLEGAPType.TYPE_MANUFACTURER_SPECIFIC_DATA.value
+TYPE_16BIT_SERVICE_UUID_COMPLETE = BLEGAPType.TYPE_16BIT_SERVICE_UUID_COMPLETE.value
+TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE = (
+    BLEGAPType.TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE.value
+)
+TYPE_128BIT_SERVICE_UUID_COMPLETE = BLEGAPType.TYPE_128BIT_SERVICE_UUID_COMPLETE.value
+TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE = (
+    BLEGAPType.TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE.value
+)
+TYPE_SERVICE_DATA = BLEGAPType.TYPE_SERVICE_DATA.value
+TYPE_SERVICE_DATA_32BIT_UUID = BLEGAPType.TYPE_SERVICE_DATA_32BIT_UUID.value
+TYPE_SERVICE_DATA_128BIT_UUID = BLEGAPType.TYPE_SERVICE_DATA_128BIT_UUID.value
+TYPE_TX_POWER_LEVEL = BLEGAPType.TYPE_TX_POWER_LEVEL.value
+
+
 def parse_advertisement_data(
     data: Iterable[bytes],
 ) -> BLEGAPAdvertisement:
     """Parse advertisement data."""
-    manufacturer_data: dict[int, bytes] = {}
-    service_data: dict[str, bytes] = {}
-    service_uuids: list[str] = []
+    manufacturer_data: Dict[int, bytes] = {}
+    service_data: Dict[str, bytes] = {}
+    service_uuids: List[str] = []
     local_name: str | None = None
     tx_power: int | None = None
 
     for gap_data in data:
         for gap_type, gap_value in decode_advertisement_data(gap_data):
-            if gap_type == BLEGAPType.TYPE_SHORT_LOCAL_NAME and not local_name:
+            gap_type_num = gap_type.value
+            if gap_type_num == TYPE_SHORT_LOCAL_NAME and not local_name:
                 local_name = gap_value.decode("utf-8", errors="replace")
-            elif gap_type == BLEGAPType.TYPE_COMPLETE_LOCAL_NAME:
+            elif gap_type_num == TYPE_COMPLETE_LOCAL_NAME:
                 local_name = gap_value.decode("utf-8", errors="replace")
-            elif gap_type == BLEGAPType.TYPE_MANUFACTURER_SPECIFIC_DATA:
+            elif gap_type_num == TYPE_MANUFACTURER_SPECIFIC_DATA:
                 manufacturer_id = int.from_bytes(gap_value[:2], "little")
                 manufacturer_data[manufacturer_id] = gap_value[2:]
-            elif gap_type in {
-                BLEGAPType.TYPE_16BIT_SERVICE_UUID_COMPLETE,
-                BLEGAPType.TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE,
+            elif gap_type_num in {
+                TYPE_16BIT_SERVICE_UUID_COMPLETE,
+                TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE,
             }:
                 uuid_int = int.from_bytes(gap_value[:2], "little")
                 service_uuids.append(f"0000{uuid_int:04x}-{BLE_UUID}")
-            elif gap_type in {
-                BLEGAPType.TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
-                BLEGAPType.TYPE_128BIT_SERVICE_UUID_COMPLETE,
+            elif gap_type_num in {
+                TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
+                TYPE_128BIT_SERVICE_UUID_COMPLETE,
             }:
                 uuid_str = str(UUID(int=int.from_bytes(gap_value[:16], "little")))
                 service_uuids.append(uuid_str)
-            elif gap_type == BLEGAPType.TYPE_SERVICE_DATA:
+            elif gap_type_num == TYPE_SERVICE_DATA:
                 uuid_int = int.from_bytes(gap_value[:2], "little")
                 service_data[f"0000{uuid_int:04x}-{BLE_UUID}"] = gap_value[2:]
-            elif gap_type == BLEGAPType.TYPE_SERVICE_DATA_32BIT_UUID:
+            elif gap_type_num == TYPE_SERVICE_DATA_32BIT_UUID:
                 uuid_int = int.from_bytes(gap_value[:4], "little")
                 service_data[f"{uuid_int:08x}-{BLE_UUID}"] = gap_value[4:]
-            elif gap_type == BLEGAPType.TYPE_SERVICE_DATA_128BIT_UUID:
+            elif gap_type_num == TYPE_SERVICE_DATA_128BIT_UUID:
                 uuid_str = str(UUID(int=int.from_bytes(gap_value[:16], "little")))
                 service_data[uuid_str] = gap_value[16:]
-            elif gap_type == BLEGAPType.TYPE_TX_POWER_LEVEL:
+            elif gap_type_num == TYPE_TX_POWER_LEVEL:
                 tx_power = int.from_bytes(gap_value, "little", signed=True)
 
     return BLEGAPAdvertisement(
