@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v1.0.0 (2023-06-07)
+### Feature
+* Speed up parsing advertisement data ([#11](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/11)) ([`47e2519`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/47e251928d5d03d7978cd82f9a6173f98d0cbb68))
+
+### Breaking
+* The decode_advertisement_data function is no longer exposed ([`47e2519`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/47e251928d5d03d7978cd82f9a6173f98d0cbb68))
+
 ## v0.4.0 (2023-04-15)
 ### Feature
 * Add cython implementation ([#10](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/10)) ([`7fd349d`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/7fd349d0dd83bbcb51ade87ee8dc94fa2db67742))
