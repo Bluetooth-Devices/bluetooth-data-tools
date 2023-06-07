@@ -78,9 +78,9 @@ _BLEGAPType_MAP = {gap_ad.value: gap_ad for gap_ad in BLEGAPType}
 _bytes = bytes
 
 
-def decode_advertisement_data(
+def _decode_advertisement_data(
     encoded_struct: _bytes,
-) -> Iterable[Tuple[BLEGAPType, bytes]]:
+) -> Iterable[Tuple[int, bytes]]:
     """Decode a BLE GAP AD structure."""
     offset = 0
     total_length = len(encoded_struct)
@@ -108,7 +108,7 @@ def decode_advertisement_data(
             )
             return
 
-        yield _BLEGAPType_MAP.get(type_, BLEGAPType.TYPE_UNKNOWN), value
+        yield type_, value
         offset += 1 + length
 
 
@@ -140,8 +140,7 @@ def parse_advertisement_data(
     tx_power: int | None = None
 
     for gap_data in data:
-        for gap_type, gap_value in decode_advertisement_data(gap_data):
-            gap_type_num = gap_type.value
+        for gap_type_num, gap_value in _decode_advertisement_data(gap_data):
             if gap_type_num == TYPE_SHORT_LOCAL_NAME and not local_name:
                 local_name = gap_value.decode("utf-8", errors="replace")
             elif gap_type_num == TYPE_COMPLETE_LOCAL_NAME:
