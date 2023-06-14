@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.0 (2023-06-14)
+### Feature
+* Reduce string conversion overhead for bluetooth addresses ([#12](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/12)) ([`558c93f`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/558c93f28ffcc205df4a34be0de963fbaeddfafe))
+
 ## v1.0.0 (2023-06-07)
 ### Feature
 * Speed up parsing advertisement data ([#11](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/11)) ([`47e2519`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/47e251928d5d03d7978cd82f9a6173f98d0cbb68))
