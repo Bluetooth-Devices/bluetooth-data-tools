@@ -6,10 +6,7 @@ from functools import lru_cache
 try:
     from ._utils_impl import _int_to_bluetooth_address  # noqa: F811 F401
 
-    @lru_cache(maxsize=256)
-    def int_to_bluetooth_address(address: int) -> str:
-        """Convert an integer to a bluetooth address."""
-        return _int_to_bluetooth_address(address)
+    int_to_bluetooth_address = lru_cache(maxsize=256)(_int_to_bluetooth_address)
 
 except ImportError:
 
