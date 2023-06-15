@@ -89,7 +89,7 @@ jobs:
       # - Create GitHub release
       # - Publish to PyPI
       - name: Python Semantic Release
-        uses: relekang/python-semantic-release@v7.33.2
+        uses: relekang/python-semantic-release@v7.34.4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           pypi_token: ${{ secrets.PYPI_TOKEN }}
@@ -133,7 +133,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel==2.12.0
+        run: python -m pip install cibuildwheel==2.13.1
 
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse
