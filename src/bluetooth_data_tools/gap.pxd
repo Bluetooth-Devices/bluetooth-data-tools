@@ -27,7 +27,13 @@ cdef cython.uint TYPE_TX_POWER_LEVEL
 
 
 @cython.locals(
+    gap_data=cython.bytes,
     gap_value=cython.bytes,
-    gap_type_num=cython.uint
+    gap_type_num=cython.uint,
+    total_length=cython.uint,
+    length=cython.uint,
+    offset=cython.uint,
+    start=cython.uint,
+    end=cython.uint,
 )
 cpdef parse_advertisement_data(object data)
