@@ -180,7 +180,7 @@ def parse_advertisement_data(
                 local_name = gap_value.decode("utf-8", "replace")
             elif gap_type_num == TYPE_MANUFACTURER_SPECIFIC_DATA:
                 manufacturer_data[
-                    _manufacturer_id_bytes_to_int(gap_value[2:])
+                    _manufacturer_id_bytes_to_int(gap_value[:2])
                 ] = gap_value[2:]
             elif gap_type_num in {
                 TYPE_16BIT_SERVICE_UUID_COMPLETE,
