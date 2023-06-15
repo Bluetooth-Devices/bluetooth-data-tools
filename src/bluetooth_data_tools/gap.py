@@ -2,7 +2,7 @@
 import logging
 from enum import IntEnum
 from functools import lru_cache
-from typing import Dict, Iterable, List, Tuple
+from typing import Dict, Iterable, List
 
 BLE_UUID = "0000-1000-8000-00805f9b34fb"
 _LOGGER = logging.getLogger(__name__)
@@ -80,43 +80,6 @@ _bytes = bytes
 from_bytes = int.from_bytes
 
 
-def _decode_advertisement_data(
-    encoded_struct: _bytes,
-) -> list[Tuple[int, bytes]]:
-    """Decode a BLE GAP AD structure."""
-    offset = 0
-    total_length = len(encoded_struct)
-    msgs: list[Tuple[int, bytes]] = []
-    while offset < total_length:
-        try:
-            length = encoded_struct[offset]
-            if not length:
-                if offset + 2 < total_length:
-                    # Maybe zero padding
-                    offset += 1
-                    continue
-                break
-            type_ = encoded_struct[offset + 1]
-            if not type_:
-                break
-            start = offset + 2
-            end = start + length - 1
-            value = encoded_struct[start:end]
-        except IndexError as ex:
-            _LOGGER.error(
-                "Invalid BLE GAP AD structure at offset %s: %s (%s)",
-                offset,
-                encoded_struct,
-                ex,
-            )
-            break
-
-        msgs.append((type_, value))
-        offset += 1 + length
-
-    return msgs
-
-
 TYPE_SHORT_LOCAL_NAME = BLEGAPType.TYPE_SHORT_LOCAL_NAME.value
 TYPE_COMPLETE_LOCAL_NAME = BLEGAPType.TYPE_COMPLETE_LOCAL_NAME.value
 TYPE_MANUFACTURER_SPECIFIC_DATA = BLEGAPType.TYPE_MANUFACTURER_SPECIFIC_DATA.value
@@ -175,7 +138,33 @@ def parse_advertisement_data(
     tx_power: int | None = None
 
     for gap_data in data:
-        for gap_type_num, gap_value in _decode_advertisement_data(gap_data):
+        offset = 0
+        total_length = len(gap_data)
+        while offset < total_length:
+            try:
+                length = gap_data[offset]
+                if not length:
+                    if offset + 2 < total_length:
+                        # Maybe zero padding
+                        offset += 1
+                        continue
+                    break
+                gap_type_num = gap_data[offset + 1]
+                if not gap_type_num:
+                    break
+                start = offset + 2
+                end = start + length - 1
+                gap_value = gap_data[start:end]
+            except IndexError as ex:
+                _LOGGER.error(
+                    "Invalid BLE GAP AD structure at offset %s: %s (%s)",
+                    offset,
+                    gap_data,
+                    ex,
+                )
+                break
+
+            offset += 1 + length
             if gap_type_num == TYPE_SHORT_LOCAL_NAME and not local_name:
                 local_name = gap_value.decode("utf-8", "replace")
             elif gap_type_num == TYPE_COMPLETE_LOCAL_NAME:
