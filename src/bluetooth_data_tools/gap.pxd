@@ -3,6 +3,8 @@ import cython
 
 cdef str BLE_UUID
 
+cdef object from_bytes
+
 cdef class BLEGAPAdvertisement:
 
     cdef public object local_name
@@ -31,11 +33,3 @@ cdef cython.uint TYPE_TX_POWER_LEVEL
 cpdef parse_advertisement_data(object data)
 
 cdef _decode_advertisement_data(cython.bytes encoded_struct)
-
-cdef _uint64_bytes_as_uuid(cython.bytes uint64_bytes)
-
-cdef _uint16_bytes_as_uuid(cython.bytes uuid16_bytes)
-
-cdef _uint32_bytes_as_uuid(cython.bytes uuid32_bytes)
-
-cdef _manufacturer_id_bytes_to_int(cython.bytes manufacturer_id_bytes)

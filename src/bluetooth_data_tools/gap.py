@@ -77,6 +77,8 @@ _BLEGAPType_MAP = {gap_ad.value: gap_ad for gap_ad in BLEGAPType}
 
 _bytes = bytes
 
+from_bytes = int.from_bytes
+
 
 def _decode_advertisement_data(
     encoded_struct: _bytes,
@@ -137,7 +139,7 @@ bytes_ = bytes
 @lru_cache(maxsize=256)
 def _uint64_bytes_as_uuid(uint64_bytes: bytes_) -> str:
     """Convert an integer to a UUID str."""
-    int_value = int.from_bytes(uint64_bytes, "little")
+    int_value = from_bytes(uint64_bytes, "little")
     hex = "%032x" % int_value
     return f"{hex[:8]}-{hex[8:12]}-{hex[12:16]}-{hex[16:20]}-{hex[20:]}"
 
@@ -145,21 +147,21 @@ def _uint64_bytes_as_uuid(uint64_bytes: bytes_) -> str:
 @lru_cache(maxsize=256)
 def _uint16_bytes_as_uuid(uuid16_bytes: bytes_) -> str:
     """Convert a 16-bit UUID to a UUID str."""
-    uuid_int = int.from_bytes(uuid16_bytes, "little")
+    uuid_int = from_bytes(uuid16_bytes, "little")
     return f"0000{uuid_int:04x}-{BLE_UUID}"
 
 
 @lru_cache(maxsize=256)
 def _uint32_bytes_as_uuid(uuid32_bytes: bytes_) -> str:
     """Convert a 32-bit UUID to a UUID str."""
-    uuid_int = int.from_bytes(uuid32_bytes, "little")
+    uuid_int = from_bytes(uuid32_bytes, "little")
     return f"{uuid_int:08x}-{BLE_UUID}"
 
 
 @lru_cache(maxsize=256)
 def _manufacturer_id_bytes_to_int(manufacturer_id_bytes: bytes_) -> int:
     """Convert manufacturer ID bytes to an int."""
-    return int.from_bytes(manufacturer_id_bytes, "little")
+    return from_bytes(manufacturer_id_bytes, "little")
 
 
 def parse_advertisement_data(
