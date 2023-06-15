@@ -1,6 +1,7 @@
 """GATT Advertisement and Scan Response Data (GAP)."""
 import logging
 from enum import IntEnum
+from functools import lru_cache
 from typing import Dict, Iterable, List, Tuple
 
 BLE_UUID = "0000-1000-8000-00805f9b34fb"
@@ -114,12 +115,6 @@ def _decode_advertisement_data(
     return msgs
 
 
-def _int_as_uuid(int_value: int) -> str:
-    """Convert an integer to a UUID."""
-    hex = "%032x" % int_value
-    return f"{hex[:8]}-{hex[8:12]}-{hex[12:16]}-{hex[16:20]}-{hex[20:]}"
-
-
 TYPE_SHORT_LOCAL_NAME = BLEGAPType.TYPE_SHORT_LOCAL_NAME.value
 TYPE_COMPLETE_LOCAL_NAME = BLEGAPType.TYPE_COMPLETE_LOCAL_NAME.value
 TYPE_MANUFACTURER_SPECIFIC_DATA = BLEGAPType.TYPE_MANUFACTURER_SPECIFIC_DATA.value
@@ -135,6 +130,36 @@ TYPE_SERVICE_DATA = BLEGAPType.TYPE_SERVICE_DATA.value
 TYPE_SERVICE_DATA_32BIT_UUID = BLEGAPType.TYPE_SERVICE_DATA_32BIT_UUID.value
 TYPE_SERVICE_DATA_128BIT_UUID = BLEGAPType.TYPE_SERVICE_DATA_128BIT_UUID.value
 TYPE_TX_POWER_LEVEL = BLEGAPType.TYPE_TX_POWER_LEVEL.value
+
+bytes_ = bytes
+
+
+@lru_cache(maxsize=256)
+def _uint64_bytes_as_uuid(uint64_bytes: bytes_) -> str:
+    """Convert an integer to a UUID str."""
+    int_value = int.from_bytes(uint64_bytes, "little")
+    hex = "%032x" % int_value
+    return f"{hex[:8]}-{hex[8:12]}-{hex[12:16]}-{hex[16:20]}-{hex[20:]}"
+
+
+@lru_cache(maxsize=256)
+def _uint16_bytes_as_uuid(uuid16_bytes: bytes_) -> str:
+    """Convert a 16-bit UUID to a UUID str."""
+    uuid_int = int.from_bytes(uuid16_bytes, "little")
+    return f"0000{uuid_int:04x}-{BLE_UUID}"
+
+
+@lru_cache(maxsize=256)
+def _uint32_bytes_as_uuid(uuid32_bytes: bytes_) -> str:
+    """Convert a 32-bit UUID to a UUID str."""
+    uuid_int = int.from_bytes(uuid32_bytes, "little")
+    return f"{uuid_int:08x}-{BLE_UUID}"
+
+
+@lru_cache(maxsize=256)
+def _manufacturer_id_bytes_to_int(manufacturer_id_bytes: bytes_) -> int:
+    """Convert manufacturer ID bytes to an int."""
+    return int.from_bytes(manufacturer_id_bytes, "little")
 
 
 def parse_advertisement_data(
@@ -154,29 +179,25 @@ def parse_advertisement_data(
             elif gap_type_num == TYPE_COMPLETE_LOCAL_NAME:
                 local_name = gap_value.decode("utf-8", "replace")
             elif gap_type_num == TYPE_MANUFACTURER_SPECIFIC_DATA:
-                manufacturer_id = int.from_bytes(gap_value[:2], "little")
-                manufacturer_data[manufacturer_id] = gap_value[2:]
+                manufacturer_data[
+                    _manufacturer_id_bytes_to_int(gap_value[2:])
+                ] = gap_value[2:]
             elif gap_type_num in {
                 TYPE_16BIT_SERVICE_UUID_COMPLETE,
                 TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE,
             }:
-                uuid_int = int.from_bytes(gap_value[:2], "little")
-                service_uuids.append(f"0000{uuid_int:04x}-{BLE_UUID}")
+                service_uuids.append(_uint16_bytes_as_uuid(gap_value[:2]))
             elif gap_type_num in {
                 TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
                 TYPE_128BIT_SERVICE_UUID_COMPLETE,
             }:
-                uuid_str = _int_as_uuid(int.from_bytes(gap_value[:16], "little"))
-                service_uuids.append(uuid_str)
+                service_uuids.append(_uint64_bytes_as_uuid(gap_value[:16]))
             elif gap_type_num == TYPE_SERVICE_DATA:
-                uuid_int = int.from_bytes(gap_value[:2], "little")
-                service_data[f"0000{uuid_int:04x}-{BLE_UUID}"] = gap_value[2:]
+                service_data[_uint16_bytes_as_uuid(gap_value[:2])] = gap_value[2:]
             elif gap_type_num == TYPE_SERVICE_DATA_32BIT_UUID:
-                uuid_int = int.from_bytes(gap_value[:4], "little")
-                service_data[f"{uuid_int:08x}-{BLE_UUID}"] = gap_value[4:]
+                service_data[_uint32_bytes_as_uuid(gap_value[:4])] = gap_value[4:]
             elif gap_type_num == TYPE_SERVICE_DATA_128BIT_UUID:
-                uuid_str = _int_as_uuid(int.from_bytes(gap_value[:16], "little"))
-                service_data[uuid_str] = gap_value[16:]
+                service_data[_uint64_bytes_as_uuid(gap_value[:16])] = gap_value[16:]
             elif gap_type_num == TYPE_TX_POWER_LEVEL:
                 tx_power = int.from_bytes(gap_value, "little", signed=True)
 
