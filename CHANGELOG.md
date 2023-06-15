@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.0 (2023-06-15)
+
+### Feature
+
+* Optimize gap parser ([#16](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/16)) ([`5800d45`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/5800d4531400ee96f95cd4ee82677a4f32e23182))
+* Optimize gap parser ([#15](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/15)) ([`c598c2d`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/c598c2ddc106da657bfec30864a65c2e2a36c5f3))
+* Optimize gap parser ([#13](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/13)) ([`7df2658`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/7df26580c06cf38e2621e16a9a17a3fafb6978e4))
+
 ## v1.1.0 (2023-06-14)
 ### Feature
 * Reduce string conversion overhead for bluetooth addresses ([#12](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/12)) ([`558c93f`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/558c93f28ffcc205df4a34be0de963fbaeddfafe))
