@@ -31,5 +31,3 @@ cdef cython.uint TYPE_TX_POWER_LEVEL
     gap_type_num=cython.uint
 )
 cpdef parse_advertisement_data(object data)
-
-cdef _decode_advertisement_data(cython.bytes encoded_struct)
