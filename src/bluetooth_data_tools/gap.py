@@ -79,10 +79,11 @@ _bytes = bytes
 
 def _decode_advertisement_data(
     encoded_struct: _bytes,
-) -> Iterable[Tuple[int, bytes]]:
+) -> list[Tuple[int, bytes]]:
     """Decode a BLE GAP AD structure."""
     offset = 0
     total_length = len(encoded_struct)
+    msgs: list[Tuple[int, bytes]] = []
     while offset < total_length:
         try:
             length = encoded_struct[offset]
@@ -91,10 +92,10 @@ def _decode_advertisement_data(
                     # Maybe zero padding
                     offset += 1
                     continue
-                return
+                break
             type_ = encoded_struct[offset + 1]
             if not type_:
-                return
+                break
             start = offset + 2
             end = start + length - 1
             value = encoded_struct[start:end]
@@ -105,10 +106,12 @@ def _decode_advertisement_data(
                 encoded_struct,
                 ex,
             )
-            return
+            break
 
-        yield type_, value
+        msgs.append((type_, value))
         offset += 1 + length
+
+    return msgs
 
 
 def _int_as_uuid(int_value: int) -> str:
