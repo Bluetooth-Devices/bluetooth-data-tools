@@ -1,7 +1,7 @@
 import cython
 
 
-cdef object BLE_UID
+cdef str BLE_UUID
 
 cdef class BLEGAPAdvertisement:
 
