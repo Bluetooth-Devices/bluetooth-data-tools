@@ -1,6 +1,10 @@
 import cython
 
 
+cdef str BLE_UUID
+
+cdef object from_bytes
+
 cdef class BLEGAPAdvertisement:
 
     cdef public object local_name
@@ -27,3 +31,5 @@ cdef cython.uint TYPE_TX_POWER_LEVEL
     gap_type_num=cython.uint
 )
 cpdef parse_advertisement_data(object data)
+
+cdef _decode_advertisement_data(cython.bytes encoded_struct)
