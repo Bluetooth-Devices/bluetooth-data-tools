@@ -79,6 +79,7 @@ _bytes = bytes
 
 from_bytes = int.from_bytes
 from_bytes_little = partial(from_bytes, byteorder="little")
+from_bytes_signed = partial(from_bytes, byteorder="little", signed=True)
 
 TYPE_SHORT_LOCAL_NAME = BLEGAPType.TYPE_SHORT_LOCAL_NAME.value
 TYPE_COMPLETE_LOCAL_NAME = BLEGAPType.TYPE_COMPLETE_LOCAL_NAME.value
@@ -209,7 +210,7 @@ def parse_advertisement_data(
                     16:
                 ]
             elif gap_type_num == TYPE_TX_POWER_LEVEL:
-                tx_power = from_bytes(gap_value, "little", signed=True)
+                tx_power = from_bytes_signed(gap_value)
 
     return BLEGAPAdvertisement(
         local_name,

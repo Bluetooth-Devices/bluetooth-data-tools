@@ -5,6 +5,7 @@ cdef str BLE_UUID
 
 cdef object from_bytes
 cdef object from_bytes_little
+cdef object from_bytes_signed
 
 cdef object _cached_uint64_bytes_as_uuid
 cdef object _cached_uint16_bytes_as_uuid
