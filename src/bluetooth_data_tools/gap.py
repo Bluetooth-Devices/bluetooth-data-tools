@@ -167,7 +167,7 @@ def parse_advertisement_data(
                 end = start + length - 1
                 gap_value = gap_data[start:end]
             except IndexError as ex:
-                _LOGGER.error(
+                _LOGGER.debug(
                     "Invalid BLE GAP AD structure at offset %s: %s (%s)",
                     offset,
                     gap_data,
