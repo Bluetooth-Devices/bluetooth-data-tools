@@ -1,7 +1,7 @@
 """GATT Advertisement and Scan Response Data (GAP)."""
 import logging
 from enum import IntEnum
-from functools import lru_cache
+from functools import lru_cache, partial
 from typing import Dict, Iterable, List
 
 BLE_UUID = "0000-1000-8000-00805f9b34fb"
@@ -78,7 +78,7 @@ _BLEGAPType_MAP = {gap_ad.value: gap_ad for gap_ad in BLEGAPType}
 _bytes = bytes
 
 from_bytes = int.from_bytes
-
+from_bytes_little = partial(from_bytes, byteorder="little")
 
 TYPE_SHORT_LOCAL_NAME = BLEGAPType.TYPE_SHORT_LOCAL_NAME.value
 TYPE_COMPLETE_LOCAL_NAME = BLEGAPType.TYPE_COMPLETE_LOCAL_NAME.value
@@ -102,7 +102,7 @@ bytes_ = bytes
 @lru_cache(maxsize=256)
 def _uint64_bytes_as_uuid(uint64_bytes: bytes_) -> str:
     """Convert an integer to a UUID str."""
-    int_value = from_bytes(uint64_bytes, "little")
+    int_value = from_bytes_little(uint64_bytes)
     hex = "%032x" % int_value
     return f"{hex[:8]}-{hex[8:12]}-{hex[12:16]}-{hex[16:20]}-{hex[20:]}"
 
@@ -113,8 +113,7 @@ _cached_uint64_bytes_as_uuid = _uint64_bytes_as_uuid
 @lru_cache(maxsize=256)
 def _uint16_bytes_as_uuid(uuid16_bytes: bytes_) -> str:
     """Convert a 16-bit UUID to a UUID str."""
-    uuid_int = from_bytes(uuid16_bytes, "little")
-    return f"0000{uuid_int:04x}-{BLE_UUID}"
+    return f"0000{from_bytes_little(uuid16_bytes):04x}-{BLE_UUID}"
 
 
 _cached_uint16_bytes_as_uuid = _uint16_bytes_as_uuid
@@ -123,8 +122,7 @@ _cached_uint16_bytes_as_uuid = _uint16_bytes_as_uuid
 @lru_cache(maxsize=256)
 def _uint32_bytes_as_uuid(uuid32_bytes: bytes_) -> str:
     """Convert a 32-bit UUID to a UUID str."""
-    uuid_int = from_bytes(uuid32_bytes, "little")
-    return f"{uuid_int:08x}-{BLE_UUID}"
+    return f"{from_bytes_little(uuid32_bytes):08x}-{BLE_UUID}"
 
 
 _cached_uint32_bytes_as_uuid = _uint32_bytes_as_uuid
@@ -133,7 +131,7 @@ _cached_uint32_bytes_as_uuid = _uint32_bytes_as_uuid
 @lru_cache(maxsize=256)
 def _manufacturer_id_bytes_to_int(manufacturer_id_bytes: bytes_) -> int:
     """Convert manufacturer ID bytes to an int."""
-    return from_bytes(manufacturer_id_bytes, "little")
+    return from_bytes_little(manufacturer_id_bytes)
 
 
 _cached_manufacturer_id_bytes_to_int = _manufacturer_id_bytes_to_int
