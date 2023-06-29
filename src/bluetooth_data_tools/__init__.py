@@ -6,7 +6,7 @@ from struct import Struct
 from .gap import BLEGAPAdvertisement, BLEGAPType, parse_advertisement_data
 from .utils import int_to_bluetooth_address
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 L_PACK = Struct(">L")
 

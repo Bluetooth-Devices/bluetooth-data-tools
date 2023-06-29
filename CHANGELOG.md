@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.3.0 (2023-06-29)
+
+### Feature
+
+* Improve handling of corrupt data ([#18](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/18)) ([`b70fdd4`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/b70fdd45afc295b7082d8fae019e28f357356bf0))
+
 ## v1.2.0 (2023-06-15)
 
 ### Feature
