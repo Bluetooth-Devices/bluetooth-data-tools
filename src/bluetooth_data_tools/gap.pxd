@@ -12,6 +12,7 @@ cdef object _cached_uint16_bytes_as_uuid
 cdef object _cached_uint32_bytes_as_uuid
 cdef object _cached_uint128_bytes_as_uuid
 
+cdef object _LOGGER
 
 cdef class BLEGAPAdvertisement:
 
