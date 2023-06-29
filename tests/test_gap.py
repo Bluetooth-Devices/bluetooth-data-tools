@@ -233,3 +233,71 @@ def test_parse_advertisement_data_zero_padded_scan_included():
     assert adv.service_data == {"00000d00-0000-1000-8000-00805f9b34fb": b"H\x10\x00"}
     assert adv.manufacturer_data == {89: b"\xfe\x024\x9e\xa6\xba"}
     assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_recovers_from_corrupt_data():
+    data = [
+        b"\x03\x03\x9f\xfe\x17\x16\x9f\xfe\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+        b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x06\xf8"
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == ["0000fe9f-0000-1000-8000-00805f9b34fb"]
+    assert adv.service_data == {
+        "0000fe9f-0000-1000-8000-00805f9b34fb": b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    }
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_recovers_from_corrupt_data_2():
+    data = [
+        b"\x1a\xff\xc3\x03_\xef5B\xb0I\x0f\xbb\x00&\x01\x00m*"
+        b"\xb2c\xd8\xb0\x02\n\x00\x00\xf2\x02\x01\x06 "
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {
+        963: b"_\xef5B\xb0I\x0f\xbb\x00&\x01\x00m*\xb2c\xd8\xb0\x02\n\x00\x00\xf2"
+    }
+    assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_recovers_from_corrupt_data_3():
+    data = [
+        b"\x03\x03\x9f\xfe\x17\x16\x9f\xfe\x00\x00\x00\x00\x00\x00\x00"
+        b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x06 "
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == ["0000fe9f-0000-1000-8000-00805f9b34fb"]
+    assert adv.service_data == {
+        "0000fe9f-0000-1000-8000-00805f9b34fb": b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    }
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_recovers_from_corrupt_data_43():
+    data = [
+        b"\x1a\xff\xc3\x03_\xef5B\xb3I\x0f\xbb\x00&\x01\x01m*"
+        b"\xb2c\xd8.\x02\n\x00\x00\xf2\x02\x01\xc6\xf8"
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {
+        963: b"_\xef5B\xb3I\x0f\xbb\x00&\x01\x01m*\xb2c\xd8.\x02\n\x00\x00\xf2"
+    }
+    assert adv.tx_power is None
