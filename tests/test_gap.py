@@ -200,6 +200,18 @@ def test_parse_advertisement_data_128bit_service_data():
     assert adv.tx_power is None
 
 
+def test_parse_advertisement_data_128bit_service_data_tuple():
+    data = (b"\x12\x21\x1a\x02\n\x05\n\xff\x062k\x03R\x00\x01\x04\t\x00\x04",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {"00090401-0052-036b-3206-ff0a050a021a": b"\x04"}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
 def test_parse_advertisement_data_zero_padded():
     data = [
         bytes.fromhex(
