@@ -2,7 +2,7 @@
 import logging
 from enum import IntEnum
 from functools import lru_cache, partial
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, List, Tuple
 
 BLE_UUID = "0000-1000-8000-00805f9b34fb"
 _LOGGER = logging.getLogger(__name__)
@@ -140,6 +140,14 @@ _cached_manufacturer_id_bytes_to_int = _manufacturer_id_bytes_to_int
 
 def parse_advertisement_data(
     data: Iterable[bytes],
+) -> BLEGAPAdvertisement:
+    """Parse advertisement data."""
+    return _parse_advertisement_data(tuple(data))
+
+
+@lru_cache(maxsize=256)
+def _parse_advertisement_data(
+    data: Tuple[bytes, ...],
 ) -> BLEGAPAdvertisement:
     """Parse advertisement data."""
     manufacturer_data: Dict[int, bytes] = {}
