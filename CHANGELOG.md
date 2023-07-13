@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.6.0 (2023-07-13)
+
+### Feature
+
+* Improve performance when data is all unique ([#21](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/21)) ([`60bff4b`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/60bff4b6f2da3cadce4305280fffc232a683122c))
+
 ## v1.5.0 (2023-07-13)
 
 ### Feature
