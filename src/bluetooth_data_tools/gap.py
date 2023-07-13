@@ -142,6 +142,8 @@ def parse_advertisement_data(
     data: Iterable[bytes],
 ) -> BLEGAPAdvertisement:
     """Parse advertisement data."""
+    if type(data) is tuple:
+        return _parse_advertisement_data(data)
     return _parse_advertisement_data(tuple(data))
 
 
