@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.0 (2023-07-13)
+
+### Feature
+
+* Cache overall parse ([#19](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/19)) ([`5983718`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/5983718f6228e9f4428fa7843df4e37e3a7527bf))
+
 ## v1.3.0 (2023-06-29)
 
 ### Feature
