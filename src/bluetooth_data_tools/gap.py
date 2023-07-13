@@ -138,20 +138,29 @@ def _manufacturer_id_bytes_to_int(manufacturer_id_bytes: bytes_) -> int:
 _cached_manufacturer_id_bytes_to_int = _manufacturer_id_bytes_to_int
 
 
-def parse_advertisement_data(
-    data: Iterable[bytes],
-) -> BLEGAPAdvertisement:
-    """Parse advertisement data."""
-    if type(data) is tuple:
-        return _parse_advertisement_data(data)
-    return _parse_advertisement_data(tuple(data))
-
-
 @lru_cache(maxsize=256)
 def _parse_advertisement_data(
     data: Tuple[bytes, ...],
 ) -> BLEGAPAdvertisement:
     """Parse advertisement data."""
+    return _uncached_parse_advertisement_data(data)
+
+
+_cached_parse_advertisement_data = _parse_advertisement_data
+
+
+def parse_advertisement_data(
+    data: Iterable[bytes],
+) -> BLEGAPAdvertisement:
+    """Parse advertisement data."""
+    if type(data) is tuple:
+        return _cached_parse_advertisement_data(data)
+    return _cached_parse_advertisement_data(tuple(data))
+
+
+def _uncached_parse_advertisement_data(
+    data: Tuple[bytes, ...],
+) -> BLEGAPAdvertisement:
     manufacturer_data: Dict[int, bytes] = {}
     service_data: Dict[str, bytes] = {}
     service_uuids: List[str] = []
