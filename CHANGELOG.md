@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.5.0 (2023-07-13)
+
+### Feature
+
+* Avoid tuple copy if data is already a tuple ([#20](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/20)) ([`69829ba`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/69829bae919245bd50132affb4b7718e6dffae1d))
+
 ## v1.4.0 (2023-07-13)
 
 ### Feature
