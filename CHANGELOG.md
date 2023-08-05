@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.6.1 (2023-07-24)
+
+### Fix
+
+* Pin python-semantic-release to fix release process ([#22](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/22)) ([`957ad28`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/957ad28f576c33d075f1f72875de118d5ef8fd4c))
+
 ## v1.6.0 (2023-07-13)
 
 ### Feature
