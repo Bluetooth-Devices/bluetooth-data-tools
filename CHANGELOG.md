@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.7.0 (2023-08-05)
+
+### Feature
+
+* Remove the need to have a cpp compiler installed ([#24](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/24)) ([`2a7ebac`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/2a7ebac86872407c7802a847b92ee739747cceaa))
+
 ## v1.6.1 (2023-07-24)
 
 ### Fix
