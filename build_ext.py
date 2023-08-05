@@ -15,7 +15,7 @@ utils_module = Extension(
     [
         join("src", "bluetooth_data_tools", "_utils_impl.pyx"),
     ],
-    language="c++",
+    language="c",
 )
 
 
