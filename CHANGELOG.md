@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.8.0 (2023-08-10)
+
+### Feature
+
+* Make returned data from parse_advertisement_data readonly ([#25](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/25)) ([`1a07397`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/1a073972bfc7dff35b4d8cc2d7394c4ad15f1109))
+
 ## v1.7.0 (2023-08-05)
 
 ### Feature

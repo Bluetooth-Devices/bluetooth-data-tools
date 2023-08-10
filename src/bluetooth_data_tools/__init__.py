@@ -11,7 +11,7 @@ from .gap import (
 )
 from .utils import int_to_bluetooth_address
 
-__version__ = "1.7.0"
+__version__ = "1.8.0"
 
 L_PACK = Struct(">L")
 
