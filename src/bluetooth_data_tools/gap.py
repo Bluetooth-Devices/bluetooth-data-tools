@@ -259,10 +259,4 @@ def _uncached_parse_advertisement_data(
             elif gap_type_num == TYPE_TX_POWER_LEVEL:
                 tx_power = from_bytes_signed(gap_value)
 
-    return (
-        local_name,
-        service_uuids,
-        service_data,
-        manufacturer_data,
-        tx_power,
-    )
+    return (local_name, service_uuids, service_data, manufacturer_data, tx_power)
