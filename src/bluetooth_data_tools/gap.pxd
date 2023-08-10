@@ -17,11 +17,11 @@ cdef object _LOGGER
 
 cdef class BLEGAPAdvertisement:
 
-    cdef public object local_name
-    cdef public object service_uuids
-    cdef public object service_data
-    cdef public object manufacturer_data
-    cdef public object tx_power
+    cdef readonly object local_name
+    cdef readonly object service_uuids
+    cdef readonly object service_data
+    cdef readonly object manufacturer_data
+    cdef readonly object tx_power
 
 cdef cython.uint TYPE_SHORT_LOCAL_NAME
 cdef cython.uint TYPE_COMPLETE_LOCAL_NAME

@@ -3,7 +3,12 @@ from __future__ import annotations
 
 from struct import Struct
 
-from .gap import BLEGAPAdvertisement, BLEGAPType, parse_advertisement_data
+from .gap import (
+    BLEGAPAdvertisement,
+    BLEGAPType,
+    parse_advertisement_data,
+    parse_advertisement_data_tuple,
+)
 from .utils import int_to_bluetooth_address
 
 __version__ = "1.7.0"
@@ -20,6 +25,7 @@ __all__ = [
     "BLEGAPType",
     "BLEGAPAdvertisement",
     "parse_advertisement_data",
+    "parse_advertisement_data_tuple",
 ]
 
 
