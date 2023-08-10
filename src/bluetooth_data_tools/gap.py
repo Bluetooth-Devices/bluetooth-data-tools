@@ -175,6 +175,9 @@ def parse_advertisement_data_tuple(
     The format of the tuple is:
     (local_name, service_uuids, service_data, manufacturer_data, tx_power)
 
+    This is tightly coupled to bleak. If you are not using bleak
+    it is recommended to use parse_advertisement_data instead.
+
     local_name: str | None
     service_uuids: list[str]
     service_data: dict[str, bytes]
