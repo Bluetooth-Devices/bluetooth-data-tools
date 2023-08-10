@@ -73,10 +73,6 @@ class BLEGAPType(IntEnum):
     TYPE_MANUFACTURER_SPECIFIC_DATA = 0xFF
 
 
-_BLEGAPType_MAP = {gap_ad.value: gap_ad for gap_ad in BLEGAPType}
-
-_bytes = bytes
-
 from_bytes = int.from_bytes
 from_bytes_little = partial(from_bytes, byteorder="little")
 from_bytes_signed = partial(from_bytes, byteorder="little", signed=True)
@@ -98,6 +94,10 @@ TYPE_SERVICE_DATA_128BIT_UUID = BLEGAPType.TYPE_SERVICE_DATA_128BIT_UUID.value
 TYPE_TX_POWER_LEVEL = BLEGAPType.TYPE_TX_POWER_LEVEL.value
 
 bytes_ = bytes
+
+BLEGAPAdvertisementTupleType = tuple[
+    str | None, list[str], dict[str, bytes], dict[int, bytes], int | None
+]
 
 
 @lru_cache(maxsize=256)
@@ -142,25 +142,56 @@ _cached_manufacturer_id_bytes_to_int = _manufacturer_id_bytes_to_int
 def _parse_advertisement_data(
     data: Tuple[bytes, ...],
 ) -> BLEGAPAdvertisement:
-    """Parse advertisement data."""
+    """Parse advertisement data and return a BLEGAPAdvertisement."""
+    return BLEGAPAdvertisement(*_uncached_parse_advertisement_data(data))
+
+
+@lru_cache(maxsize=256)
+def _parse_advertisement_data_tuple(
+    data: Tuple[bytes, ...],
+) -> BLEGAPAdvertisementTupleType:
+    """Parse advertisement data and return a tuple."""
     return _uncached_parse_advertisement_data(data)
 
 
 _cached_parse_advertisement_data = _parse_advertisement_data
+_cached_parse_advertisement_data_tuple = _parse_advertisement_data_tuple
 
 
 def parse_advertisement_data(
     data: Iterable[bytes],
 ) -> BLEGAPAdvertisement:
-    """Parse advertisement data."""
+    """Parse advertisement data and return a BLEGAPAdvertisement."""
     if type(data) is tuple:
         return _cached_parse_advertisement_data(data)
     return _cached_parse_advertisement_data(tuple(data))
 
 
+def parse_advertisement_data_tuple(
+    data: Iterable[bytes],
+) -> BLEGAPAdvertisementTupleType:
+    """Parse advertisement data and return a tuple of BLEGAPAdvertisementTupleType.
+
+    The format of the tuple is:
+    (local_name, service_uuids, service_data, manufacturer_data, tx_power)
+
+    This is tightly coupled to bleak. If you are not using bleak
+    it is recommended to use parse_advertisement_data instead.
+
+    local_name: str | None
+    service_uuids: list[str]
+    service_data: dict[str, bytes]
+    manufacturer_data: dict[int, bytes]
+    tx_power: int | None
+    """
+    if type(data) is tuple:
+        return _cached_parse_advertisement_data_tuple(data)
+    return _cached_parse_advertisement_data_tuple(tuple(data))
+
+
 def _uncached_parse_advertisement_data(
     data: Tuple[bytes, ...],
-) -> BLEGAPAdvertisement:
+) -> BLEGAPAdvertisementTupleType:
     manufacturer_data: Dict[int, bytes] = {}
     service_data: Dict[str, bytes] = {}
     service_uuids: List[str] = []
@@ -231,10 +262,4 @@ def _uncached_parse_advertisement_data(
             elif gap_type_num == TYPE_TX_POWER_LEVEL:
                 tx_power = from_bytes_signed(gap_value)
 
-    return BLEGAPAdvertisement(
-        local_name,
-        service_uuids,
-        service_data,
-        manufacturer_data,
-        tx_power,
-    )
+    return (local_name, service_uuids, service_data, manufacturer_data, tx_power)
