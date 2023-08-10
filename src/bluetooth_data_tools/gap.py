@@ -170,7 +170,17 @@ def parse_advertisement_data(
 def parse_advertisement_data_tuple(
     data: Iterable[bytes],
 ) -> BLEGAPAdvertisementTupleType:
-    """Parse advertisement data and return a tuple of BLEGAPAdvertisementTupleType."""
+    """Parse advertisement data and return a tuple of BLEGAPAdvertisementTupleType.
+
+    The format of the tuple is:
+    (local_name, service_uuids, service_data, manufacturer_data, tx_power)
+
+    local_name: str | None
+    service_uuids: list[str]
+    service_data: dict[str, bytes]
+    manufacturer_data: dict[int, bytes]
+    tx_power: int | None
+    """
     if type(data) is tuple:
         return _cached_parse_advertisement_data_tuple(data)
     return _cached_parse_advertisement_data_tuple(tuple(data))
