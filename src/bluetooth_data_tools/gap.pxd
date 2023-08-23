@@ -12,6 +12,7 @@ cdef object _cached_uint16_bytes_as_uuid
 cdef object _cached_uint32_bytes_as_uuid
 cdef object _cached_uint128_bytes_as_uuid
 cdef object _cached_parse_advertisement_data
+cdef object _cached_parse_advertisement_data_tuple
 
 cdef object _LOGGER
 
@@ -36,6 +37,8 @@ cdef cython.uint TYPE_SERVICE_DATA_128BIT_UUID
 cdef cython.uint TYPE_TX_POWER_LEVEL
 
 cpdef parse_advertisement_data(object data)
+
+cpdef parse_advertisement_data_tuple(cython.tuple data)
 
 @cython.locals(
     gap_data=cython.bytes,

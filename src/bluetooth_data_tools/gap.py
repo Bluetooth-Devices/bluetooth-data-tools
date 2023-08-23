@@ -146,16 +146,7 @@ def _parse_advertisement_data(
     return BLEGAPAdvertisement(*_uncached_parse_advertisement_data(data))
 
 
-@lru_cache(maxsize=256)
-def _parse_advertisement_data_tuple(
-    data: Tuple[bytes, ...],
-) -> BLEGAPAdvertisementTupleType:
-    """Parse advertisement data and return a tuple."""
-    return _uncached_parse_advertisement_data(data)
-
-
 _cached_parse_advertisement_data = _parse_advertisement_data
-_cached_parse_advertisement_data_tuple = _parse_advertisement_data_tuple
 
 
 def parse_advertisement_data(
@@ -167,10 +158,11 @@ def parse_advertisement_data(
     return _cached_parse_advertisement_data(tuple(data))
 
 
-def parse_advertisement_data_tuple(
-    data: Iterable[bytes],
+@lru_cache(maxsize=256)
+def _parse_advertisement_data_tuple(
+    data: Tuple[bytes, ...],
 ) -> BLEGAPAdvertisementTupleType:
-    """Parse advertisement data and return a tuple of BLEGAPAdvertisementTupleType.
+    """Parse a tuple of raw advertisement data and return a tuple of BLEGAPAdvertisementTupleType.
 
     The format of the tuple is:
     (local_name, service_uuids, service_data, manufacturer_data, tx_power)
@@ -184,9 +176,17 @@ def parse_advertisement_data_tuple(
     manufacturer_data: dict[int, bytes]
     tx_power: int | None
     """
-    if type(data) is tuple:
-        return _cached_parse_advertisement_data_tuple(data)
-    return _cached_parse_advertisement_data_tuple(tuple(data))
+    return _uncached_parse_advertisement_data(data)
+
+
+_cached_parse_advertisement_data_tuple = _parse_advertisement_data_tuple
+
+
+def parse_advertisement_data_tuple(
+    data: Tuple[bytes, ...],
+) -> BLEGAPAdvertisementTupleType:
+    """Parse a tuple of raw advertisement data and return a tuple of BLEGAPAdvertisementTupleType."""
+    return _cached_parse_advertisement_data_tuple(data)
 
 
 def _uncached_parse_advertisement_data(
