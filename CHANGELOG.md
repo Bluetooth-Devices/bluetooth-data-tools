@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.9.0 (2023-08-23)
+
+### Feature
+
+* Speed up the new parse_advertisement_data_tuple function ([#26](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/26)) ([`1137a50`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/1137a5004a1e2a65ee0d37ab555d6ce300208237))
+
 ## v1.8.0 (2023-08-10)
 
 ### Feature
