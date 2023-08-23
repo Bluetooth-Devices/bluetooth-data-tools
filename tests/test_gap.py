@@ -158,13 +158,6 @@ def test_parse_advertisement_data_oral_b_toothbrush():
     assert adv.manufacturer_data == {220: b"\x062k\x03R\x00\x01\x04\t\x00\x04"}
     assert adv.tx_power == 0
 
-    assert parse_advertisement_data_tuple(data) == (
-        "Oral-B Toothbrush",
-        ["0000fe0d-0000-1000-8000-00805f9b34fb"],
-        {},
-        {220: b"\x062k\x03R\x00\x01\x04\t\x00\x04"},
-        0,
-    )
     assert parse_advertisement_data_tuple(tuple(data)) == (
         "Oral-B Toothbrush",
         ["0000fe0d-0000-1000-8000-00805f9b34fb"],
