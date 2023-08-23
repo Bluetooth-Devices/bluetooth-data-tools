@@ -179,11 +179,14 @@ def _parse_advertisement_data_tuple(
     return _uncached_parse_advertisement_data(data)
 
 
+_cached_parse_advertisement_data_tuple = _parse_advertisement_data_tuple
+
+
 def parse_advertisement_data_tuple(
     data: Tuple[bytes, ...],
 ) -> BLEGAPAdvertisementTupleType:
     """Parse a tuple of raw advertisement data and return a tuple of BLEGAPAdvertisementTupleType."""
-    return _parse_advertisement_data_tuple(data)
+    return _cached_parse_advertisement_data_tuple(data)
 
 
 def _uncached_parse_advertisement_data(
