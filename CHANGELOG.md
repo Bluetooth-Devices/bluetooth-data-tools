@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.9.1 (2023-08-27)
+
+### Fix
+
+* Rebuild wheels with cython 3.0.2 ([#27](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/27)) ([`4634dfb`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/4634dfb8f47ab42787afecc596e864bf3ac11cbe))
+
 ## v1.9.0 (2023-08-23)
 
 ### Feature
