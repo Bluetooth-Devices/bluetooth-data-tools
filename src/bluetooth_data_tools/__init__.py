@@ -10,6 +10,7 @@ from .gap import (
     parse_advertisement_data,
     parse_advertisement_data_tuple,
 )
+from .privacy import get_cipher_for_irk, resolve_private_address
 from .utils import int_to_bluetooth_address
 
 __version__ = "1.10.0"
@@ -28,6 +29,8 @@ __all__ = [
     "parse_advertisement_data",
     "parse_advertisement_data_tuple",
     "calculate_distance_meters",
+    "get_cipher_for_irk",
+    "resolve_private_address",
 ]
 
 
