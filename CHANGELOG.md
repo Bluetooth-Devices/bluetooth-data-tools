@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.11.0 (2023-09-01)
+
+### Feature
+
+* Add helper for resolving a private address using an identity key ([#29](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/29)) ([`b5e13cc`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/b5e13cc44711d4ef4aa306bc6e06666afde9968c))
+
 ## v1.10.0 (2023-09-01)
 
 ### Feature
