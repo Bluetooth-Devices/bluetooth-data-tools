@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from struct import Struct
 
+from .distance import calculate_distance_meters
 from .gap import (
     BLEGAPAdvertisement,
     BLEGAPType,
@@ -26,6 +27,7 @@ __all__ = [
     "BLEGAPAdvertisement",
     "parse_advertisement_data",
     "parse_advertisement_data_tuple",
+    "calculate_distance_meters",
 ]
 
 
