@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.10.0 (2023-09-01)
+
+### Feature
+
+* Add calculate_distance_meters to estimate distance to a bluetooth device ([#28](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/28)) ([`c6f0150`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/c6f0150f48d73e603bf69642e7cb7b03375f8393))
+
 ## v1.9.1 (2023-08-27)
 
 ### Fix
