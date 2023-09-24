@@ -229,7 +229,7 @@ def _uncached_parse_advertisement_data(
             offset += 1 + length
             if len(gap_value) == 0:
                 continue
-            if gap_type_num == TYPE_SHORT_LOCAL_NAME and not local_name:
+            if gap_type_num == TYPE_SHORT_LOCAL_NAME and local_name is None:
                 local_name = gap_value.decode("utf-8", "replace")
             elif gap_type_num == TYPE_COMPLETE_LOCAL_NAME:
                 local_name = gap_value.decode("utf-8", "replace")
