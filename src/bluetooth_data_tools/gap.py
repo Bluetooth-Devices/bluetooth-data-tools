@@ -101,6 +101,15 @@ BLEGAPAdvertisementTupleType = tuple[
 
 
 @lru_cache(maxsize=256)
+def _from_bytes_signed(bytes_: bytes_) -> int:
+    """Convert bytes to a signed integer."""
+    return from_bytes_signed(bytes_)
+
+
+_cached_from_bytes_signed = _from_bytes_signed
+
+
+@lru_cache(maxsize=256)
 def _uint64_bytes_as_uuid(uint64_bytes: bytes_) -> str:
     """Convert an integer to a UUID str."""
     int_value = from_bytes_little(uint64_bytes)
@@ -260,6 +269,6 @@ def _uncached_parse_advertisement_data(
                     16:
                 ]
             elif gap_type_num == TYPE_TX_POWER_LEVEL:
-                tx_power = from_bytes_signed(gap_value)
+                tx_power = _cached_from_bytes_signed(gap_value)
 
     return (local_name, service_uuids, service_data, manufacturer_data, tx_power)
