@@ -147,7 +147,7 @@ def _manufacturer_id_bytes_to_int(manufacturer_id_bytes: bytes_) -> int:
 _cached_manufacturer_id_bytes_to_int = _manufacturer_id_bytes_to_int
 
 
-@lru_cache(maxsize=256)
+@lru_cache(maxsize=512)
 def _parse_advertisement_data(
     data: Tuple[bytes, ...],
 ) -> BLEGAPAdvertisement:
@@ -167,7 +167,7 @@ def parse_advertisement_data(
     return _cached_parse_advertisement_data(tuple(data))
 
 
-@lru_cache(maxsize=256)
+@lru_cache(maxsize=512)
 def _parse_advertisement_data_tuple(
     data: Tuple[bytes, ...],
 ) -> BLEGAPAdvertisementTupleType:
