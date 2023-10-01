@@ -324,3 +324,27 @@ def test_parse_advertisement_data_recovers_from_corrupt_data_43():
         963: b"_\xef5B\xb3I\x0f\xbb\x00&\x01\x01m*\xb2c\xd8.\x02\n\x00\x00\xf2"
     }
     assert adv.tx_power is None
+
+
+def test_name_parser():
+    """Test parsing name from https://github.com/esphome/issues/issues/4838."""
+
+    data = (
+        b"\t\tPineTime\002\001\006\021\007\236\312\334$\016\345\251(340\223\363\243\265\001\000@n",
+    )
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name == "PineTime"
+    assert adv.service_uuids == ["01b5a3f3-9330-3433-28a9-e50e24dcca9e"]
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        "PineTime",
+        ["01b5a3f3-9330-3433-28a9-e50e24dcca9e"],
+        {},
+        {},
+        None,
+    )
