@@ -13,7 +13,7 @@ from .gap import (
 from .privacy import get_cipher_for_irk, resolve_private_address
 from .utils import int_to_bluetooth_address
 
-__version__ = "1.12.0"
+__version__ = "1.13.0"
 
 L_PACK = Struct(">L")
 

@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v1.13.0 (2023-10-18)
+
+### Feature
+
+* Update cibuildwheel to build on final cpython release ([#33](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/33)) ([`46781c1`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/46781c1b41eec31c5047e76a843077a3b02d6dca))
+
+### Fix
+
+* Reduce size of wheels by excluding generated .c files ([#34](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/34)) ([`1b56b6e`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/1b56b6e3f1579e9abb0b1d2aaf57fec39c8fc10b))
+
 ## v1.12.0 (2023-09-24)
 
 ### Feature
