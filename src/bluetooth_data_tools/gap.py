@@ -208,18 +208,19 @@ def _uncached_parse_advertisement_data(
     tx_power: int | None = None
 
     for gap_data in data:
+        gap_view = gap_data
         offset = 0
         total_length = len(gap_data)
         while offset < total_length:
             try:
-                length = gap_data[offset]
+                length = gap_view[offset]
                 if not length:
                     if offset + 2 < total_length:
                         # Maybe zero padding
                         offset += 1
                         continue
                     break
-                gap_type_num = gap_data[offset + 1]
+                gap_type_num = gap_view[offset + 1]
                 if not gap_type_num:
                     break
                 start = offset + 2
@@ -236,7 +237,7 @@ def _uncached_parse_advertisement_data(
                 continue
 
             offset += 1 + length
-            if len(gap_value) == 0:
+            if end - start == 0:
                 continue
             if gap_type_num == TYPE_SHORT_LOCAL_NAME and local_name is None:
                 local_name = gap_value.decode("utf-8", "replace")
