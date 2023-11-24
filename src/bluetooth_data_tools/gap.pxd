@@ -45,10 +45,9 @@ cpdef parse_advertisement_data_tuple(cython.tuple data)
 @cython.locals(
     gap_data=cython.bytes,
     gap_value=cython.bytes,
-    gap_view="const unsigned char [:]",
-    gap_type_num=cython.uint,
+    gap_type_num="unsigned char",
     total_length=cython.uint,
-    length=cython.uint,
+    length="unsigned char",
     offset=cython.uint,
     start=cython.uint,
     end=cython.uint,
