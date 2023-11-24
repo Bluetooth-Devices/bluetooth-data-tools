@@ -97,6 +97,5 @@ def uncached_parse_adv() -> None:
     _uncached_parse_advertisement_data(advs)
 
 
-count = 100000
 time = timeit.Timer(uncached_parse_adv).timeit(count)
 print(f"Parsing {count} bluetooth messages without caching took {time} seconds")
