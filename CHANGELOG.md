@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.16.0 (2023-12-01)
+
+### Feature
+
+* Add cython monotonic_time_coarse implementation ([#38](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/38)) ([`ae3abb8`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/ae3abb88023a998be5e4b75b32f0882ebb18dfd9))
+
 ## v1.15.0 (2023-11-24)
 
 ### Feature

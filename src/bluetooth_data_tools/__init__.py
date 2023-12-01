@@ -14,7 +14,7 @@ from .privacy import get_cipher_for_irk, resolve_private_address
 from .time import monotonic_time_coarse
 from .utils import int_to_bluetooth_address
 
-__version__ = "1.15.0"
+__version__ = "1.16.0"
 
 L_PACK = Struct(">L")
 
