@@ -18,6 +18,14 @@ utils_module = Extension(
     language="c",
 )
 
+time_module = Extension(
+    "bluetooth_data_tools._utils_impl",
+    [
+        join("src", "bluetooth_data_tools", "_time_impl.pyx"),
+    ],
+    language="c",
+)
+
 
 class BuildExt(build_ext):
     def build_extensions(self) -> None:
@@ -36,7 +44,7 @@ def build(setup_kwargs: Any) -> None:
         setup_kwargs.update(
             dict(
                 ext_modules=cythonize(
-                    [utils_module, "src/bluetooth_data_tools/gap.py"],
+                    [time_module, utils_module, "src/bluetooth_data_tools/gap.py"],
                     compiler_directives={"language_level": "3"},  # Python 3
                 ),
                 cmdclass=dict(build_ext=BuildExt),
