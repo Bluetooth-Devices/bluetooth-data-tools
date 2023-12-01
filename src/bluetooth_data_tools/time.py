@@ -37,10 +37,9 @@ with suppress(Exception):
         monotonic_time_coarse = __gen_monotonic_time_coarse()
         _USE_COARSE_MONOTONIC_TIME = True
 
-
-with suppress(ImportError):
-    if _USE_COARSE_MONOTONIC_TIME:
-        from ._time_impl import (  # noqa: F811 F401
+if _USE_COARSE_MONOTONIC_TIME:
+    with suppress(ImportError):
+        from ._time_impl import (  # type: ignore[no-redef] # noqa: F811 F401
             _monotonic_time_coarse as monotonic_time_coarse,
         )
 
