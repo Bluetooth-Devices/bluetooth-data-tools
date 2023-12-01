@@ -19,7 +19,7 @@ utils_module = Extension(
 )
 
 time_module = Extension(
-    "bluetooth_data_tools._utils_impl",
+    "bluetooth_data_tools._time_impl",
     [
         join("src", "bluetooth_data_tools", "_time_impl.pyx"),
     ],
