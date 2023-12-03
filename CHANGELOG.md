@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.17.0 (2023-12-03)
+
+### Feature
+
+* Speed up int_to_bluetooth_address ([#39](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/39)) ([`ac354ae`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/ac354ae68b7afedfe5242ec50a209a6241d33169))
+
 ## v1.16.0 (2023-12-01)
 
 ### Feature
