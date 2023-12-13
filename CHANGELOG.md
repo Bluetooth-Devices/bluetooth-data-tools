@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.18.0 (2023-12-13)
+
+### Feature
+
+* Add mac_to_int util ([#40](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/40)) ([`57aebfb`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/57aebfbcdf83754c8324890908d401718818d391))
+
 ## v1.17.0 (2023-12-03)
 
 ### Feature
