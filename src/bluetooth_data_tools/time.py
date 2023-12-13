@@ -5,6 +5,7 @@ import platform
 import time
 from contextlib import suppress
 from functools import partial
+from typing import Callable
 
 CLOCK_MONOTONIC_COARSE = 6
 
@@ -26,7 +27,7 @@ def __gen_monotonic_time_coarse() -> partial[float]:
     return partial(time.clock_gettime, CLOCK_MONOTONIC_COARSE)
 
 
-monotonic_time_coarse = time.monotonic
+monotonic_time_coarse: Callable[[], float] = time.monotonic
 _USE_COARSE_MONOTONIC_TIME = False
 
 with suppress(Exception):
