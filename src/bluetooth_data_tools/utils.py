@@ -29,7 +29,9 @@ def mac_to_int(address: str) -> int:
 def short_address(address: str) -> str:
     """Convert a Bluetooth address to a short address."""
     results = address.replace("-", ":").split(":")
-    return f"{results[-2].upper()}{results[-1].upper()}"[-4:]
+    last: str = results[-1]
+    second_last: str = results[-2]
+    return f"{second_last.upper()}{last.upper()}"[-4:]
 
 
 def human_readable_name(name: str | None, local_name: str, address: str) -> str:
@@ -49,17 +51,11 @@ def address_to_bytes(address: str) -> bytes:
     if ":" not in address:
         address_as_int = 0
     else:
-        address_as_int = int(address.replace(":", ""), 16)
+        address_as_int = mac_to_int(address)
     return L_PACK.pack(address_as_int)
 
 
 def manufacturer_data_to_raw(manufacturer_id: int, manufacturer_data: bytes) -> bytes:
     """Return the raw data from manufacturer data."""
-    return _pad_manufacturer_data(
-        int(manufacturer_id).to_bytes(2, byteorder="little") + manufacturer_data
-    )
-
-
-def _pad_manufacturer_data(manufacturer_data: bytes) -> bytes:
-    """Pad manufacturer data to the format needs."""
-    return b"\x00" * 2 + manufacturer_data
+    init_bytes: bytes = int(manufacturer_id).to_bytes(2, byteorder="little")
+    return b"\x00" * 2 + init_bytes + manufacturer_data
