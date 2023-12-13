@@ -44,7 +44,12 @@ def build(setup_kwargs: Any) -> None:
         setup_kwargs.update(
             dict(
                 ext_modules=cythonize(
-                    [time_module, utils_module, "src/bluetooth_data_tools/gap.py"],
+                    [
+                        time_module,
+                        utils_module,
+                        "src/bluetooth_data_tools/gap.py",
+                        "src/bluetooth_data_tools/utils.py",
+                    ],
                     compiler_directives={"language_level": "3"},  # Python 3
                 ),
                 cmdclass=dict(build_ext=BuildExt),
