@@ -110,14 +110,14 @@ _cached_from_bytes_signed = _from_bytes_signed
 
 
 @lru_cache(maxsize=256)
-def _uint64_bytes_as_uuid(uint64_bytes: bytes_) -> str:
+def _uint128_bytes_as_uuid(uint128_bytes: bytes_) -> str:
     """Convert an integer to a UUID str."""
-    int_value = from_bytes_little(uint64_bytes)
+    int_value = from_bytes_little(uint128_bytes)
     hex = "%032x" % int_value
     return f"{hex[:8]}-{hex[8:12]}-{hex[12:16]}-{hex[16:20]}-{hex[20:]}"
 
 
-_cached_uint64_bytes_as_uuid = _uint64_bytes_as_uuid
+_cached_uint128_bytes_as_uuid = _uint128_bytes_as_uuid
 
 
 @lru_cache(maxsize=256)
@@ -231,41 +231,44 @@ def _uncached_parse_advertisement_data(
                 )
                 offset += 1 + length
                 continue
-            gap_value = gap_data[start:end]
             offset += 1 + length
             if end - start == 0:
                 continue
             if gap_type_num == TYPE_SHORT_LOCAL_NAME and local_name is None:
-                local_name = gap_value.decode("utf-8", "replace")
+                local_name = gap_data[start:end].decode("utf-8", "replace")
             elif gap_type_num == TYPE_COMPLETE_LOCAL_NAME:
-                local_name = gap_value.decode("utf-8", "replace")
+                local_name = gap_data[start:end].decode("utf-8", "replace")
             elif gap_type_num == TYPE_MANUFACTURER_SPECIFIC_DATA:
                 manufacturer_data[
-                    _cached_manufacturer_id_bytes_to_int(gap_value[:2])
-                ] = gap_value[2:]
+                    _cached_manufacturer_id_bytes_to_int(gap_data[start : start + 2])
+                ] = gap_data[start + 2 : end]
             elif gap_type_num in {
                 TYPE_16BIT_SERVICE_UUID_COMPLETE,
                 TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE,
             }:
-                service_uuids.append(_cached_uint16_bytes_as_uuid(gap_value[:2]))
+                service_uuids.append(
+                    _cached_uint16_bytes_as_uuid(gap_data[start : start + 2])
+                )
             elif gap_type_num in {
                 TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
                 TYPE_128BIT_SERVICE_UUID_COMPLETE,
             }:
-                service_uuids.append(_cached_uint64_bytes_as_uuid(gap_value[:16]))
+                service_uuids.append(
+                    _cached_uint128_bytes_as_uuid(gap_data[start : start + 16])
+                )
             elif gap_type_num == TYPE_SERVICE_DATA:
-                service_data[_cached_uint16_bytes_as_uuid(gap_value[:2])] = gap_value[
-                    2:
-                ]
+                service_data[
+                    _cached_uint16_bytes_as_uuid(gap_data[start : start + 2])
+                ] = gap_data[start + 2 : end]
             elif gap_type_num == TYPE_SERVICE_DATA_32BIT_UUID:
-                service_data[_cached_uint32_bytes_as_uuid(gap_value[:4])] = gap_value[
-                    4:
-                ]
+                service_data[
+                    _cached_uint32_bytes_as_uuid(gap_data[start : start + 4])
+                ] = gap_data[start + 4 : end]
             elif gap_type_num == TYPE_SERVICE_DATA_128BIT_UUID:
-                service_data[_cached_uint64_bytes_as_uuid(gap_value[:16])] = gap_value[
-                    16:
-                ]
+                service_data[
+                    _cached_uint128_bytes_as_uuid(gap_data[start : start + 16])
+                ] = gap_data[start + 16 : end]
             elif gap_type_num == TYPE_TX_POWER_LEVEL:
-                tx_power = _cached_from_bytes_signed(gap_value)
+                tx_power = _cached_from_bytes_signed(gap_data[start:end])
 
     return (local_name, service_uuids, service_data, manufacturer_data, tx_power)
