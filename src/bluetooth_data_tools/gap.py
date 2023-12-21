@@ -210,31 +210,28 @@ def _uncached_parse_advertisement_data(
     for gap_data in data:
         offset = 0
         total_length = len(gap_data)
-        while offset < total_length:
-            try:
-                length = gap_data[offset]
-                if not length:
-                    if offset + 2 < total_length:
-                        # Maybe zero padding
-                        offset += 1
-                        continue
-                    break
-                gap_type_num = gap_data[offset + 1]
-                if not gap_type_num:
-                    break
-                start = offset + 2
-                end = start + length - 1
-                gap_value = gap_data[start:end]
-            except IndexError as ex:
+        while offset + 1 < total_length:
+            length = gap_data[offset]
+            if not length:
+                if offset + 2 < total_length:
+                    # Maybe zero padding
+                    offset += 1
+                    continue
+                break
+            gap_type_num = gap_data[offset + 1]
+            if not gap_type_num:
+                break
+            start = offset + 2
+            end = start + length - 1
+            if total_length < end:
                 _LOGGER.debug(
                     "Invalid BLE GAP AD structure at offset %s: %s (%s)",
                     offset,
                     gap_data,
-                    ex,
                 )
                 offset += 1 + length
                 continue
-
+            gap_value = gap_data[start:end]
             offset += 1 + length
             if end - start == 0:
                 continue
