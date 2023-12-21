@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.19.0 (2023-12-21)
+
+### Feature
+
+* Speed up to gap parser ([#41](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/41)) ([`595c65a`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/595c65ac0fdaac27d286c1e893abe28c8b6bfe52))
+
 ## v1.18.0 (2023-12-13)
 
 ### Feature
