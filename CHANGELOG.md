@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.19.2 (2024-06-24)
+
+### Fix
+
+* Build cibuildwheel ([#43](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/43)) ([`fc8c1a1`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/fc8c1a182b189f115a687173abc20e2fe1ba2219))
+
 ## v1.19.1 (2024-06-24)
 
 ### Fix
