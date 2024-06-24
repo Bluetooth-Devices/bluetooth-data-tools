@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.19.1 (2024-06-24)
+
+### Fix
+
+* Fix license classifier ([#42](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/42)) ([`71d54c3`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/71d54c39e62413194a1ba65d2fe397603788e042))
+
 ## v1.19.0 (2023-12-21)
 
 ### Feature
