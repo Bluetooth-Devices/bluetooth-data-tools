@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.19.3 (2024-06-24)
+
+### Fix
+
+* Wheel builds on macos ([#44](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/44)) ([`07f423b`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/07f423bc4ce88a357e7a06b5b48fb36dfc8b916a))
+
 ## v1.19.2 (2024-06-24)
 
 ### Fix
