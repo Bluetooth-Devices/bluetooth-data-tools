@@ -1,4 +1,5 @@
 """Bluetooth data tools."""
+
 from __future__ import annotations
 
 from .distance import calculate_distance_meters
