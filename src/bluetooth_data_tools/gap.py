@@ -1,4 +1,5 @@
 """GATT Advertisement and Scan Response Data (GAP)."""
+
 import logging
 from enum import IntEnum
 from functools import lru_cache, partial

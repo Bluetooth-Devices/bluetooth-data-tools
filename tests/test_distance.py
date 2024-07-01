@@ -1,4 +1,5 @@
 """Test utils."""
+
 from bluetooth_data_tools import calculate_distance_meters
 
 
