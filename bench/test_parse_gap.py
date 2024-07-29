@@ -1,5 +1,3 @@
-import timeit
-
 from bluetooth_data_tools import parse_advertisement_data
 
 #  cythonize -X language_level=3 -a -i  src/bluetooth_data_tools/gap.py
@@ -83,10 +81,5 @@ advs = [
 ]
 
 
-def parse_adv() -> None:
-    parse_advertisement_data(advs)
-
-
-count = 100000
-time = timeit.Timer(parse_adv).timeit(count)
-print(f"Parsing {count} bluetooth messages took {time} seconds")
+def test_parse_advertisement_data(benchmark):
+    benchmark(lambda: parse_advertisement_data(advs))
