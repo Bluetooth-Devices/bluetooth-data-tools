@@ -31,7 +31,7 @@ class BuildExt(build_ext):
     def build_extensions(self) -> None:
         try:
             super().build_extensions()
-        except Exception:  # nosec
+        except Exception:  # noqa: S110
             pass
 
 

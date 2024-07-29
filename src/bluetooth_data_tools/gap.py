@@ -1,9 +1,9 @@
 """GATT Advertisement and Scan Response Data (GAP)."""
 
 import logging
+from collections.abc import Iterable
 from enum import IntEnum
 from functools import lru_cache, partial
-from typing import Dict, Iterable, List, Tuple
 
 BLE_UUID = "0000-1000-8000-00805f9b34fb"
 _LOGGER = logging.getLogger(__name__)
@@ -23,9 +23,9 @@ class BLEGAPAdvertisement:
     def __init__(
         self,
         local_name: str | None,
-        service_uuids: List[str],
-        service_data: Dict[str, bytes],
-        manufacturer_data: Dict[int, bytes],
+        service_uuids: list[str],
+        service_data: dict[str, bytes],
+        manufacturer_data: dict[int, bytes],
         tx_power: int | None,
     ) -> None:
         """Initialize GAP Advertisement."""
@@ -114,7 +114,7 @@ _cached_from_bytes_signed = _from_bytes_signed
 def _uint128_bytes_as_uuid(uint128_bytes: bytes_) -> str:
     """Convert an integer to a UUID str."""
     int_value = from_bytes_little(uint128_bytes)
-    hex = "%032x" % int_value
+    hex = f"{int_value:032x}"
     return f"{hex[:8]}-{hex[8:12]}-{hex[12:16]}-{hex[16:20]}-{hex[20:]}"
 
 
@@ -150,7 +150,7 @@ _cached_manufacturer_id_bytes_to_int = _manufacturer_id_bytes_to_int
 
 @lru_cache(maxsize=256)
 def _parse_advertisement_data(
-    data: Tuple[bytes, ...],
+    data: tuple[bytes, ...],
 ) -> BLEGAPAdvertisement:
     """Parse advertisement data and return a BLEGAPAdvertisement."""
     return BLEGAPAdvertisement(*_uncached_parse_advertisement_data(data))
@@ -170,7 +170,7 @@ def parse_advertisement_data(
 
 @lru_cache(maxsize=256)
 def _parse_advertisement_data_tuple(
-    data: Tuple[bytes, ...],
+    data: tuple[bytes, ...],
 ) -> BLEGAPAdvertisementTupleType:
     """Parse a tuple of raw advertisement data and return a tuple of BLEGAPAdvertisementTupleType.
 
@@ -193,18 +193,18 @@ _cached_parse_advertisement_data_tuple = _parse_advertisement_data_tuple
 
 
 def parse_advertisement_data_tuple(
-    data: Tuple[bytes, ...],
+    data: tuple[bytes, ...],
 ) -> BLEGAPAdvertisementTupleType:
     """Parse a tuple of raw advertisement data and return a tuple of BLEGAPAdvertisementTupleType."""
     return _cached_parse_advertisement_data_tuple(data)
 
 
 def _uncached_parse_advertisement_data(
-    data: Tuple[bytes, ...],
+    data: tuple[bytes, ...],
 ) -> BLEGAPAdvertisementTupleType:
-    manufacturer_data: Dict[int, bytes] = {}
-    service_data: Dict[str, bytes] = {}
-    service_uuids: List[str] = []
+    manufacturer_data: dict[int, bytes] = {}
+    service_data: dict[str, bytes] = {}
+    service_uuids: list[str] = []
     local_name: str | None = None
     tx_power: int | None = None
 
