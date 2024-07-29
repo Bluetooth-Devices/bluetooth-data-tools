@@ -114,7 +114,7 @@ _cached_from_bytes_signed = _from_bytes_signed
 def _uint128_bytes_as_uuid(uint128_bytes: bytes_) -> str:
     """Convert an integer to a UUID str."""
     int_value = from_bytes_little(uint128_bytes)
-    hex = "%032x" % int_value
+    hex = f"{int_value:032x}"
     return f"{hex[:8]}-{hex[8:12]}-{hex[12:16]}-{hex[16:20]}-{hex[20:]}"
 
 

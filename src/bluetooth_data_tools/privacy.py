@@ -17,7 +17,7 @@ PADDING = b"\x00" * 13
 
 
 def get_cipher_for_irk(irk: bytes) -> Cipher:
-    return Cipher(algorithms.AES(irk), modes.ECB())  # nosec B305
+    return Cipher(algorithms.AES(irk), modes.ECB())  # noqa: S305
 
 
 def resolve_private_address(
