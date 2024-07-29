@@ -1,5 +1,3 @@
-import timeit
-
 from bluetooth_data_tools import parse_advertisement_data_tuple
 from bluetooth_data_tools.gap import _uncached_parse_advertisement_data
 
@@ -84,18 +82,9 @@ advs = (
 )
 
 
-def parse_adv() -> None:
-    parse_advertisement_data_tuple(advs)
+def test_parse_advertisement_data_tuple(benchmark):
+    benchmark(lambda: parse_advertisement_data_tuple(advs))
 
 
-count = 100000
-time = timeit.Timer(parse_adv).timeit(count)
-print(f"Parsing {count} bluetooth messages took {time} seconds")
-
-
-def uncached_parse_adv() -> None:
-    _uncached_parse_advertisement_data(advs)
-
-
-time = timeit.Timer(uncached_parse_adv).timeit(count)
-print(f"Parsing {count} bluetooth messages without caching took {time} seconds")
+def test_parse_advertisement_data_tuple_uncached(benchmark):
+    benchmark(lambda: _uncached_parse_advertisement_data(advs))

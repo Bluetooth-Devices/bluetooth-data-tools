@@ -62,12 +62,41 @@ jobs:
           fi
         shell: bash
       - name: Test with Pytest
-        run: poetry run pytest --cov-report=xml
+        run: poetry run pytest --cov-report=xml -v -Wdefault --cov=bluetooth_data_tools --cov-report=term-missing:skip-covered tests
         shell: bash
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  benchmark:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.12"
+        os:
+          - ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: snok/install-poetry@v1.3.3
+      - name: Install Dependencies
+        run: poetry install --only=main,dev,benchmark
+        env:
+          REQUIRE_CYTHON: 1
+      - name: Run benchmarks
+        run: |
+          poetry run pytest bench --benchmark-autosave
+          echo '# Benchmark Results' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          poetry run pytest-benchmark compare --columns=mean,ops >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+        shell: bash
 
   release:
     runs-on: ubuntu-latest
