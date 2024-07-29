@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.19.4 (2024-07-29)
+
+### Fix
+
+* Speed up int_to_bluetooth_address C implementation ([#52](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/52)) ([`7d46575`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/7d4657515cd313aff84fee17bd027d092bd3ae3c))
+
 ## v1.19.3 (2024-06-24)
 
 ### Fix
