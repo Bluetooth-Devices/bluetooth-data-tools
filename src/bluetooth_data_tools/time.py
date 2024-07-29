@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import platform
 import time
+from collections.abc import Callable
 from contextlib import suppress
 from functools import partial
-from typing import Callable
 
 CLOCK_MONOTONIC_COARSE = 6
 

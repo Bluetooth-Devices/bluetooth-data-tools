@@ -97,7 +97,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 exclude = ["docs"]
 line-length = 88
-target-version = "py37"
+target-version = "py310"
 
 [tool.ruff.lint]
 extend-select = [
