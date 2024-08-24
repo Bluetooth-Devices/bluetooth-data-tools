@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.20.0 (2024-08-24)
+
+### Feature
+
+* Python 3.13 support ([#57](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/57)) ([`468014e`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/468014ee5e69253eb4534013ee8cebf1ffe06c70))
+
 ## v1.19.4 (2024-07-29)
 
 ### Fix
