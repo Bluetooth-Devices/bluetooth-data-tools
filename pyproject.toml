@@ -48,7 +48,7 @@ docs = [
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0"
-pytest-cov = "^3.0"
+pytest-cov = "^5.0"
 
 [tool.poetry.group.benchmark.dependencies]
 pytest-benchmark = "^4.0.0"
