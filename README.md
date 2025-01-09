@@ -10,6 +10,7 @@
   <a href="https://codecov.io/gh/bdraco/bluetooth-data-tools">
     <img src="https://img.shields.io/codecov/c/github/bdraco/bluetooth-data-tools.svg?logo=codecov&logoColor=fff&style=flat-square" alt="Test coverage percentage">
   </a>
+  <a href="https://codspeed.io/Bluetooth-Devices/bluetooth-data-tools"><img src="https://img.shields.io/endpoint?url=https://codspeed.io/badge.json" alt="CodSpeed Badge"/></a>
 </p>
 <p align="center">
   <a href="https://python-poetry.org/">
