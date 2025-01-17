@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.22.0 (2025-01-17)
+
+### Feature
+
+* Migrate benchmarks to use Python 3.13 ([#95](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/95)) ([`949684e`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/949684ec43507bac7f5513c636cf7bb58222d957))
+
 ## v1.21.0 (2025-01-17)
 
 ### Feature

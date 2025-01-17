@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bluetooth-data-tools"
-version = "1.21.0"
+version = "1.22.0"
 description = "Tools for converting bluetooth data and packets"
 authors = ["J. Nick Koston <nick@koston.org>"]
 readme = "README.md"
