@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.21.0 (2025-01-17)
+
+### Feature
+
+* Add aarch64 wheels ([#94](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/94)) ([`88d134b`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/88d134b1ac5377c515f613d5481cc35c969493e0))
+
 ## v1.20.0 (2024-08-24)
 
 ### Feature
