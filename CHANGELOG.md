@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v1.23.0 (2025-02-02)
+
+### Feature
+
+* Improve cache performance ([#99](https://github.com/Bluetooth-Devices/bluetooth-data-tools/issues/99)) ([`0dcf7ff`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/0dcf7ffba7c278bf10453c92464d8b0adcfd09d5))
+
 ## v1.22.0 (2025-01-17)
 
 ### Feature
