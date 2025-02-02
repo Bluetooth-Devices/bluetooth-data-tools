@@ -4,6 +4,7 @@ import logging
 from collections.abc import Iterable
 from enum import IntEnum
 from functools import lru_cache, partial
+from typing import TYPE_CHECKING
 
 BLE_UUID = "0000-1000-8000-00805f9b34fb"
 _LOGGER = logging.getLogger(__name__)
@@ -101,13 +102,7 @@ BLEGAPAdvertisementTupleType = tuple[
 ]
 
 
-@lru_cache(maxsize=256)
-def _from_bytes_signed(bytes_: bytes_) -> int:
-    """Convert bytes to a signed integer."""
-    return from_bytes_signed(bytes_)
-
-
-_cached_from_bytes_signed = _from_bytes_signed
+_cached_from_bytes_signed = lru_cache(maxsize=256)(from_bytes_signed)
 
 
 @lru_cache(maxsize=256)
@@ -138,14 +133,7 @@ def _uint32_bytes_as_uuid(uuid32_bytes: bytes_) -> str:
 
 _cached_uint32_bytes_as_uuid = _uint32_bytes_as_uuid
 
-
-@lru_cache(maxsize=256)
-def _manufacturer_id_bytes_to_int(manufacturer_id_bytes: bytes_) -> int:
-    """Convert manufacturer ID bytes to an int."""
-    return from_bytes_little(manufacturer_id_bytes)
-
-
-_cached_manufacturer_id_bytes_to_int = _manufacturer_id_bytes_to_int
+_cached_manufacturer_id_bytes_to_int = lru_cache(maxsize=256)(from_bytes_little)
 
 
 @lru_cache(maxsize=256)
@@ -166,37 +154,6 @@ def parse_advertisement_data(
     if type(data) is tuple:
         return _cached_parse_advertisement_data(data)
     return _cached_parse_advertisement_data(tuple(data))
-
-
-@lru_cache(maxsize=256)
-def _parse_advertisement_data_tuple(
-    data: tuple[bytes, ...],
-) -> BLEGAPAdvertisementTupleType:
-    """Parse a tuple of raw advertisement data and return a tuple of BLEGAPAdvertisementTupleType.
-
-    The format of the tuple is:
-    (local_name, service_uuids, service_data, manufacturer_data, tx_power)
-
-    This is tightly coupled to bleak. If you are not using bleak
-    it is recommended to use parse_advertisement_data instead.
-
-    local_name: str | None
-    service_uuids: list[str]
-    service_data: dict[str, bytes]
-    manufacturer_data: dict[int, bytes]
-    tx_power: int | None
-    """
-    return _uncached_parse_advertisement_data(data)
-
-
-_cached_parse_advertisement_data_tuple = _parse_advertisement_data_tuple
-
-
-def parse_advertisement_data_tuple(
-    data: tuple[bytes, ...],
-) -> BLEGAPAdvertisementTupleType:
-    """Parse a tuple of raw advertisement data and return a tuple of BLEGAPAdvertisementTupleType."""
-    return _cached_parse_advertisement_data_tuple(data)
 
 
 def _uncached_parse_advertisement_data(
@@ -273,3 +230,30 @@ def _uncached_parse_advertisement_data(
                 tx_power = _cached_from_bytes_signed(gap_data[start:end])
 
     return (local_name, service_uuids, service_data, manufacturer_data, tx_power)
+
+
+if TYPE_CHECKING:
+
+    @lru_cache(maxsize=256)
+    def parse_advertisement_data_tuple(
+        data: tuple[bytes, ...],
+    ) -> BLEGAPAdvertisementTupleType:
+        """Parse a tuple of raw advertisement data and return a tuple of BLEGAPAdvertisementTupleType.
+
+        The format of the tuple is:
+        (local_name, service_uuids, service_data, manufacturer_data, tx_power)
+
+        This is tightly coupled to bleak. If you are not using bleak
+        it is recommended to use parse_advertisement_data instead.
+
+        local_name: str | None
+        service_uuids: list[str]
+        service_data: dict[str, bytes]
+        manufacturer_data: dict[int, bytes]
+        tx_power: int | None
+        """
+        return _uncached_parse_advertisement_data(data)
+else:
+    parse_advertisement_data_tuple = lru_cache(maxsize=256)(
+        _uncached_parse_advertisement_data
+    )
