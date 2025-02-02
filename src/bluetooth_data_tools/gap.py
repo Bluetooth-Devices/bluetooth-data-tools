@@ -139,14 +139,7 @@ def _uint32_bytes_as_uuid(uuid32_bytes: bytes_) -> str:
 
 _cached_uint32_bytes_as_uuid = _uint32_bytes_as_uuid
 
-
-@lru_cache(maxsize=256)
-def _manufacturer_id_bytes_to_int(manufacturer_id_bytes: bytes_) -> int:
-    """Convert manufacturer ID bytes to an int."""
-    return from_bytes_little(manufacturer_id_bytes)
-
-
-_cached_manufacturer_id_bytes_to_int = _manufacturer_id_bytes_to_int
+_cached_manufacturer_id_bytes_to_int = lru_cache(maxsize=256)(from_bytes_little)
 
 
 @lru_cache(maxsize=256)
