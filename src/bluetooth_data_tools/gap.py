@@ -102,13 +102,7 @@ BLEGAPAdvertisementTupleType = tuple[
 ]
 
 
-@lru_cache(maxsize=256)
-def _from_bytes_signed(bytes_: bytes_) -> int:
-    """Convert bytes to a signed integer."""
-    return from_bytes_signed(bytes_)
-
-
-_cached_from_bytes_signed = _from_bytes_signed
+_cached_from_bytes_signed = lru_cache(maxsize=256)(from_bytes_signed)
 
 
 @lru_cache(maxsize=256)
