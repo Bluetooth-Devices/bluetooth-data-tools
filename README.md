@@ -7,8 +7,8 @@
   <a href="https://bluetooth-data-tools.readthedocs.io">
     <img src="https://img.shields.io/readthedocs/bluetooth-data-tools.svg?logo=read-the-docs&logoColor=fff&style=flat-square" alt="Documentation Status">
   </a>
-  <a href="https://codecov.io/gh/bdraco/bluetooth-data-tools">
-    <img src="https://img.shields.io/codecov/c/github/bdraco/bluetooth-data-tools.svg?logo=codecov&logoColor=fff&style=flat-square" alt="Test coverage percentage">
+  <a href="https://codecov.io/gh/Bluetooth-Devices/bluetooth-data-tools">
+    <img src="https://img.shields.io/codecov/c/github/Bluetooth-Devices/bluetooth-data-tools.svg?logo=codecov&logoColor=fff&style=flat-square" alt="Test coverage percentage">
   </a>
   <a href="https://codspeed.io/Bluetooth-Devices/bluetooth-data-tools"><img src="https://img.shields.io/endpoint?url=https://codspeed.io/badge.json" alt="CodSpeed Badge"/></a>
 </p>
