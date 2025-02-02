@@ -1,8 +1,8 @@
 # Bluetooth Data Tools
 
 <p align="center">
-  <a href="https://github.com/bdraco/bluetooth-data-tools/actions?query=workflow%3ACI">
-    <img src="https://img.shields.io/github/workflow/status/bdraco/bluetooth-data-tools/CI/main?label=CI&logo=github&style=flat-square" alt="CI Status" >
+  <a href="https://github.com/bluetooth-devices/bluetooth-data-tools/actions/workflows/ci.yml?query=branch%3Amain">
+    <img src="https://img.shields.io/github/actions/workflow/status/bluetooth-devices/bluetooth-data-tools/ci.yml?branch=main&label=CI&logo=github&style=flat-square" alt="CI Status" >
   </a>
   <a href="https://bluetooth-data-tools.readthedocs.io">
     <img src="https://img.shields.io/readthedocs/bluetooth-data-tools.svg?logo=read-the-docs&logoColor=fff&style=flat-square" alt="Documentation Status">
