@@ -54,7 +54,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
-      - uses: snok/install-poetry@v1.3.3
+      - uses: snok/install-poetry@v1.4.1
       - name: Install Dependencies
         run: |
           if [ "${{ matrix.extension }}" = "skip_cython" ]; then
@@ -67,7 +67,7 @@ jobs:
         run: poetry run pytest --cov-report=xml -v -Wdefault --cov=bluetooth_data_tools --cov-report=term-missing:skip-covered tests
         shell: bash
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -86,7 +86,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: snok/install-poetry@v1.3.3
+      - uses: snok/install-poetry@v1.4.1
       - name: Install Dependencies
         run: poetry install --only=main,dev,benchmark
         env:
@@ -105,10 +105,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python 3.13
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.13
-      - uses: snok/install-poetry@v1.3.4
+      - uses: snok/install-poetry@v1.4.1
       - name: Install Dependencies
         run: |
           REQUIRE_CYTHON=1 poetry install --only=main,dev
@@ -142,7 +142,7 @@ jobs:
       # - Create GitHub release
       # - Publish to PyPI
       - name: Python Semantic Release
-        uses: python-semantic-release/python-semantic-release@v7.34.6
+        uses: python-semantic-release/python-semantic-release@v9.17.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           pypi_token: ${{ secrets.PYPI_TOKEN }}
@@ -218,7 +218,7 @@ jobs:
           path: dist
           merge-multiple: true
 
-      - uses: pypa/gh-action-pypi-publish@v1.12.3
+      - uses: pypa/gh-action-pypi-publish@v1.12.4
         with:
           user: __token__
           password: ${{ secrets.PYPI_TOKEN }}
