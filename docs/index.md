@@ -1,4 +1,4 @@
-# Welcome to Bluetooth Data Tools documentation!
+# Welcome to bluetooth-data-tools documentation!
 
 ```{toctree}
 :caption: Installation & Usage
@@ -16,6 +16,6 @@ changelog
 contributing
 ```
 
-```{include} ../../README.md
+```{include} ../README.md
 
 ```
