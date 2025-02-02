@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v1.23.3 (2025-02-02)
+
+### Bug Fixes
+
+- Migrate to trusted publishing
+  ([#108](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/108),
+  [`38023b0`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/38023b02ee67709007d5f513131de6948df3acf3))
+
+
 ## v1.23.2 (2025-02-02)
 
 ### Bug Fixes
