@@ -1,6 +1,23 @@
 # CHANGELOG
 
 
+## v1.23.4 (2025-02-04)
+
+### Bug Fixes
+
+- Update poetry to v2 + add license to metadata
+  ([#110](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/110),
+  [`9cce169`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/9cce16967d35170770d8d62cb1c3d8dd66b36688))
+
+### Chores
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#109](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/109),
+  [`2edb0ed`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/2edb0edcd5fb75d9e440edd8298fca2f09f2b97f))
+
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+
+
 ## v1.23.3 (2025-02-02)
 
 ### Bug Fixes
