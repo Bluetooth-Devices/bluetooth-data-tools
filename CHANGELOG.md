@@ -1,6 +1,47 @@
 # CHANGELOG
 
 
+## v1.24.0 (2025-03-05)
+
+### Chores
+
+- Update release workflow for newer PSR
+  ([#114](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/114),
+  [`93eabee`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/93eabee3d0a0f58be29b6486a181ab3237687147))
+
+- **ci**: Bump python-semantic-release/python-semantic-release from 9.17.0 to 9.21.0 in the
+  github-actions group ([#113](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/113),
+  [`bbcc3b3`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/bbcc3b3347e18119fce258ec2d9508212ec30903))
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#111](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/111),
+  [`1a45dae`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/1a45dae9cd5bb10ced6edc306ce3f6d4274e1642))
+
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#112](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/112),
+  [`dc9f71f`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/dc9f71fff7f478b48fe3f1fd10ea53cb245e7c96))
+
+updates: - [github.com/commitizen-tools/commitizen: v4.2.1 →
+  v4.4.1](https://github.com/commitizen-tools/commitizen/compare/v4.2.1...v4.4.1) -
+  [github.com/astral-sh/ruff-pre-commit: v0.9.6 →
+  v0.9.9](https://github.com/astral-sh/ruff-pre-commit/compare/v0.9.6...v0.9.9)
+
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+
+### Features
+
+- Add new wheel builds ([#115](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/115),
+  [`37369e8`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/37369e8f3f70e3734ad5b1912c7cab4f0a1582b6))
+
+* feat: optimize wheel builds
+
+Reduce size of objects
+
+* chore: armv7l wheels
+
+
 ## v1.23.4 (2025-02-04)
 
 ### Bug Fixes
@@ -163,9 +204,7 @@ Bumps [sphinx](https://github.com/sphinx-doc/sphinx) from 6.2.1 to 7.4.7. - [Rel
 
 --- updated-dependencies: - dependency-name: sphinx dependency-type: direct:production
 
-update-type: version-update:semver-major
-
-...
+update-type: version-update:semver-major ...
 
 Signed-off-by: dependabot[bot] <support@github.com>
 
@@ -676,7 +715,7 @@ BREAKING CHANGE: The decode_advertisement_data function is no longer exposed
 It is likely nobody was using it since it is internals for parse_advertisement_data, but it was
   exposed. If this is a problem for you, please open an issue.
 
-### BREAKING CHANGES
+### Breaking Changes
 
 - The decode_advertisement_data function is no longer exposed
 
