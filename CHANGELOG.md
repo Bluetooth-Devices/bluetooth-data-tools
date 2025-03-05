@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v1.24.1 (2025-03-05)
+
+### Bug Fixes
+
+- Ensure Python 3.10 wheels build
+  ([#116](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/116),
+  [`91725a9`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/91725a9a74e3efd36f3091368179fe2cbf0b2e7d))
+
+
 ## v1.24.0 (2025-03-05)
 
 ### Chores
