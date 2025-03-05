@@ -27,6 +27,20 @@ time_module = Extension(
     language="c",
     extra_compile_args=["-O3", "-g0"],
 )
+TO_CYTHONIZE = [
+    "src/bluetooth_data_tools/gap.py",
+    "src/bluetooth_data_tools/utils.py",
+]
+
+EXTENSIONS = [
+    Extension(
+        ext.removeprefix("src/").removesuffix(".py").replace("/", "."),
+        [ext],
+        language="c",
+        extra_compile_args=["-O3", "-g0"],
+    )
+    for ext in TO_CYTHONIZE
+]
 
 
 class BuildExt(build_ext):
@@ -49,8 +63,7 @@ def build(setup_kwargs: Any) -> None:
                     [
                         time_module,
                         utils_module,
-                        "src/bluetooth_data_tools/gap.py",
-                        "src/bluetooth_data_tools/utils.py",
+                        *EXTENSIONS,
                     ],
                     compiler_directives={"language_level": "3"},  # Python 3
                 ),
