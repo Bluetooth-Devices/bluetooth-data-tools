@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v1.25.1 (2025-03-05)
+
+### Bug Fixes
+
+- Use trusted publishing for wheel uploads
+  ([#118](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/118),
+  [`2bddddf`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/2bddddf888b9efe28b3ba25fefad10ccd5ff2dcb))
+
+
 ## v1.25.0 (2025-03-05)
 
 ### Features
