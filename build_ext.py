@@ -16,6 +16,7 @@ utils_module = Extension(
         join("src", "bluetooth_data_tools", "_utils_impl.pyx"),
     ],
     language="c",
+    extra_compile_args=["-O3", "-g0"],
 )
 
 time_module = Extension(
@@ -24,6 +25,7 @@ time_module = Extension(
         join("src", "bluetooth_data_tools", "_time_impl.pyx"),
     ],
     language="c",
+    extra_compile_args=["-O3", "-g0"],
 )
 
 
