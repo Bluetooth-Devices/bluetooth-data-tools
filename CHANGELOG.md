@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v1.25.0 (2025-03-05)
+
+### Features
+
+- Reduce size of wheels ([#117](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/117),
+  [`cc720fc`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/cc720fcc0cf6a4b68bc46895396fd32628aa1d52))
+
+
 ## v1.24.1 (2025-03-05)
 
 ### Bug Fixes
