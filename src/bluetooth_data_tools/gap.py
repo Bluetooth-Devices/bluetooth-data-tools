@@ -169,7 +169,7 @@ def _uncached_parse_advertisement_data(
         offset = 0
         total_length = len(gap_bytes)
         gap_data = gap_bytes
-        while offset + 1 < total_length:
+        while offset + 2 < total_length:
             length = gap_data[offset]
             if not length:
                 if offset + 2 < total_length:
