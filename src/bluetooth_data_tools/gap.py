@@ -178,7 +178,7 @@ def _uncached_parse_advertisement_data(
                 continue
             start = offset + 2
             end = start + length - 1
-            if end >= total_length or end - start <= 0:
+            if total_length < end or end - start <= 0:
                 _LOGGER.debug(
                     "Invalid BLE GAP AD structure at offset %s: %s (%s)",
                     offset,
