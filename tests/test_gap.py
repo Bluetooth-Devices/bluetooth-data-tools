@@ -464,6 +464,50 @@ def test_manufacturer_data_short_by_two():
     )
 
 
+def test_manufacturer_data_short_by_three():
+    """Test short manufacturer data."""
+
+    data = (b"\x03\xff\x01\x01",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {},
+        None,
+    )
+
+
+def test_manufacturer_data_single_byte():
+    """Test single byte manufacturer data."""
+
+    data = (b"\x04\xff\x01\x01\x01",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {257: b"\x01"}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {257: b"\x01"},
+        None,
+    )
+
+
 def test_service_data_short():
     """Test short service data."""
 
