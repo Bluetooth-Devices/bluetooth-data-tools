@@ -169,6 +169,8 @@ def _uncached_parse_advertisement_data(
         offset = 0
         total_length = len(gap_bytes)
         gap_data = gap_bytes
+        # IMPORTANT: All data must be manually bounds checked
+        # because the data is untrusted and can be malformed.
         while offset + 2 < total_length:
             if not (length := gap_data[offset]):
                 offset += 1  # Handle zero padding
