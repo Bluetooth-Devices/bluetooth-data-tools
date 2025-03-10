@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v1.26.0 (2025-03-10)
+
+### Features
+
+- Reduce gap bytes slicing overhead
+  ([#119](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/119),
+  [`577561c`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/577561c3318f17fc02e7cdd20935290181f1b0fd))
+
+
 ## v1.25.1 (2025-03-05)
 
 ### Bug Fixes
