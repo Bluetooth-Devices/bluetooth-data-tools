@@ -171,11 +171,10 @@ def _uncached_parse_advertisement_data(
         gap_data = gap_bytes
         while offset + 2 < total_length:
             if not (length := gap_data[offset]):
-                # Maybe zero padding
-                offset += 1
+                offset += 1  # Handle zero padding
                 continue
             if not (gap_type_num := gap_data[offset + 1]):
-                offset += 1 + length
+                offset += 1 + length  # Skip empty type
                 continue
             start = offset + 2
             end = start + length - 1
