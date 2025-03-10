@@ -348,3 +348,273 @@ def test_name_parser():
         {},
         None,
     )
+
+
+def test_invalid_gap_num():
+    """Test skip invalid gap type."""
+
+    data = (
+        b"\t\x00PineTime\002\001\006\021\007\236\312\334$\016\345\251(340\223\363\243\265\001\000@n",
+    )
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == ["01b5a3f3-9330-3433-28a9-e50e24dcca9e"]
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        ["01b5a3f3-9330-3433-28a9-e50e24dcca9e"],
+        {},
+        {},
+        None,
+    )
+
+
+def test_out_of_bounds_length():
+    """Test out of bound length."""
+
+    data = (
+        b"\xff\x00PineTime\002\001\006\021\007\236\312\334$\016\345\251(340\223\363\243\265\001\000@n",
+    )
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {},
+        None,
+    )
+
+
+def test_out_of_bounds_length_by_one():
+    """Test out of bound length by one."""
+
+    data = (b"\x01\x08",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {},
+        None,
+    )
+
+
+def test_manufacturer_data_short_by_one():
+    """Test short manufacturer data."""
+
+    data = (b"\x02\xff\x01",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {},
+        None,
+    )
+
+
+def test_manufacturer_data_short_by_two():
+    """Test short manufacturer data."""
+
+    data = (b"\x02\xff\x01\x01",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {},
+        None,
+    )
+
+
+def test_manufacturer_data_short_by_three():
+    """Test short manufacturer data."""
+
+    data = (b"\x03\xff\x01\x01",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {},
+        None,
+    )
+
+
+def test_manufacturer_data_single_byte():
+    """Test single byte manufacturer data."""
+
+    data = (b"\x04\xff\x01\x01\x01",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {257: b"\x01"}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {257: b"\x01"},
+        None,
+    )
+
+
+def test_service_data_short():
+    """Test short service data."""
+
+    data = (b"\x02\x16\x01",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {},
+        None,
+    )
+
+
+def test_32bit_uuid_short():
+    """Test short 32bit uuid data."""
+
+    data = (b"\x02 \x01",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {},
+        None,
+    )
+
+
+def test_128bit_uuid_short():
+    """Test short 128bit uuid data."""
+
+    data = (b"\x02!\x01",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {},
+        None,
+    )
+
+
+def test_zero_padded_end():
+    """Test name with zero padded end."""
+
+    data = (b"\x02\x08a\x00",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name == "a"
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        "a",
+        [],
+        {},
+        {},
+        None,
+    )
+
+
+def test_zero_padded_out_of_bounds_length():
+    """Test zero padded out of bound length."""
+
+    data = (
+        b"\x00\xff\x00PineTime\002\001\006\021\007\236\312\334$\016\345\251(340\223\363\243\265\001\000@n",
+    )
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {},
+        None,
+    )
