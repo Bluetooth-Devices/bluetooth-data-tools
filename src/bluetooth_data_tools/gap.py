@@ -201,20 +201,12 @@ def _uncached_parse_advertisement_data(
                 TYPE_16BIT_SERVICE_UUID_COMPLETE,
                 TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE,
             }:
-                if start + 2 > end:
-                    continue
-                service_uuids.append(
-                    _cached_uint16_bytes_as_uuid(gap_data[start : start + 2])
-                )
+                service_uuids.append(_cached_uint16_bytes_as_uuid(gap_data[start:end]))
             elif gap_type_num in {
                 TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
                 TYPE_128BIT_SERVICE_UUID_COMPLETE,
             }:
-                if start + 16 > end:
-                    continue
-                service_uuids.append(
-                    _cached_uint128_bytes_as_uuid(gap_data[start : start + 16])
-                )
+                service_uuids.append(_cached_uint128_bytes_as_uuid(gap_data[start:end]))
             elif gap_type_num == TYPE_SERVICE_DATA:
                 if start + 2 > end:
                     continue
