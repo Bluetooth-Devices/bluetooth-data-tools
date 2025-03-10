@@ -40,7 +40,8 @@ cdef cython.uint TYPE_TX_POWER_LEVEL
 cpdef parse_advertisement_data(object data)
 
 @cython.locals(
-    gap_data=cython.bytes,
+    gap_bytes="bytes",
+    gap_data="const unsigned char *",
     gap_value=cython.bytes,
     gap_type_num="unsigned char",
     total_length=cython.uint,
@@ -48,5 +49,6 @@ cpdef parse_advertisement_data(object data)
     offset=cython.uint,
     start=cython.uint,
     end=cython.uint,
+    tx_power_int="unsigned char"
 )
 cpdef _uncached_parse_advertisement_data(tuple data)
