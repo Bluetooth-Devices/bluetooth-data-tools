@@ -420,10 +420,32 @@ def test_out_of_bounds_length_by_one():
     )
 
 
-def test_manufacturer_data_short():
+def test_manufacturer_data_short_by_one():
     """Test short manufacturer data."""
 
     data = (b"\x02\xff\x01",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {},
+        None,
+    )
+
+
+def test_manufacturer_data_short_by_two():
+    """Test short manufacturer data."""
+
+    data = (b"\x02\xff\x01\x01",)
 
     adv = parse_advertisement_data(data)
 
