@@ -192,7 +192,7 @@ def _uncached_parse_advertisement_data(
             elif gap_type_num == TYPE_COMPLETE_LOCAL_NAME:
                 local_name = gap_data[start:end].decode("utf-8", "replace")
             elif gap_type_num == TYPE_MANUFACTURER_SPECIFIC_DATA:
-                if start + 2 >= end:
+                if start + 2 > end:
                     continue
                 manufacturer_data[
                     _cached_manufacturer_id_bytes_to_int(gap_data[start : start + 2])
@@ -201,7 +201,7 @@ def _uncached_parse_advertisement_data(
                 TYPE_16BIT_SERVICE_UUID_COMPLETE,
                 TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE,
             }:
-                if start + 2 >= end:
+                if start + 2 > end:
                     continue
                 service_uuids.append(
                     _cached_uint16_bytes_as_uuid(gap_data[start : start + 2])
@@ -210,25 +210,25 @@ def _uncached_parse_advertisement_data(
                 TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
                 TYPE_128BIT_SERVICE_UUID_COMPLETE,
             }:
-                if start + 16 >= end:
+                if start + 16 > end:
                     continue
                 service_uuids.append(
                     _cached_uint128_bytes_as_uuid(gap_data[start : start + 16])
                 )
             elif gap_type_num == TYPE_SERVICE_DATA:
-                if start + 2 >= end:
+                if start + 2 > end:
                     continue
                 service_data[
                     _cached_uint16_bytes_as_uuid(gap_data[start : start + 2])
                 ] = gap_data[start + 2 : end]
             elif gap_type_num == TYPE_SERVICE_DATA_32BIT_UUID:
-                if start + 4 >= end:
+                if start + 4 > end:
                     continue
                 service_data[
                     _cached_uint32_bytes_as_uuid(gap_data[start : start + 4])
                 ] = gap_data[start + 4 : end]
             elif gap_type_num == TYPE_SERVICE_DATA_128BIT_UUID:
-                if start + 16 >= end:
+                if start + 16 > end:
                     continue
                 service_data[
                     _cached_uint128_bytes_as_uuid(gap_data[start : start + 16])
