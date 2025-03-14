@@ -141,6 +141,18 @@ _EMPTY_SERVICE_DATA: dict[str, bytes] = {}
 _EMPTY_SERVICE_UUIDS: list[str] = []
 
 
+def parse_advertisement_data(
+    data: Iterable[bytes],
+) -> BLEGAPAdvertisement:
+    """Parse advertisement data and return a BLEGAPAdvertisement."""
+    return _cached_parse_advertisement_data(b"".join(data))
+
+
+@lru_cache(maxsize=256)
+def _cached_parse_advertisement_data(data: bytes) -> BLEGAPAdvertisement:
+    return BLEGAPAdvertisement(*parse_advertisement_data_bytes(data))
+
+
 def _uncached_parse_advertisement_data(
     data: Iterable[bytes],
 ) -> BLEGAPAdvertisement:
@@ -246,13 +258,6 @@ def _uncached_parse_advertisement_bytes(
 if TYPE_CHECKING:
 
     @lru_cache(maxsize=256)
-    def parse_advertisement_data(
-        data: Iterable[bytes],
-    ) -> BLEGAPAdvertisement:
-        """Parse advertisement data and return a BLEGAPAdvertisement."""
-        return _uncached_parse_advertisement_data(data)
-
-    @lru_cache(maxsize=256)
     def parse_advertisement_data_bytes(
         gap_bytes: bytes,
     ) -> BLEGAPAdvertisementTupleType:
@@ -292,9 +297,6 @@ if TYPE_CHECKING:
         """
         return _uncached_parse_advertisement_tuple(data)
 else:
-    parse_advertisement_data = lru_cache(maxsize=256)(
-        _uncached_parse_advertisement_data
-    )
     parse_advertisement_data_bytes = lru_cache(maxsize=256)(
         _uncached_parse_advertisement_bytes
     )
