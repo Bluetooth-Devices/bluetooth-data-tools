@@ -386,6 +386,39 @@ def test_name_parser():
     )
 
 
+def test_name_parser_with_16_bit_uuid_first():
+    """Test parsing name from https://github.com/esphome/issues/issues/4838."""
+
+    data = (
+        b"\x02\x01\x06\t\xffY\x00\xfe\x024\x9e\xa6\xba\x00\x00\x00\x00\x00\x00\x00\x00"
+        b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x11\x07\x1b\xc5\xd5\xa5\x02\x00\xb8"
+        b'\x9f\xe6\x11M"\x00\r\xa2\xcb\x06\x16\x00\rH\x10\x00\x00\x00\x00\x00\x00\x00'
+        b"\t\tPineTime\002\001\006\021\007\236\312\334$\016\345\251(340\223\363\243\265\001\000@n",
+    )
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name == "PineTime"
+    assert adv.service_uuids == [
+        "cba20d00-224d-11e6-9fb8-0002a5d5c51b",
+        "01b5a3f3-9330-3433-28a9-e50e24dcca9e",
+    ]
+    assert adv.service_data == {"00000d00-0000-1000-8000-00805f9b34fb": b"H\x10\x00"}
+    assert adv.manufacturer_data == {89: b"\xfe\x024\x9e\xa6\xba"}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        "PineTime",
+        [
+            "cba20d00-224d-11e6-9fb8-0002a5d5c51b",
+            "01b5a3f3-9330-3433-28a9-e50e24dcca9e",
+        ],
+        {"00000d00-0000-1000-8000-00805f9b34fb": b"H\x10\x00"},
+        {89: b"\xfe\x024\x9e\xa6\xba"},
+        None,
+    )
+
+
 def test_invalid_gap_num():
     """Test skip invalid gap type."""
 
