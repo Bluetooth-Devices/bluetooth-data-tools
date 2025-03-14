@@ -202,48 +202,76 @@ def _uncached_parse_advertisement_data(
                 if start + 2 >= total_length:
                     break
                 if manufacturer_data is None:
-                    manufacturer_data = {}
-                manufacturer_data[
-                    _cached_manufacturer_id_bytes_to_int(gap_data[start : start + 2])
-                ] = gap_data[start + 2 : end]
+                    manufacturer_data = {
+                        _cached_manufacturer_id_bytes_to_int(
+                            gap_data[start : start + 2]
+                        ): gap_data[start + 2 : end]
+                    }
+                else:
+                    manufacturer_data[
+                        _cached_manufacturer_id_bytes_to_int(
+                            gap_data[start : start + 2]
+                        )
+                    ] = gap_data[start + 2 : end]
             elif gap_type_num in {
                 TYPE_16BIT_SERVICE_UUID_COMPLETE,
                 TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE,
             }:
                 if service_uuids is None:
-                    service_uuids = []
-                service_uuids.append(_cached_uint16_bytes_as_uuid(gap_data[start:end]))
+                    service_uuids = [_cached_uint16_bytes_as_uuid(gap_data[start:end])]
+                else:
+                    service_uuids.append(
+                        _cached_uint16_bytes_as_uuid(gap_data[start:end])
+                    )
             elif gap_type_num in {
                 TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
                 TYPE_128BIT_SERVICE_UUID_COMPLETE,
             }:
                 if service_uuids is None:
-                    service_uuids = []
-                service_uuids.append(_cached_uint128_bytes_as_uuid(gap_data[start:end]))
+                    service_uuids = [_cached_uint128_bytes_as_uuid(gap_data[start:end])]
+                else:
+                    service_uuids.append(
+                        _cached_uint128_bytes_as_uuid(gap_data[start:end])
+                    )
             elif gap_type_num == TYPE_SERVICE_DATA:
                 if start + 2 >= total_length:
                     break
                 if service_data is None:
-                    service_data = {}
-                service_data[
-                    _cached_uint16_bytes_as_uuid(gap_data[start : start + 2])
-                ] = gap_data[start + 2 : end]
+                    service_data = {
+                        _cached_uint16_bytes_as_uuid(
+                            gap_data[start : start + 2]
+                        ): gap_data[start + 2 : end]
+                    }
+                else:
+                    service_data[
+                        _cached_uint16_bytes_as_uuid(gap_data[start : start + 2])
+                    ] = gap_data[start + 2 : end]
             elif gap_type_num == TYPE_SERVICE_DATA_32BIT_UUID:
                 if start + 4 >= total_length:
                     break
                 if service_data is None:
-                    service_data = {}
-                service_data[
-                    _cached_uint32_bytes_as_uuid(gap_data[start : start + 4])
-                ] = gap_data[start + 4 : end]
+                    service_data = {
+                        _cached_uint32_bytes_as_uuid(
+                            gap_data[start : start + 4]
+                        ): gap_data[start + 4 : end]
+                    }
+                else:
+                    service_data[
+                        _cached_uint32_bytes_as_uuid(gap_data[start : start + 4])
+                    ] = gap_data[start + 4 : end]
             elif gap_type_num == TYPE_SERVICE_DATA_128BIT_UUID:
                 if start + 16 >= total_length:
                     break
                 if service_data is None:
-                    service_data = {}
-                service_data[
-                    _cached_uint128_bytes_as_uuid(gap_data[start : start + 16])
-                ] = gap_data[start + 16 : end]
+                    service_data = {
+                        _cached_uint128_bytes_as_uuid(
+                            gap_data[start : start + 16]
+                        ): gap_data[start + 16 : end]
+                    }
+                else:
+                    service_data[
+                        _cached_uint128_bytes_as_uuid(gap_data[start : start + 16])
+                    ] = gap_data[start + 16 : end]
             elif gap_type_num == TYPE_TX_POWER_LEVEL:
                 tx_power = _cached_from_bytes_signed(gap_data[start:end])
 
