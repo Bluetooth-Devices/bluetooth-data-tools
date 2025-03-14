@@ -136,36 +136,23 @@ _cached_uint32_bytes_as_uuid = _uint32_bytes_as_uuid
 _cached_manufacturer_id_bytes_to_int = lru_cache(maxsize=256)(from_bytes_little)
 
 
-@lru_cache(maxsize=256)
-def _parse_advertisement_data(gap_data: bytes) -> BLEGAPAdvertisement:
-    """Parse advertisement data and return a BLEGAPAdvertisement."""
-    return BLEGAPAdvertisement(*parse_advertisement_data_bytes(gap_data))
-
-
-def parse_advertisement_data(
-    data: Iterable[bytes],
-) -> BLEGAPAdvertisement:
-    """Parse advertisement data and return a BLEGAPAdvertisement."""
-    return _parse_advertisement_data(b"".join(data))
-
-
 _EMPTY_MANUFACTURER_DATA: dict[int, bytes] = {}
 _EMPTY_SERVICE_DATA: dict[str, bytes] = {}
 _EMPTY_SERVICE_UUIDS: list[str] = []
 
 
 def _uncached_parse_advertisement_data(
+    data: Iterable[bytes],
+) -> BLEGAPAdvertisement:
+    return BLEGAPAdvertisement(*_uncached_parse_advertisement_bytes(b"".join(data)))
+
+
+def _uncached_parse_advertisement_tuple(
     data: tuple[bytes, ...],
 ) -> BLEGAPAdvertisementTupleType:
     return _uncached_parse_advertisement_bytes(
         b"".join(data) if len(data) > 1 else data[0]
     )
-
-
-def parse_advertisement_data_tuple(
-    data: tuple[bytes, ...],
-) -> BLEGAPAdvertisementTupleType:
-    return parse_advertisement_data_bytes(b"".join(data) if len(data) > 1 else data[0])
 
 
 def _uncached_parse_advertisement_bytes(
@@ -259,6 +246,13 @@ def _uncached_parse_advertisement_bytes(
 if TYPE_CHECKING:
 
     @lru_cache(maxsize=256)
+    def parse_advertisement_data(
+        data: Iterable[bytes],
+    ) -> BLEGAPAdvertisement:
+        """Parse advertisement data and return a BLEGAPAdvertisement."""
+        return _uncached_parse_advertisement_data(data)
+
+    @lru_cache(maxsize=256)
     def parse_advertisement_data_bytes(
         gap_bytes: bytes,
     ) -> BLEGAPAdvertisementTupleType:
@@ -277,7 +271,33 @@ if TYPE_CHECKING:
         tx_power: int | None
         """
         return _uncached_parse_advertisement_bytes(gap_bytes)
+
+    @lru_cache(maxsize=256)
+    def parse_advertisement_data_tuple(
+        data: tuple[bytes, ...],
+    ) -> BLEGAPAdvertisementTupleType:
+        """Parse a tuple of raw advertisement data and return a tuple of BLEGAPAdvertisementTupleType.
+
+        The format of the tuple is:
+        (local_name, service_uuids, service_data, manufacturer_data, tx_power)
+
+        This is tightly coupled to bleak. If you are not using bleak
+        it is recommended to use parse_advertisement_data instead.
+
+        local_name: str | None
+        service_uuids: list[str]
+        service_data: dict[str, bytes]
+        manufacturer_data: dict[int, bytes]
+        tx_power: int | None
+        """
+        return _uncached_parse_advertisement_tuple(data)
 else:
+    parse_advertisement_data = lru_cache(maxsize=256)(
+        _uncached_parse_advertisement_data
+    )
     parse_advertisement_data_bytes = lru_cache(maxsize=256)(
         _uncached_parse_advertisement_bytes
+    )
+    parse_advertisement_data_tuple = lru_cache(maxsize=256)(
+        _uncached_parse_advertisement_tuple
     )
