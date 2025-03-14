@@ -87,4 +87,5 @@ def test_parse_advertisement_data_tuple(benchmark):
 
 
 def test_parse_advertisement_data_tuple_uncached(benchmark):
-    benchmark(lambda: _uncached_parse_advertisement_data(advs))
+    joined_advs = b"".join(advs)
+    benchmark(lambda: _uncached_parse_advertisement_data(joined_advs))
