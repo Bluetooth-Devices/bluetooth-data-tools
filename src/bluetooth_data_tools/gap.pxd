@@ -14,6 +14,8 @@ cdef object from_bytes_signed
 cdef object _cached_uint16_bytes_as_uuid
 cdef object _cached_uint32_bytes_as_uuid
 cdef object _cached_uint128_bytes_as_uuid
+cdef object _cached_parse_advertisement_data
+cdef object _cached_parse_advertisement_data_tuple
 cdef object _cached_manufacturer_id_bytes_to_int
 cdef object _cached_from_bytes_signed
 
