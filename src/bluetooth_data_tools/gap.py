@@ -137,98 +137,121 @@ _cached_manufacturer_id_bytes_to_int = lru_cache(maxsize=256)(from_bytes_little)
 
 
 @lru_cache(maxsize=256)
-def _parse_advertisement_data(
-    data: tuple[bytes, ...],
-) -> BLEGAPAdvertisement:
+def _parse_advertisement_data(gap_data: bytes) -> BLEGAPAdvertisement:
     """Parse advertisement data and return a BLEGAPAdvertisement."""
-    return BLEGAPAdvertisement(*_uncached_parse_advertisement_data(data))
-
-
-_cached_parse_advertisement_data = _parse_advertisement_data
+    return BLEGAPAdvertisement(*parse_advertisement_data_bytes(gap_data))
 
 
 def parse_advertisement_data(
     data: Iterable[bytes],
 ) -> BLEGAPAdvertisement:
     """Parse advertisement data and return a BLEGAPAdvertisement."""
-    if type(data) is tuple:
-        return _cached_parse_advertisement_data(data)
-    return _cached_parse_advertisement_data(tuple(data))
+    return _parse_advertisement_data(b"".join(data))
+
+
+_EMPTY_MANUFACTURER_DATA: dict[int, bytes] = {}
+_EMPTY_SERVICE_DATA: dict[str, bytes] = {}
+_EMPTY_SERVICE_UUIDS: list[str] = []
 
 
 def _uncached_parse_advertisement_data(
     data: tuple[bytes, ...],
 ) -> BLEGAPAdvertisementTupleType:
-    manufacturer_data: dict[int, bytes] = {}
-    service_data: dict[str, bytes] = {}
-    service_uuids: list[str] = []
+    return _uncached_parse_advertisement_bytes(
+        b"".join(data) if len(data) > 1 else data[0]
+    )
+
+
+def parse_advertisement_data_tuple(
+    data: tuple[bytes, ...],
+) -> BLEGAPAdvertisementTupleType:
+    return parse_advertisement_data_bytes(b"".join(data) if len(data) > 1 else data[0])
+
+
+def _uncached_parse_advertisement_bytes(
+    gap_bytes: bytes,
+) -> BLEGAPAdvertisementTupleType:
+    manufacturer_data = _EMPTY_MANUFACTURER_DATA
+    service_data = _EMPTY_SERVICE_DATA
+    service_uuids = _EMPTY_SERVICE_UUIDS
     local_name: str | None = None
     tx_power: int | None = None
 
-    for gap_bytes in data:
-        offset = 0
-        total_length = len(gap_bytes)
-        gap_data = gap_bytes
-        # IMPORTANT: All data must be manually bounds checked
-        # because the data is untrusted and can be malformed.
-        while offset + 2 < total_length:
-            if not (length := gap_data[offset]):
-                offset += 1  # Handle zero padding
-                continue
-            if not (gap_type_num := gap_data[offset + 1]):
-                offset += 1 + length  # Skip empty type
-                continue
-            start = offset + 2
-            end = start + length - 1
-            if end > total_length or end - start <= 0:
-                _LOGGER.debug(
-                    "Invalid BLE GAP AD structure at offset %s: %s (%s)",
-                    offset,
-                    gap_bytes,
-                )
-                offset += 1 + length
-                continue
+    offset = 0
+    total_length = len(gap_bytes)
+    gap_data = gap_bytes
+    # IMPORTANT: All data must be manually bounds checked
+    # because the data is untrusted and can be malformed.
+    while offset + 2 < total_length:
+        if not (length := gap_data[offset]):
+            offset += 1  # Handle zero padding
+            continue
+        if not (gap_type_num := gap_data[offset + 1]):
+            offset += 1 + length  # Skip empty type
+            continue
+        start = offset + 2
+        end = start + length - 1
+        if end > total_length or end - start <= 0:
+            _LOGGER.debug(
+                "Invalid BLE GAP AD structure at offset %s: %s (%s)",
+                offset,
+                gap_bytes,
+            )
             offset += 1 + length
-            if gap_type_num == TYPE_SHORT_LOCAL_NAME and local_name is None:
-                local_name = gap_data[start:end].decode("utf-8", "replace")
-            elif gap_type_num == TYPE_COMPLETE_LOCAL_NAME:
-                local_name = gap_data[start:end].decode("utf-8", "replace")
-            elif gap_type_num == TYPE_MANUFACTURER_SPECIFIC_DATA:
-                if start + 2 >= total_length:
-                    break
-                manufacturer_data[
-                    _cached_manufacturer_id_bytes_to_int(gap_data[start : start + 2])
-                ] = gap_data[start + 2 : end]
-            elif gap_type_num in {
-                TYPE_16BIT_SERVICE_UUID_COMPLETE,
-                TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE,
-            }:
-                service_uuids.append(_cached_uint16_bytes_as_uuid(gap_data[start:end]))
-            elif gap_type_num in {
-                TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
-                TYPE_128BIT_SERVICE_UUID_COMPLETE,
-            }:
-                service_uuids.append(_cached_uint128_bytes_as_uuid(gap_data[start:end]))
-            elif gap_type_num == TYPE_SERVICE_DATA:
-                if start + 2 >= total_length:
-                    break
-                service_data[
-                    _cached_uint16_bytes_as_uuid(gap_data[start : start + 2])
-                ] = gap_data[start + 2 : end]
-            elif gap_type_num == TYPE_SERVICE_DATA_32BIT_UUID:
-                if start + 4 >= total_length:
-                    break
-                service_data[
-                    _cached_uint32_bytes_as_uuid(gap_data[start : start + 4])
-                ] = gap_data[start + 4 : end]
-            elif gap_type_num == TYPE_SERVICE_DATA_128BIT_UUID:
-                if start + 16 >= total_length:
-                    break
-                service_data[
-                    _cached_uint128_bytes_as_uuid(gap_data[start : start + 16])
-                ] = gap_data[start + 16 : end]
-            elif gap_type_num == TYPE_TX_POWER_LEVEL:
-                tx_power = _cached_from_bytes_signed(gap_data[start:end])
+            continue
+        offset += 1 + length
+        if gap_type_num == TYPE_SHORT_LOCAL_NAME and local_name is None:
+            local_name = gap_data[start:end].decode("utf-8", "replace")
+        elif gap_type_num == TYPE_COMPLETE_LOCAL_NAME:
+            local_name = gap_data[start:end].decode("utf-8", "replace")
+        elif gap_type_num == TYPE_MANUFACTURER_SPECIFIC_DATA:
+            if start + 2 >= total_length:
+                break
+            if manufacturer_data is _EMPTY_MANUFACTURER_DATA:
+                manufacturer_data = {}
+            manufacturer_data[
+                _cached_manufacturer_id_bytes_to_int(gap_data[start : start + 2])
+            ] = gap_data[start + 2 : end]
+        elif gap_type_num in {
+            TYPE_16BIT_SERVICE_UUID_COMPLETE,
+            TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE,
+        }:
+            if service_uuids is _EMPTY_SERVICE_UUIDS:
+                service_uuids = []
+            service_uuids.append(_cached_uint16_bytes_as_uuid(gap_data[start:end]))
+        elif gap_type_num in {
+            TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
+            TYPE_128BIT_SERVICE_UUID_COMPLETE,
+        }:
+            if service_uuids is _EMPTY_SERVICE_UUIDS:
+                service_uuids = []
+            service_uuids.append(_cached_uint128_bytes_as_uuid(gap_data[start:end]))
+        elif gap_type_num == TYPE_SERVICE_DATA:
+            if start + 2 >= total_length:
+                break
+            if service_data is _EMPTY_SERVICE_DATA:
+                service_data = {}
+            service_data[_cached_uint16_bytes_as_uuid(gap_data[start : start + 2])] = (
+                gap_data[start + 2 : end]
+            )
+        elif gap_type_num == TYPE_SERVICE_DATA_32BIT_UUID:
+            if start + 4 >= total_length:
+                break
+            if service_data is _EMPTY_SERVICE_DATA:
+                service_data = {}
+            service_data[_cached_uint32_bytes_as_uuid(gap_data[start : start + 4])] = (
+                gap_data[start + 4 : end]
+            )
+        elif gap_type_num == TYPE_SERVICE_DATA_128BIT_UUID:
+            if start + 16 >= total_length:
+                break
+            if service_data is _EMPTY_SERVICE_DATA:
+                service_data = {}
+            service_data[
+                _cached_uint128_bytes_as_uuid(gap_data[start : start + 16])
+            ] = gap_data[start + 16 : end]
+        elif gap_type_num == TYPE_TX_POWER_LEVEL:
+            tx_power = _cached_from_bytes_signed(gap_data[start:end])
 
     return (local_name, service_uuids, service_data, manufacturer_data, tx_power)
 
@@ -236,8 +259,8 @@ def _uncached_parse_advertisement_data(
 if TYPE_CHECKING:
 
     @lru_cache(maxsize=256)
-    def parse_advertisement_data_tuple(
-        data: tuple[bytes, ...],
+    def parse_advertisement_data_bytes(
+        gap_bytes: bytes,
     ) -> BLEGAPAdvertisementTupleType:
         """Parse a tuple of raw advertisement data and return a tuple of BLEGAPAdvertisementTupleType.
 
@@ -253,8 +276,8 @@ if TYPE_CHECKING:
         manufacturer_data: dict[int, bytes]
         tx_power: int | None
         """
-        return _uncached_parse_advertisement_data(data)
+        return _uncached_parse_advertisement_bytes(gap_bytes)
 else:
-    parse_advertisement_data_tuple = lru_cache(maxsize=256)(
-        _uncached_parse_advertisement_data
+    parse_advertisement_data_bytes = lru_cache(maxsize=256)(
+        _uncached_parse_advertisement_bytes
     )
