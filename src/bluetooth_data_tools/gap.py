@@ -289,7 +289,7 @@ if TYPE_CHECKING:
     def parse_advertisement_data_tuple(
         data: tuple[bytes, ...],
     ) -> BLEGAPAdvertisementTupleType:
-        """Parse a tuple of raw advertisement data and return a tuple of BLEGAPAdvertisementTupleType.
+        """Parse raw advertisement bytes and return a tuple of BLEGAPAdvertisementTupleType.
 
         The format of the tuple is:
         (local_name, service_uuids, service_data, manufacturer_data, tx_power)
