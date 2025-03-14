@@ -75,9 +75,11 @@ class BLEGAPType(IntEnum):
     TYPE_MANUFACTURER_SPECIFIC_DATA = 0xFF
 
 
-from_bytes = int.from_bytes
-from_bytes_little = partial(from_bytes, byteorder="little")
-from_bytes_signed = partial(from_bytes, byteorder="little", signed=True)
+uncached_from_bytes = int.from_bytes
+uncached_from_bytes_little = partial(uncached_from_bytes, byteorder="little")
+uncached_from_bytes_signed = partial(
+    uncached_from_bytes, byteorder="little", signed=True
+)
 
 TYPE_SHORT_LOCAL_NAME = BLEGAPType.TYPE_SHORT_LOCAL_NAME.value
 TYPE_COMPLETE_LOCAL_NAME = BLEGAPType.TYPE_COMPLETE_LOCAL_NAME.value
@@ -102,38 +104,38 @@ BLEGAPAdvertisementTupleType = tuple[
 ]
 
 
-_cached_from_bytes_signed = lru_cache(maxsize=256)(from_bytes_signed)
+_from_bytes_signed = lru_cache(maxsize=256)(uncached_from_bytes_signed)
 
 
 @lru_cache(maxsize=256)
-def _uint128_bytes_as_uuid(uint128_bytes: bytes_) -> str:
+def _uncached_uint128_bytes_as_uuid(uint128_bytes: bytes_) -> str:
     """Convert an integer to a UUID str."""
-    int_value = from_bytes_little(uint128_bytes)
+    int_value = uncached_from_bytes_little(uint128_bytes)
     hex = f"{int_value:032x}"
     return f"{hex[:8]}-{hex[8:12]}-{hex[12:16]}-{hex[16:20]}-{hex[20:]}"
 
 
-_cached_uint128_bytes_as_uuid = _uint128_bytes_as_uuid
+_uint128_bytes_as_uuid = _uncached_uint128_bytes_as_uuid
 
 
 @lru_cache(maxsize=256)
-def _uint16_bytes_as_uuid(uuid16_bytes: bytes_) -> str:
+def _uncached_uint16_bytes_as_uuid(uuid16_bytes: bytes_) -> str:
     """Convert a 16-bit UUID to a UUID str."""
-    return f"0000{from_bytes_little(uuid16_bytes):04x}-{BLE_UUID}"
+    return f"0000{uncached_from_bytes_little(uuid16_bytes):04x}-{BLE_UUID}"
 
 
-_cached_uint16_bytes_as_uuid = _uint16_bytes_as_uuid
+_uint16_bytes_as_uuid = _uncached_uint16_bytes_as_uuid
 
 
 @lru_cache(maxsize=256)
-def _uint32_bytes_as_uuid(uuid32_bytes: bytes_) -> str:
+def _uncached_uint32_bytes_as_uuid(uuid32_bytes: bytes_) -> str:
     """Convert a 32-bit UUID to a UUID str."""
-    return f"{from_bytes_little(uuid32_bytes):08x}-{BLE_UUID}"
+    return f"{uncached_from_bytes_little(uuid32_bytes):08x}-{BLE_UUID}"
 
 
-_cached_uint32_bytes_as_uuid = _uint32_bytes_as_uuid
+_uint32_bytes_as_uuid = _uncached_uint32_bytes_as_uuid
 
-_cached_manufacturer_id_bytes_to_int = lru_cache(maxsize=256)(from_bytes_little)
+_manufacturer_id_bytes_to_int = lru_cache(maxsize=256)(uncached_from_bytes_little)
 
 
 @lru_cache(maxsize=256)
@@ -203,71 +205,71 @@ def _uncached_parse_advertisement_data(
                     break
                 if manufacturer_data is None:
                     manufacturer_data = {
-                        _cached_manufacturer_id_bytes_to_int(
-                            cstr[start : start + 2]
-                        ): cstr[start + 2 : end]
+                        _manufacturer_id_bytes_to_int(cstr[start : start + 2]): cstr[
+                            start + 2 : end
+                        ]
                     }
                 else:
                     manufacturer_data[
-                        _cached_manufacturer_id_bytes_to_int(cstr[start : start + 2])
+                        _manufacturer_id_bytes_to_int(cstr[start : start + 2])
                     ] = cstr[start + 2 : end]
             elif gap_type_num in {
                 TYPE_16BIT_SERVICE_UUID_COMPLETE,
                 TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE,
             }:
                 if service_uuids is None:
-                    service_uuids = [_cached_uint16_bytes_as_uuid(cstr[start:end])]
+                    service_uuids = [_uint16_bytes_as_uuid(cstr[start:end])]
                 else:
-                    service_uuids.append(_cached_uint16_bytes_as_uuid(cstr[start:end]))
+                    service_uuids.append(_uint16_bytes_as_uuid(cstr[start:end]))
             elif gap_type_num in {
                 TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
                 TYPE_128BIT_SERVICE_UUID_COMPLETE,
             }:
                 if service_uuids is None:
-                    service_uuids = [_cached_uint128_bytes_as_uuid(cstr[start:end])]
+                    service_uuids = [_uint128_bytes_as_uuid(cstr[start:end])]
                 else:
-                    service_uuids.append(_cached_uint128_bytes_as_uuid(cstr[start:end]))
+                    service_uuids.append(_uint128_bytes_as_uuid(cstr[start:end]))
             elif gap_type_num == TYPE_SERVICE_DATA:
                 if start + 2 >= total_length:
                     break
                 if service_data is None:
                     service_data = {
-                        _cached_uint16_bytes_as_uuid(cstr[start : start + 2]): cstr[
+                        _uint16_bytes_as_uuid(cstr[start : start + 2]): cstr[
                             start + 2 : end
                         ]
                     }
                 else:
-                    service_data[
-                        _cached_uint16_bytes_as_uuid(cstr[start : start + 2])
-                    ] = cstr[start + 2 : end]
+                    service_data[_uint16_bytes_as_uuid(cstr[start : start + 2])] = cstr[
+                        start + 2 : end
+                    ]
             elif gap_type_num == TYPE_SERVICE_DATA_32BIT_UUID:
                 if start + 4 >= total_length:
                     break
                 if service_data is None:
                     service_data = {
-                        _cached_uint32_bytes_as_uuid(cstr[start : start + 4]): cstr[
+                        _uint32_bytes_as_uuid(cstr[start : start + 4]): cstr[
                             start + 4 : end
                         ]
                     }
                 else:
-                    service_data[
-                        _cached_uint32_bytes_as_uuid(cstr[start : start + 4])
-                    ] = cstr[start + 4 : end]
+                    service_data[_uint32_bytes_as_uuid(cstr[start : start + 4])] = cstr[
+                        start + 4 : end
+                    ]
             elif gap_type_num == TYPE_SERVICE_DATA_128BIT_UUID:
                 if start + 16 >= total_length:
                     break
                 if service_data is None:
                     service_data = {
-                        _cached_uint128_bytes_as_uuid(cstr[start : start + 16]): cstr[
+                        _uint128_bytes_as_uuid(cstr[start : start + 16]): cstr[
                             start + 16 : end
                         ]
                     }
                 else:
-                    service_data[
-                        _cached_uint128_bytes_as_uuid(cstr[start : start + 16])
-                    ] = cstr[start + 16 : end]
+                    service_data[_uint128_bytes_as_uuid(cstr[start : start + 16])] = (
+                        cstr[start + 16 : end]
+                    )
             elif gap_type_num == TYPE_TX_POWER_LEVEL:
-                tx_power = _cached_from_bytes_signed(cstr[start:end])
+                tx_power = _from_bytes_signed(cstr[start:end])
 
     return (
         local_name,
