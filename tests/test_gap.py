@@ -2,8 +2,28 @@ import base64
 
 from bluetooth_data_tools import (
     parse_advertisement_data,
+    parse_advertisement_data_bytes,
     parse_advertisement_data_tuple,
 )
+
+
+def test_parse_advertisement_data_Prodigio_D83567A4F5A5_bytes():
+    data = b"".join(
+        [
+            base64.b64decode("AgoEFglQcm9kaWdpb19EODM1NjdBNEY1QTU="),
+            base64.b64decode("AgEGEQYbxdWlAgCqneMRKvIQGaoGCf8CJUQJgAcAAg=="),
+        ]
+    )
+
+    (local_name, service_uuids, service_data, manufacturer_data, tx_power) = (
+        parse_advertisement_data_bytes(data)
+    )
+
+    assert local_name == "Prodigio_D83567A4F5A5"
+    assert service_uuids == ["06aa1910-f22a-11e3-9daa-0002a5d5c51b"]
+    assert service_data == {}
+    assert manufacturer_data == {9474: b"D\t\x80\x07\x00\x02"}
+    assert tx_power == 4
 
 
 def test_parse_advertisement_data_Prodigio_D83567A4F5A5():
