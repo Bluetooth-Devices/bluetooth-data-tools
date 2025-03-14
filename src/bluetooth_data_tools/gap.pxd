@@ -45,7 +45,7 @@ cpdef parse_advertisement_data(object data)
 
 @cython.locals(
     gap_bytes="bytes",
-    gap_data="const unsigned char *",
+    cstr="const unsigned char *",
     gap_value=cython.bytes,
     gap_type_num="unsigned char",
     total_length=cython.uint,
