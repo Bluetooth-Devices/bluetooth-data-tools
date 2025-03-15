@@ -255,6 +255,6 @@ if TYPE_CHECKING:
         """
         return _uncached_parse_advertisement_data(data)
 else:
-    parse_advertisement_data_tuple = lru_cache(maxsize=256)(
+    parse_advertisement_data_tuple = lru_cache(maxsize=1024)(
         _uncached_parse_advertisement_data
     )
