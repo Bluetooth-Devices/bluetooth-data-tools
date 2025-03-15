@@ -1,6 +1,32 @@
 # CHANGELOG
 
 
+## v1.26.1 (2025-03-15)
+
+### Bug Fixes
+
+- Increase size of parse_advertisement_data_tuple cache to 1024
+  ([#124](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/124),
+  [`00076dc`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/00076dc4b3f51cdbfa15ef5b2a8a1dc420dccb36))
+
+fixes #123
+
+This one churns quite a bit and from how often its called, its a drain on performance having it so
+  small.
+
+### Chores
+
+- Update deps ([#125](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/125),
+  [`0e6492a`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/0e6492a35a3f5055b15167e15aa2e6f875fbfdc0))
+
+- Updating coverage (7.6.10 -> 7.6.12) - Updating pytest (8.3.4 -> 8.3.5) - Updating cryptography
+  (44.0.1 -> 44.0.2)
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#120](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/120),
+  [`e45380e`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/e45380edd13e155372917a30362661e1b7686e65))
+
+
 ## v1.26.0 (2025-03-10)
 
 ### Features
