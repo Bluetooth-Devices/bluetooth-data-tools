@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v1.26.2 (2025-03-22)
+
+### Bug Fixes
+
+- Use project.license key
+  ([#127](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/127),
+  [`6aa523e`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/6aa523efe000a32d20f7b8e86bc48cd7251998f1))
+
+### Chores
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#126](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/126),
+  [`d28efe3`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/d28efe360636966287066d01c498b8607cb27596))
+
+
 ## v1.26.1 (2025-03-15)
 
 ### Bug Fixes
