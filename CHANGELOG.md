@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v1.26.5 (2025-04-02)
+
+### Bug Fixes
+
+- Reject data where the splice start position would be greater than end of the data
+  ([#132](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/132),
+  [`028f696`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/028f6965abd1f4d6d85fd895ad95198e74e36ca5))
+
+
 ## v1.26.4 (2025-04-02)
 
 ### Bug Fixes
