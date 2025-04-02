@@ -667,3 +667,29 @@ def test_data_shorter_than_length() -> None:
             {},
             None,
         )
+
+
+def test_data_shorter_than_required_length():
+    """Test data that is too short."""
+
+    data = (b"\x02 a\xc4|\x04@*'\x9c\xa5C\r\xa1\xe6\x1e\xe7\x8f\xa57D\xe6$\x03",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(
+        tuple(
+            data,
+        )
+    ) == (
+        None,
+        [],
+        {},
+        {},
+        None,
+    )
