@@ -718,7 +718,22 @@ def test_data_shorter_than_length() -> None:
     ],
 )
 def test_negative_splice_pos_does_not_crash(data: tuple[bytes, bytes, bytes]) -> None:
-    """Test data that would cause a negative splice position."""
+    """Test data that would cause a negative splice position.
+
+    All of the data here will result in a negative splice position
+    when attempting to parse the advertisement data. This is a
+    regression test to ensure that the parser does not crash
+    when it encounters this data.
+
+    A negative splice position is caused by the parser
+    attempting to splice the data at a position that is
+    greater than the length of the data. This can happen
+    when the data is malformed or when the parser is
+    attempting to parse data that is not in the expected
+    format. The parser should be able to handle this
+    gracefully and return an empty advertisement object
+    without crashing.
+    """
 
     adv = parse_advertisement_data(data)
 
