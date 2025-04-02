@@ -49,6 +49,5 @@ cpdef parse_advertisement_data(object data)
     offset=cython.uint,
     start=cython.uint,
     end=cython.uint,
-    tx_power_int="unsigned char"
 )
 cpdef _uncached_parse_advertisement_data(tuple data)
