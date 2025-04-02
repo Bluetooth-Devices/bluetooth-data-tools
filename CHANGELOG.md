@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v1.26.4 (2025-04-02)
+
+### Bug Fixes
+
+- Add more test coverage for out of bound data
+  ([#131](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/131),
+  [`5249fe9`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/5249fe9374d173cf32c96c3755702f026c780457))
+
+
 ## v1.26.3 (2025-04-02)
 
 ### Bug Fixes
