@@ -1,6 +1,52 @@
 # CHANGELOG
 
 
+## v1.26.3 (2025-04-02)
+
+### Bug Fixes
+
+- Reduce code complexity
+  ([#130](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/130),
+  [`8491346`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/849134609ab511d446f24e6b596ada503ba3a23a))
+
+### Chores
+
+- **ci**: Bump pypa/cibuildwheel from 2.23.0 to 2.23.2 in the github-actions group
+  ([#129](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/129),
+  [`78a83c6`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/78a83c60ae35525ce2e3e4d1e6fe0513bab81bb9))
+
+chore(ci): bump pypa/cibuildwheel in the github-actions group
+
+Bumps the github-actions group with 1 update:
+  [pypa/cibuildwheel](https://github.com/pypa/cibuildwheel).
+
+Updates `pypa/cibuildwheel` from 2.23.0 to 2.23.2 - [Release
+  notes](https://github.com/pypa/cibuildwheel/releases) -
+  [Changelog](https://github.com/pypa/cibuildwheel/blob/main/docs/changelog.md) -
+  [Commits](https://github.com/pypa/cibuildwheel/compare/v2.23.0...v2.23.2)
+
+--- updated-dependencies: - dependency-name: pypa/cibuildwheel dependency-version: 2.23.2
+
+dependency-type: direct:production
+
+update-type: version-update:semver-patch
+
+dependency-group: github-actions ...
+
+Signed-off-by: dependabot[bot] <support@github.com>
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#128](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/128),
+  [`f28d99e`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/f28d99ec17b0643a5f032a6bf0300ce7d8051e66))
+
+updates: - [github.com/astral-sh/ruff-pre-commit: v0.11.0 →
+  v0.11.2](https://github.com/astral-sh/ruff-pre-commit/compare/v0.11.0...v0.11.2)
+
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+
+
 ## v1.26.2 (2025-03-22)
 
 ### Bug Fixes
