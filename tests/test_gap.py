@@ -671,35 +671,10 @@ def test_data_shorter_than_length() -> None:
         )
 
 
-def test_data_shorter_than_required_length():
-    """Test data that is too short."""
-
-    data = (b"\x02 a\xc4|\x04@*'\x9c\xa5C\r\xa1\xe6\x1e\xe7\x8f\xa57D\xe6$\x03",)
-
-    adv = parse_advertisement_data(data)
-
-    assert adv.local_name is None
-    assert adv.service_uuids == []
-    assert adv.service_data == {}
-    assert adv.manufacturer_data == {}
-    assert adv.tx_power is None
-
-    assert parse_advertisement_data_tuple(
-        tuple(
-            data,
-        )
-    ) == (
-        None,
-        [],
-        {},
-        {},
-        None,
-    )
-
-
 @pytest.mark.parametrize(
     "data",
     [
+        (b"\x02 a\xc4|\x04@*'\x9c\xa5C\r\xa1\xe6\x1e\xe7\x8f\xa57D\xe6$\x03",),
         (
             b"\xe8\x9d\x83\x8b\x96\x85\x07U\x19$&\x1c\x91\x80\xba\x04Z",
             b'"EU\xcb\x11\xeb\xdc\xd4)\xc9\x1b\x8c\xfe\x1e\xd7\xca\x98\xfe\xcd%\xf6>\xbb\xe3\xbc\xfc5',
