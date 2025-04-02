@@ -152,6 +152,7 @@ known-first-party = ["bluetooth_data_tools", "tests"]
     "D103",
     "D104",
     "S101",
+    "S311",
 ]
 "setup.py" = ["D100"]
 "conftest.py" = ["D100"]
