@@ -486,6 +486,28 @@ def test_manufacturer_data_short_by_three():
     )
 
 
+def test_manufacturer_data_short_by_five():
+    """Test short manufacturer data."""
+
+    data = (b"\x05\xff\x01\x01\x01",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {},
+        None,
+    )
+
+
 def test_manufacturer_data_single_byte():
     """Test single byte manufacturer data."""
 
@@ -611,10 +633,37 @@ def test_zero_padded_out_of_bounds_length():
     assert adv.manufacturer_data == {}
     assert adv.tx_power is None
 
-    assert parse_advertisement_data_tuple(tuple(data)) == (
+    assert parse_advertisement_data_tuple(
+        tuple(
+            data,
+        )
+    ) == (
         None,
         [],
         {},
         {},
         None,
     )
+
+
+def test_data_shorter_than_length() -> None:
+    """Test data shorter than length."""
+
+    for len in range(0, 30):
+        data = bytes((len,)) + b"!\x01"
+
+        adv = parse_advertisement_data((data,))
+
+        assert adv.local_name is None
+        assert adv.service_uuids == []
+        assert adv.service_data == {}
+        assert adv.manufacturer_data == {}
+        assert adv.tx_power is None
+
+        assert parse_advertisement_data_tuple((data,)) == (
+            None,
+            [],
+            {},
+            {},
+            None,
+        )
