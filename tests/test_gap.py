@@ -693,3 +693,33 @@ def test_data_shorter_than_required_length():
         {},
         None,
     )
+
+
+def test_negative_splice_pos_does_not_crash():
+    """Test data that would cause a negative splice position."""
+
+    data = (
+        b"\xe8\x9d\x83\x8b\x96\x85\x07U\x19$&\x1c\x91\x80\xba\x04Z",
+        b'"EU\xcb\x11\xeb\xdc\xd4)\xc9\x1b\x8c\xfe\x1e\xd7\xca\x98\xfe\xcd%\xf6>\xbb\xe3\xbc\xfc5',
+        b"(\x86\x18\xe9m>\x89\xa7\xe1=\x9fE\x0f\xbcE\xb2<",
+    )
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(
+        tuple(
+            data,
+        )
+    ) == (
+        None,
+        [],
+        {},
+        {},
+        None,
+    )
