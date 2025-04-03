@@ -133,8 +133,6 @@ def _uint32_bytes_as_uuid(uuid32_bytes: bytes_) -> str:
 
 _cached_uint32_bytes_as_uuid = _uint32_bytes_as_uuid
 
-_cached_manufacturer_id_bytes_to_int = lru_cache(maxsize=256)(from_bytes_little)
-
 
 @lru_cache(maxsize=256)
 def _parse_advertisement_data(
@@ -196,9 +194,9 @@ def _uncached_parse_advertisement_data(
                 splice_pos = start + 2
                 if splice_pos >= total_length or splice_pos >= end:
                     break
-                manufacturer_data[
-                    _cached_manufacturer_id_bytes_to_int(gap_data[start:splice_pos])
-                ] = gap_data[splice_pos:end]
+                manufacturer_data[gap_data[start] | (gap_data[start + 1] << 8)] = (
+                    gap_data[splice_pos:end]
+                )
             elif gap_type_num in {
                 TYPE_16BIT_SERVICE_UUID_COMPLETE,
                 TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE,
