@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## v1.27.0 (2025-04-03)
+
+### Chores
+
+- Add gap fuzzer test ([#133](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/133),
+  [`298e733`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/298e733e6185ca3e70ce9275662edb63802043ab))
+
+### Features
+
+- Improve performance of parsing manufacturer_data
+  ([#134](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/134),
+  [`f853955`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/f853955411d8c68a20fab58465b8966b76f3f21a))
+
+
 ## v1.26.5 (2025-04-02)
 
 ### Bug Fixes
