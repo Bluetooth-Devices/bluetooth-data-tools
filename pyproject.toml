@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "bluetooth-data-tools"
-version = "1.27.0"
+version = "1.28.0"
 license = "Apache-2.0"
 description = "Tools for converting bluetooth data and packets"
 authors = [{ name = "J. Nick Koston", email = "nick@koston.org" }]

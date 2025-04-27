@@ -1,6 +1,46 @@
 # CHANGELOG
 
 
+## v1.28.0 (2025-04-27)
+
+### Chores
+
+- **deps-dev**: Bump h11 from 0.14.0 to 0.16.0 in the pip group
+  ([#138](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/138),
+  [`c51e7ab`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/c51e7ab700fe32ef5003762d1e449d2f81fa1553))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#135](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/135),
+  [`9102a5e`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/9102a5e55a0213daa1c2dc570e8c65d189e942b9))
+
+updates: - [github.com/commitizen-tools/commitizen: v4.4.1 →
+  v4.5.0](https://github.com/commitizen-tools/commitizen/compare/v4.4.1...v4.5.0) -
+  [github.com/astral-sh/ruff-pre-commit: v0.11.2 →
+  v0.11.4](https://github.com/astral-sh/ruff-pre-commit/compare/v0.11.2...v0.11.4)
+
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#136](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/136),
+  [`215a267`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/215a267382e5ba61d723a8c101b018eb0c03c2c5))
+
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#137](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/137),
+  [`88bfed3`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/88bfed3314f9b96b7d5d34e62d728e04f7882705))
+
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+
+### Features
+
+- Add parse_advertisement_data_bytes method
+  ([#121](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/121),
+  [`ce07c1c`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/ce07c1c9229eabfbcc1241572e7bd2a4550c1c54))
+
+
 ## v1.27.0 (2025-04-03)
 
 ### Chores
