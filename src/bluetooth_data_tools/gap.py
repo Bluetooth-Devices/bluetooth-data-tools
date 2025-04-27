@@ -196,27 +196,27 @@ def _uncached_parse_advertisement_bytes(
             continue
         start = offset + 2
         end = start + length - 1
+        offset += 1 + length
         if end > total_length or end - start <= 0:
             _LOGGER.debug(
                 "Invalid BLE GAP AD structure at offset %s: %s (%s)",
                 offset,
                 gap_bytes,
             )
-            offset += 1 + length
             continue
-        offset += 1 + length
         if gap_type_num == TYPE_SHORT_LOCAL_NAME and local_name is None:
             local_name = gap_data[start:end].decode("utf-8", "replace")
         elif gap_type_num == TYPE_COMPLETE_LOCAL_NAME:
             local_name = gap_data[start:end].decode("utf-8", "replace")
         elif gap_type_num == TYPE_MANUFACTURER_SPECIFIC_DATA:
-            if start + 2 >= total_length:
+            splice_pos = start + 2
+            if splice_pos >= total_length or splice_pos >= end:
                 break
             if manufacturer_data is _EMPTY_MANUFACTURER_DATA:
                 manufacturer_data = {}
-            manufacturer_data[
-                _cached_manufacturer_id_bytes_to_int(gap_data[start : start + 2])
-            ] = gap_data[start + 2 : end]
+            manufacturer_data[gap_data[start] | (gap_data[start + 1] << 8)] = gap_data[
+                splice_pos:end
+            ]
         elif gap_type_num in {
             TYPE_16BIT_SERVICE_UUID_COMPLETE,
             TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE,
@@ -232,29 +232,32 @@ def _uncached_parse_advertisement_bytes(
                 service_uuids = []
             service_uuids.append(_cached_uint128_bytes_as_uuid(gap_data[start:end]))
         elif gap_type_num == TYPE_SERVICE_DATA:
-            if start + 2 >= total_length:
+            splice_pos = start + 2
+            if splice_pos >= total_length or splice_pos >= end:
                 break
             if service_data is _EMPTY_SERVICE_DATA:
                 service_data = {}
-            service_data[_cached_uint16_bytes_as_uuid(gap_data[start : start + 2])] = (
-                gap_data[start + 2 : end]
+            service_data[_cached_uint16_bytes_as_uuid(gap_data[start:splice_pos])] = (
+                gap_data[splice_pos:end]
             )
         elif gap_type_num == TYPE_SERVICE_DATA_32BIT_UUID:
-            if start + 4 >= total_length:
+            splice_pos = start + 4
+            if splice_pos >= total_length or splice_pos >= end:
                 break
             if service_data is _EMPTY_SERVICE_DATA:
                 service_data = {}
-            service_data[_cached_uint32_bytes_as_uuid(gap_data[start : start + 4])] = (
-                gap_data[start + 4 : end]
+            service_data[_cached_uint32_bytes_as_uuid(gap_data[start:splice_pos])] = (
+                gap_data[splice_pos:end]
             )
         elif gap_type_num == TYPE_SERVICE_DATA_128BIT_UUID:
-            if start + 16 >= total_length:
+            splice_pos = start + 16
+            if splice_pos >= total_length or splice_pos >= end:
                 break
             if service_data is _EMPTY_SERVICE_DATA:
                 service_data = {}
-            service_data[
-                _cached_uint128_bytes_as_uuid(gap_data[start : start + 16])
-            ] = gap_data[start + 16 : end]
+            service_data[_cached_uint128_bytes_as_uuid(gap_data[start:splice_pos])] = (
+                gap_data[splice_pos:end]
+            )
         elif gap_type_num == TYPE_TX_POWER_LEVEL:
             tx_power = _cached_from_bytes_signed(gap_data[start:end])
 
