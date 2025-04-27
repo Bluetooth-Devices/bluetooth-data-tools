@@ -92,5 +92,5 @@ def test_parse_advertisement_data_tuple(benchmark: BenchmarkFixture) -> None:
     benchmark(lambda: parse_advertisement_data(advs_as_tuple))
 
 
-def test_parse_advertisement_data_list(benchmark: BenchmarkFixture) -> None:
+def test_parse_advertisement_data(benchmark: BenchmarkFixture) -> None:
     benchmark(lambda: parse_advertisement_data(advs))
