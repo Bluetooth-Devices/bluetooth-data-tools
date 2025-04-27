@@ -7,6 +7,7 @@ from .gap import (
     BLEGAPAdvertisement,
     BLEGAPType,
     parse_advertisement_data,
+    parse_advertisement_data_bytes,
     parse_advertisement_data_tuple,
 )
 from .privacy import get_cipher_for_irk, resolve_private_address
@@ -30,6 +31,7 @@ __all__ = [
     "newest_manufacturer_data",
     "human_readable_name",
     "int_to_bluetooth_address",
+    "parse_advertisement_data_bytes",
     "short_address",
     "BLEGAPType",
     "BLEGAPAdvertisement",

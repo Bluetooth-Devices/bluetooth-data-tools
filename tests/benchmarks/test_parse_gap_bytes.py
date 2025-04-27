@@ -1,8 +1,8 @@
 #  cythonize -X language_level=3 -a -i  src/bluetooth_data_tools/gap.py
 from pytest_codspeed import BenchmarkFixture
 
-from bluetooth_data_tools import parse_advertisement_data_tuple
-from bluetooth_data_tools.gap import _uncached_parse_advertisement_data
+from bluetooth_data_tools import parse_advertisement_data_bytes
+from bluetooth_data_tools.gap import _uncached_parse_advertisement_bytes
 
 advs = (
     b"\x02\x01\x06\x03\x03\x12\x18\x10\tLOOKin_98F33163\x03\x19\xc1\x03",
@@ -83,10 +83,11 @@ advs = (
 )
 
 
-def test_parse_advertisement_data_tuple(benchmark: BenchmarkFixture) -> None:
-    benchmark(lambda: parse_advertisement_data_tuple(advs))
-
-
-def test_parse_advertisement_data_tuple_uncached(benchmark: BenchmarkFixture) -> None:
+def test_parse_advertisement_data_bytes(benchmark: BenchmarkFixture) -> None:
     joined_advs = b"".join(advs)
-    benchmark(lambda: _uncached_parse_advertisement_data(joined_advs))
+    benchmark(lambda: parse_advertisement_data_bytes(joined_advs))
+
+
+def test_parse_advertisement_data_tuple_bytes(benchmark: BenchmarkFixture) -> None:
+    joined_advs = b"".join(advs)
+    benchmark(lambda: _uncached_parse_advertisement_bytes(joined_advs))

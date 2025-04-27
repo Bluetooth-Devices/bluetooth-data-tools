@@ -12,4 +12,4 @@ def test_gap_fuzzer() -> None:
             bytes([random.randint(0, 255) for _ in range(random.randint(1, 31))]),
         )
         print([i, adv])
-        _uncached_parse_advertisement_data(adv)
+        _uncached_parse_advertisement_data(b"".join(adv))

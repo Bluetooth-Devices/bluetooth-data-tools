@@ -4,8 +4,28 @@ import pytest
 
 from bluetooth_data_tools import (
     parse_advertisement_data,
+    parse_advertisement_data_bytes,
     parse_advertisement_data_tuple,
 )
+
+
+def test_parse_advertisement_data_Prodigio_D83567A4F5A5_bytes():
+    data = b"".join(
+        [
+            base64.b64decode("AgoEFglQcm9kaWdpb19EODM1NjdBNEY1QTU="),
+            base64.b64decode("AgEGEQYbxdWlAgCqneMRKvIQGaoGCf8CJUQJgAcAAg=="),
+        ]
+    )
+
+    (local_name, service_uuids, service_data, manufacturer_data, tx_power) = (
+        parse_advertisement_data_bytes(data)
+    )
+
+    assert local_name == "Prodigio_D83567A4F5A5"
+    assert service_uuids == ["06aa1910-f22a-11e3-9daa-0002a5d5c51b"]
+    assert service_data == {}
+    assert manufacturer_data == {9474: b"D\t\x80\x07\x00\x02"}
+    assert tx_power == 4
 
 
 def test_parse_advertisement_data_Prodigio_D83567A4F5A5():
@@ -209,6 +229,42 @@ def test_parse_advertisement_data_128bit_service_data():
     assert adv.local_name is None
     assert adv.service_uuids == []
     assert adv.service_data == {"00090401-0052-036b-3206-ff0a050a021a": b"\x04"}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_32bit_and_128bit_service_data():
+    data = [
+        b"\x07\x20\x1a\x02\n\x05\n\xff",
+        b"\x12\x21\x1a\x02\n\x05\n\xff\x062k\x03R\x00\x01\x04\t\x00\x04",
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {
+        "00090401-0052-036b-3206-ff0a050a021a": b"\x04",
+        "050a021a-0000-1000-8000-00805f9b34fb": b"\n\xff",
+    }
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_128bit_and_32bit_service_data():
+    data = [
+        b"\x12\x21\x1a\x02\n\x05\n\xff\x062k\x03R\x00\x01\x04\t\x00\x04",
+        b"\x07\x20\x1a\x02\n\x05\n\xff",
+    ]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {
+        "00090401-0052-036b-3206-ff0a050a021a": b"\x04",
+        "050a021a-0000-1000-8000-00805f9b34fb": b"\n\xff",
+    }
     assert adv.manufacturer_data == {}
     assert adv.tx_power is None
 

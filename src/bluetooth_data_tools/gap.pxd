@@ -3,6 +3,10 @@ import cython
 
 cdef str BLE_UUID
 
+cdef dict _EMPTY_MANUFACTURER_DATA
+cdef dict _EMPTY_SERVICE_DATA
+cdef list _EMPTY_SERVICE_UUIDS
+
 cdef object from_bytes
 cdef object from_bytes_little
 cdef object from_bytes_signed
@@ -39,7 +43,6 @@ cdef cython.uint TYPE_TX_POWER_LEVEL
 cpdef parse_advertisement_data(object data)
 
 @cython.locals(
-    gap_bytes="bytes",
     gap_data="const unsigned char *",
     gap_value=cython.bytes,
     gap_type_num="unsigned char",
@@ -48,6 +51,9 @@ cpdef parse_advertisement_data(object data)
     offset=cython.uint,
     start=cython.uint,
     end=cython.uint,
-    splice_pos=cython.uint,
 )
-cpdef _uncached_parse_advertisement_data(tuple data)
+cpdef _uncached_parse_advertisement_bytes(bytes gap_bytes)
+
+cpdef _uncached_parse_advertisement_data(bytes gap_bytes)
+
+cpdef _uncached_parse_advertisement_tuple(tuple data)
