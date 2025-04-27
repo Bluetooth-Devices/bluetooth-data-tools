@@ -1,6 +1,125 @@
 # CHANGELOG
 
 
+## v1.27.0 (2025-04-03)
+
+### Chores
+
+- Add gap fuzzer test ([#133](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/133),
+  [`298e733`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/298e733e6185ca3e70ce9275662edb63802043ab))
+
+### Features
+
+- Improve performance of parsing manufacturer_data
+  ([#134](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/134),
+  [`f853955`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/f853955411d8c68a20fab58465b8966b76f3f21a))
+
+
+## v1.26.5 (2025-04-02)
+
+### Bug Fixes
+
+- Reject data where the splice start position would be greater than end of the data
+  ([#132](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/132),
+  [`028f696`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/028f6965abd1f4d6d85fd895ad95198e74e36ca5))
+
+
+## v1.26.4 (2025-04-02)
+
+### Bug Fixes
+
+- Add more test coverage for out of bound data
+  ([#131](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/131),
+  [`5249fe9`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/5249fe9374d173cf32c96c3755702f026c780457))
+
+
+## v1.26.3 (2025-04-02)
+
+### Bug Fixes
+
+- Reduce code complexity
+  ([#130](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/130),
+  [`8491346`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/849134609ab511d446f24e6b596ada503ba3a23a))
+
+### Chores
+
+- **ci**: Bump pypa/cibuildwheel from 2.23.0 to 2.23.2 in the github-actions group
+  ([#129](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/129),
+  [`78a83c6`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/78a83c60ae35525ce2e3e4d1e6fe0513bab81bb9))
+
+chore(ci): bump pypa/cibuildwheel in the github-actions group
+
+Bumps the github-actions group with 1 update:
+  [pypa/cibuildwheel](https://github.com/pypa/cibuildwheel).
+
+Updates `pypa/cibuildwheel` from 2.23.0 to 2.23.2 - [Release
+  notes](https://github.com/pypa/cibuildwheel/releases) -
+  [Changelog](https://github.com/pypa/cibuildwheel/blob/main/docs/changelog.md) -
+  [Commits](https://github.com/pypa/cibuildwheel/compare/v2.23.0...v2.23.2)
+
+--- updated-dependencies: - dependency-name: pypa/cibuildwheel dependency-version: 2.23.2
+
+dependency-type: direct:production
+
+update-type: version-update:semver-patch
+
+dependency-group: github-actions ...
+
+Signed-off-by: dependabot[bot] <support@github.com>
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#128](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/128),
+  [`f28d99e`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/f28d99ec17b0643a5f032a6bf0300ce7d8051e66))
+
+updates: - [github.com/astral-sh/ruff-pre-commit: v0.11.0 →
+  v0.11.2](https://github.com/astral-sh/ruff-pre-commit/compare/v0.11.0...v0.11.2)
+
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+
+
+## v1.26.2 (2025-03-22)
+
+### Bug Fixes
+
+- Use project.license key
+  ([#127](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/127),
+  [`6aa523e`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/6aa523efe000a32d20f7b8e86bc48cd7251998f1))
+
+### Chores
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#126](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/126),
+  [`d28efe3`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/d28efe360636966287066d01c498b8607cb27596))
+
+
+## v1.26.1 (2025-03-15)
+
+### Bug Fixes
+
+- Increase size of parse_advertisement_data_tuple cache to 1024
+  ([#124](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/124),
+  [`00076dc`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/00076dc4b3f51cdbfa15ef5b2a8a1dc420dccb36))
+
+fixes #123
+
+This one churns quite a bit and from how often its called, its a drain on performance having it so
+  small.
+
+### Chores
+
+- Update deps ([#125](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/125),
+  [`0e6492a`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/0e6492a35a3f5055b15167e15aa2e6f875fbfdc0))
+
+- Updating coverage (7.6.10 -> 7.6.12) - Updating pytest (8.3.4 -> 8.3.5) - Updating cryptography
+  (44.0.1 -> 44.0.2)
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#120](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/120),
+  [`e45380e`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/e45380edd13e155372917a30362661e1b7686e65))
+
+
 ## v1.26.0 (2025-03-10)
 
 ### Features

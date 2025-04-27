@@ -133,8 +133,6 @@ def _uint32_bytes_as_uuid(uuid32_bytes: bytes_) -> str:
 
 _cached_uint32_bytes_as_uuid = _uint32_bytes_as_uuid
 
-_cached_manufacturer_id_bytes_to_int = lru_cache(maxsize=256)(from_bytes_little)
-
 
 _EMPTY_MANUFACTURER_DATA: dict[int, bytes] = {}
 _EMPTY_SERVICE_DATA: dict[str, bytes] = {}

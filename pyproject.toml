@@ -1,7 +1,11 @@
+[build-system]
+requires = ['setuptools>=77.0', 'Cython', "poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [project]
 name = "bluetooth-data-tools"
-version = "1.26.0"
-license.text = "Apache-2.0"
+version = "1.27.0"
+license = "Apache-2.0"
 description = "Tools for converting bluetooth data and packets"
 authors = [{ name = "J. Nick Koston", email = "nick@koston.org" }]
 readme = "README.md"
@@ -113,10 +117,6 @@ allow_untyped_defs = true
 module = "docs.*"
 ignore_errors = true
 
-[build-system]
-requires = ['setuptools>=75.8.0', 'Cython', "poetry-core>=2.0.0"]
-build-backend = "poetry.core.masonry.api"
-
 [tool.ruff]
 exclude = ["docs"]
 line-length = 88
@@ -152,6 +152,7 @@ known-first-party = ["bluetooth_data_tools", "tests"]
     "D103",
     "D104",
     "S101",
+    "S311",
 ]
 "setup.py" = ["D100"]
 "conftest.py" = ["D100"]
