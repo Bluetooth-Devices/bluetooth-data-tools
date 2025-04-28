@@ -266,7 +266,7 @@ def _uncached_parse_advertisement_bytes(
 
 if TYPE_CHECKING:
 
-    @lru_cache(maxsize=256)
+    @lru_cache(maxsize=1024)
     def parse_advertisement_data_bytes(
         gap_bytes: bytes,
     ) -> BLEGAPAdvertisementTupleType:
@@ -306,7 +306,7 @@ if TYPE_CHECKING:
         """
         return _uncached_parse_advertisement_tuple(data)
 else:
-    parse_advertisement_data_bytes = lru_cache(maxsize=256)(
+    parse_advertisement_data_bytes = lru_cache(maxsize=1024)(
         _uncached_parse_advertisement_bytes
     )
     parse_advertisement_data_tuple = lru_cache(maxsize=256)(
