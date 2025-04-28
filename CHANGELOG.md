@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v1.28.1 (2025-04-28)
+
+### Bug Fixes
+
+- Restore lru size to 1024
+  ([#140](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/140),
+  [`647e04f`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/647e04fa23a1a07aa96adcbac48ebac6b2fe930f))
+
+
 ## v1.28.0 (2025-04-27)
 
 ### Chores
