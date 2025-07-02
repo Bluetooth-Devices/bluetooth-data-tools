@@ -359,6 +359,54 @@ def test_parse_multiple_32bit_uuids():
     assert adv.tx_power is None
 
 
+def test_parse_mixed_16bit_32bit_uuids():
+    """Test parsing advertisement data with 16-bit UUID followed by 32-bit UUID."""
+    # Build advertisement data with:
+    # - One 16-bit UUID: 0x1234
+    # - Two 32-bit UUIDs: 0x56789ABC, 0xDEF01234
+    data = [
+        bytes.fromhex(
+            "03023412"  # Length=3, Type=0x02, UUID=0x1234 (little-endian)
+            "090478563412F0DEBC9A"  # Length=9, Type=0x04, UUIDs in little-endian
+        )
+    ]
+    adv = parse_advertisement_data(data)
+
+    assert adv.service_uuids == [
+        "00001234-0000-1000-8000-00805f9b34fb",  # 16-bit
+        "12345678-0000-1000-8000-00805f9b34fb",  # 32-bit
+        "9abcdef0-0000-1000-8000-00805f9b34fb",  # 32-bit
+    ]
+    assert adv.local_name is None
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
+def test_parse_mixed_16bit_128bit_uuids():
+    """Test parsing advertisement data with 16-bit UUID followed by 128-bit UUID."""
+    # Build advertisement data with:
+    # - One 16-bit UUID: 0x1234
+    # - One 128-bit UUID: 550e8400-e29b-41d4-a716-446655440000
+    # Note: 128-bit UUIDs are stored in reverse byte order in BLE
+    data = [
+        bytes.fromhex(
+            "03023412"  # Length=3, Type=0x02, UUID=0x1234 (little-endian)
+            "110600004455664416a7d4419be200840e55"  # Length=17, Type=0x06, 128-bit UUID (reversed)
+        )
+    ]
+    adv = parse_advertisement_data(data)
+
+    assert adv.service_uuids == [
+        "00001234-0000-1000-8000-00805f9b34fb",  # 16-bit
+        "550e8400-e29b-41d4-a716-446655440000",  # 128-bit
+    ]
+    assert adv.local_name is None
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
 def test_parse_advertisement_data_zero_padded_scan_included():
     data = [
         b"\x02\x01\x06\t\xffY\x00\xfe\x024\x9e\xa6\xba\x00\x00\x00\x00\x00\x00\x00\x00"
