@@ -1,6 +1,93 @@
 # CHANGELOG
 
 
+## v1.28.2 (2025-07-02)
+
+### Bug Fixes
+
+- Parse multiple 16-bit and 32-bit Service UUIDs in BLE advertisement data
+  ([#155](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/155),
+  [`4b1d6e2`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/4b1d6e2f0c209d201973007f2a863efdd98ddf82))
+
+### Chores
+
+- **ci**: Bump pypa/cibuildwheel from 2.23.2 to 2.23.3 in the github-actions group
+  ([#142](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/142),
+  [`68fc83f`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/68fc83f6a8e48fdaa130b9acc3fa0ce1bfc8cfbb))
+
+- **deps**: Bump cryptography from 44.0.2 to 44.0.3
+  ([#143](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/143),
+  [`94532d9`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/94532d999cf086cd85383d1da12f3ca321427675))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **deps**: Bump cryptography from 44.0.3 to 45.0.2
+  ([#146](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/146),
+  [`c8661a5`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/c8661a59ae9d53c8d663833d0c07ea5aa92f07e3))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **deps**: Bump cryptography from 45.0.2 to 45.0.3
+  ([#147](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/147),
+  [`21cf466`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/21cf46698826410318019204103da2b53a8aeab3))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **deps**: Bump cryptography from 45.0.3 to 45.0.4
+  ([#152](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/152),
+  [`2cca2de`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/2cca2deb00d8ea808d0878c40d3d9947ecca1cc0))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **deps**: Bump requests from 2.32.3 to 2.32.4 in the pip group
+  ([#150](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/150),
+  [`67c1724`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/67c1724545f024ceefc1eea64ce1050742def146))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **deps**: Bump urllib3 from 2.3.0 to 2.5.0 in the pip group
+  ([#156](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/156),
+  [`16e1dad`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/16e1dadaf37af3d2c3561c0fb4484409ce5ed522))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **deps-dev**: Bump pytest from 8.3.5 to 8.4.1
+  ([#153](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/153),
+  [`f68a58f`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/f68a58fb4f054f004cbef5f080f9f42d29268b5c))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **deps-dev**: Bump pytest-cov from 6.0.0 to 6.1.1
+  ([#139](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/139),
+  [`9b2dc3c`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/9b2dc3c7fb495180cb6542886765b41672ba5aa2))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **deps-dev**: Bump pytest-cov from 6.1.1 to 6.2.1
+  ([#151](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/151),
+  [`45fe00b`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/45fe00bb31058b1fbd4e8ef23be94c08e6291415))
+
+Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#141](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/141),
+  [`be5a29f`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/be5a29fb00136763c48002d9fcf4ddceb1d7eaf8))
+
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#144](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/144),
+  [`b5c8d16`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/b5c8d16ebedc97f4cf286a333a939e6916e1afdf))
+
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+
+- **pre-commit.ci**: Pre-commit autoupdate
+  ([#145](https://github.com/Bluetooth-Devices/bluetooth-data-tools/pull/145),
+  [`20cc9ab`](https://github.com/Bluetooth-Devices/bluetooth-data-tools/commit/20cc9abd4023f2009fcd33c919c20cf3136c3904))
+
+Co-authored-by: pre-commit-ci[bot] <66853113+pre-commit-ci[bot]@users.noreply.github.com>
+
+
 ## v1.28.1 (2025-04-28)
 
 ### Bug Fixes
