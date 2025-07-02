@@ -53,6 +53,7 @@ cpdef parse_advertisement_data(object data)
     offset=cython.uint,
     start=cython.uint,
     end=cython.uint,
+    i=cython.uint,
 )
 cpdef _uncached_parse_advertisement_bytes(bytes gap_bytes)
 
