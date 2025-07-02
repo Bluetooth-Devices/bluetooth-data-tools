@@ -300,6 +300,23 @@ def test_parse_advertisement_data_zero_padded():
     assert adv.tx_power is None
 
 
+def test_parse_adv_data():
+    data = [
+        bytes.fromhex(
+            "02.01.06.05.02.E0.FF.E7.FE.0B.FF.65.0B.88.A0"
+            ".C8.47.8C.EA.D1.C1.0C.09.4D.32.5F.42.31.41.38"
+            ".53.31.30.50".replace(".", "")
+        )
+    ]
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name == "M2_B1A8S10P"
+    assert adv.service_uuids == ["0000fee7ffe0-0000-1000-8000-00805f9b34fb"]
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {2917: b"\x88\xa0\xc8G\x8c\xea\xd1\xc1"}
+    assert adv.tx_power is None
+
+
 def test_parse_advertisement_data_zero_padded_scan_included():
     data = [
         b"\x02\x01\x06\t\xffY\x00\xfe\x024\x9e\xa6\xba\x00\x00\x00\x00\x00\x00\x00\x00"
