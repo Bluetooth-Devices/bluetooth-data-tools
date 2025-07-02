@@ -33,6 +33,8 @@ cdef cython.uint TYPE_COMPLETE_LOCAL_NAME
 cdef cython.uint TYPE_MANUFACTURER_SPECIFIC_DATA
 cdef cython.uint TYPE_16BIT_SERVICE_UUID_COMPLETE
 cdef cython.uint TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE
+cdef cython.uint TYPE_32BIT_SERVICE_UUID_COMPLETE
+cdef cython.uint TYPE_32BIT_SERVICE_UUID_MORE_AVAILABLE
 cdef cython.uint TYPE_128BIT_SERVICE_UUID_COMPLETE
 cdef cython.uint TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE
 cdef cython.uint TYPE_SERVICE_DATA
@@ -51,6 +53,7 @@ cpdef parse_advertisement_data(object data)
     offset=cython.uint,
     start=cython.uint,
     end=cython.uint,
+    i=cython.uint,
 )
 cpdef _uncached_parse_advertisement_bytes(bytes gap_bytes)
 

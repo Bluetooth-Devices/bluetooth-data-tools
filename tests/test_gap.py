@@ -300,6 +300,113 @@ def test_parse_advertisement_data_zero_padded():
     assert adv.tx_power is None
 
 
+def test_parse_adv_data():
+    data = [
+        bytes.fromhex(
+            "02.01.06.05.02.E0.FF.E7.FE.0B.FF.65.0B.88.A0"
+            ".C8.47.8C.EA.D1.C1.0C.09.4D.32.5F.42.31.41.38"
+            ".53.31.30.50".replace(".", "")
+        )
+    ]
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name == "M2_B1A8S10P"
+    assert adv.service_uuids == [
+        "0000ffe0-0000-1000-8000-00805f9b34fb",
+        "0000fee7-0000-1000-8000-00805f9b34fb",
+    ]
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {2917: b"\x88\xa0\xc8G\x8c\xea\xd1\xc1"}
+    assert adv.tx_power is None
+
+
+def test_parse_multiple_16bit_uuids():
+    """Test parsing advertisement data with 3 16-bit service UUIDs."""
+    # Build advertisement data with 3 16-bit UUIDs
+    # Length: 7 (1 byte type + 6 bytes for 3 UUIDs)
+    # Type: 0x02 (16-bit service UUID more available)
+    # UUIDs in little-endian: 0x1234 -> 3412, 0x5678 -> 7856, 0x9ABC -> BC9A
+    data = [bytes.fromhex("070234127856BC9A")]
+    adv = parse_advertisement_data(data)
+
+    assert adv.service_uuids == [
+        "00001234-0000-1000-8000-00805f9b34fb",
+        "00005678-0000-1000-8000-00805f9b34fb",
+        "00009abc-0000-1000-8000-00805f9b34fb",
+    ]
+    assert adv.local_name is None
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
+def test_parse_multiple_32bit_uuids():
+    """Test parsing advertisement data with 2 32-bit service UUIDs."""
+    # Build advertisement data with 2 32-bit UUIDs
+    # Length: 9 (1 byte type + 8 bytes for 2 UUIDs)
+    # Type: 0x04 (32-bit service UUID more available)
+    # UUIDs in little-endian: 0x12345678 -> 78563412, 0x9ABCDEF0 -> F0DEBC9A
+    data = [bytes.fromhex("090478563412F0DEBC9A")]
+    adv = parse_advertisement_data(data)
+
+    assert adv.service_uuids == [
+        "12345678-0000-1000-8000-00805f9b34fb",
+        "9abcdef0-0000-1000-8000-00805f9b34fb",
+    ]
+    assert adv.local_name is None
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
+def test_parse_mixed_16bit_32bit_uuids():
+    """Test parsing advertisement data with 16-bit UUID followed by 32-bit UUID."""
+    # Build advertisement data with:
+    # - One 16-bit UUID: 0x1234
+    # - Two 32-bit UUIDs: 0x56789ABC, 0xDEF01234
+    data = [
+        bytes.fromhex(
+            "03023412"  # Length=3, Type=0x02, UUID=0x1234 (little-endian)
+            "090478563412F0DEBC9A"  # Length=9, Type=0x04, UUIDs in little-endian
+        )
+    ]
+    adv = parse_advertisement_data(data)
+
+    assert adv.service_uuids == [
+        "00001234-0000-1000-8000-00805f9b34fb",  # 16-bit
+        "12345678-0000-1000-8000-00805f9b34fb",  # 32-bit
+        "9abcdef0-0000-1000-8000-00805f9b34fb",  # 32-bit
+    ]
+    assert adv.local_name is None
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
+def test_parse_mixed_16bit_128bit_uuids():
+    """Test parsing advertisement data with 16-bit UUID followed by 128-bit UUID."""
+    # Build advertisement data with:
+    # - One 16-bit UUID: 0x1234
+    # - One 128-bit UUID: 550e8400-e29b-41d4-a716-446655440000
+    # Note: 128-bit UUIDs are stored in reverse byte order in BLE
+    data = [
+        bytes.fromhex(
+            "03023412"  # Length=3, Type=0x02, UUID=0x1234 (little-endian)
+            "110600004455664416a7d4419be200840e55"  # Length=17, Type=0x06, 128-bit UUID (reversed)
+        )
+    ]
+    adv = parse_advertisement_data(data)
+
+    assert adv.service_uuids == [
+        "00001234-0000-1000-8000-00805f9b34fb",  # 16-bit
+        "550e8400-e29b-41d4-a716-446655440000",  # 128-bit
+    ]
+    assert adv.local_name is None
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
 def test_parse_advertisement_data_zero_padded_scan_included():
     data = [
         b"\x02\x01\x06\t\xffY\x00\xfe\x024\x9e\xa6\xba\x00\x00\x00\x00\x00\x00\x00\x00"
