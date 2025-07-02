@@ -86,6 +86,10 @@ TYPE_16BIT_SERVICE_UUID_COMPLETE = BLEGAPType.TYPE_16BIT_SERVICE_UUID_COMPLETE.v
 TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE = (
     BLEGAPType.TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE.value
 )
+TYPE_32BIT_SERVICE_UUID_COMPLETE = BLEGAPType.TYPE_32BIT_SERVICE_UUID_COMPLETE.value
+TYPE_32BIT_SERVICE_UUID_MORE_AVAILABLE = (
+    BLEGAPType.TYPE_32BIT_SERVICE_UUID_MORE_AVAILABLE.value
+)
 TYPE_128BIT_SERVICE_UUID_COMPLETE = BLEGAPType.TYPE_128BIT_SERVICE_UUID_COMPLETE.value
 TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE = (
     BLEGAPType.TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE.value
@@ -223,7 +227,24 @@ def _uncached_parse_advertisement_bytes(
         }:
             if service_uuids is _EMPTY_SERVICE_UUIDS:
                 service_uuids = []
-            service_uuids.append(_cached_uint16_bytes_as_uuid(gap_data[start:end]))
+            # Parse multiple 16-bit UUIDs (each is 2 bytes)
+            for i in range(start, end, 2):
+                if i + 2 <= end:
+                    service_uuids.append(
+                        _cached_uint16_bytes_as_uuid(gap_data[i : i + 2])
+                    )
+        elif gap_type_num in {
+            TYPE_32BIT_SERVICE_UUID_COMPLETE,
+            TYPE_32BIT_SERVICE_UUID_MORE_AVAILABLE,
+        }:
+            if service_uuids is _EMPTY_SERVICE_UUIDS:
+                service_uuids = []
+            # Parse multiple 32-bit UUIDs (each is 4 bytes)
+            for i in range(start, end, 4):
+                if i + 4 <= end:
+                    service_uuids.append(
+                        _cached_uint32_bytes_as_uuid(gap_data[i : i + 4])
+                    )
         elif gap_type_num in {
             TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
             TYPE_128BIT_SERVICE_UUID_COMPLETE,

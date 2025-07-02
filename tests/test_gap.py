@@ -311,9 +311,51 @@ def test_parse_adv_data():
     adv = parse_advertisement_data(data)
 
     assert adv.local_name == "M2_B1A8S10P"
-    assert adv.service_uuids == ["0000fee7ffe0-0000-1000-8000-00805f9b34fb"]
+    assert adv.service_uuids == [
+        "0000ffe0-0000-1000-8000-00805f9b34fb",
+        "0000fee7-0000-1000-8000-00805f9b34fb",
+    ]
     assert adv.service_data == {}
     assert adv.manufacturer_data == {2917: b"\x88\xa0\xc8G\x8c\xea\xd1\xc1"}
+    assert adv.tx_power is None
+
+
+def test_parse_multiple_16bit_uuids():
+    """Test parsing advertisement data with 3 16-bit service UUIDs."""
+    # Build advertisement data with 3 16-bit UUIDs
+    # Length: 7 (1 byte type + 6 bytes for 3 UUIDs)
+    # Type: 0x02 (16-bit service UUID more available)
+    # UUIDs in little-endian: 0x1234 -> 3412, 0x5678 -> 7856, 0x9ABC -> BC9A
+    data = [bytes.fromhex("070234127856BC9A")]
+    adv = parse_advertisement_data(data)
+
+    assert adv.service_uuids == [
+        "00001234-0000-1000-8000-00805f9b34fb",
+        "00005678-0000-1000-8000-00805f9b34fb",
+        "00009abc-0000-1000-8000-00805f9b34fb",
+    ]
+    assert adv.local_name is None
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
+def test_parse_multiple_32bit_uuids():
+    """Test parsing advertisement data with 2 32-bit service UUIDs."""
+    # Build advertisement data with 2 32-bit UUIDs
+    # Length: 9 (1 byte type + 8 bytes for 2 UUIDs)
+    # Type: 0x04 (32-bit service UUID more available)
+    # UUIDs in little-endian: 0x12345678 -> 78563412, 0x9ABCDEF0 -> F0DEBC9A
+    data = [bytes.fromhex("090478563412F0DEBC9A")]
+    adv = parse_advertisement_data(data)
+
+    assert adv.service_uuids == [
+        "12345678-0000-1000-8000-00805f9b34fb",
+        "9abcdef0-0000-1000-8000-00805f9b34fb",
+    ]
+    assert adv.local_name is None
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
     assert adv.tx_power is None
 
 
