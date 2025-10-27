@@ -53,7 +53,7 @@ docs = [
 pytest-benchmark = ">=4,<6"
 
 [tool.poetry.group.dev.dependencies]
-pytest-codspeed = "^4.0.0"
+pytest-codspeed = "^4.2.0"
 pytest = "^8.4"
 pytest-cov = "^7.0"
 
