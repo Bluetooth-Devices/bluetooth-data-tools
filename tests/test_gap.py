@@ -630,9 +630,39 @@ def test_manufacturer_data_short_by_two():
 
 
 def test_manufacturer_data_short_by_three():
-    """Test short manufacturer data."""
+    """Test manufacturer data with minimum size (company ID only, no payload).
+
+    This is now valid after fixing issue #179 - manufacturer data with just
+    a company ID and empty payload is accepted, consistent with service data.
+    """
 
     data = (b"\x03\xff\x01\x01",)
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name is None
+    assert adv.service_uuids == []
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {257: b""}
+    assert adv.tx_power is None
+
+    assert parse_advertisement_data_tuple(tuple(data)) == (
+        None,
+        [],
+        {},
+        {257: b""},
+        None,
+    )
+
+
+def test_manufacturer_data_short_by_four():
+    """Test short manufacturer data.
+
+    Manufacturer data claims length of 4 but only has 3 bytes available
+    (type + company ID, no payload bytes when 1 payload byte is claimed).
+    """
+
+    data = (b"\x04\xff\x01\x01",)
 
     adv = parse_advertisement_data(data)
 
@@ -917,3 +947,29 @@ def test_negative_splice_pos_does_not_crash(data: tuple[bytes, bytes, bytes]) ->
         {},
         None,
     )
+
+
+def test_parse_advertisement_with_empty_service_data():
+    """Test parsing advertisement with empty service data payload (issue #179).
+
+    This tests the case where service data contains only a UUID with no payload bytes.
+    The parser should accept this as valid empty service data and continue parsing
+    subsequent advertisement structures.
+    """
+    # Data from issue #179:
+    # 02 01 06 - Flags (type 0x01, data 0x06)
+    # 03 16 0a 18 - Service Data (type 0x16, UUID 0x180a, empty payload)
+    # 03 03 fa ff - Complete 16-bit Service UUIDs (type 0x03, UUID 0xfffa)
+    # 07 ff 00 01 50 90 40 a2 - Manufacturer Data (type 0xff, company 0x0100, data)
+    # 10 09 4b 54... - Complete Local Name (type 0x09, "KT12200-B-00100")
+    data = bytes.fromhex(
+        "02010603160a180303faff07ff0001509040a210094b5431323230302d422d3030313030"
+    )
+
+    adv = parse_advertisement_data((data,))
+
+    assert adv.local_name == "KT12200-B-00100"
+    assert adv.service_uuids == ["0000fffa-0000-1000-8000-00805f9b34fb"]
+    assert adv.service_data == {"0000180a-0000-1000-8000-00805f9b34fb": b""}
+    assert adv.manufacturer_data == {256: b"\x50\x90\x40\xa2"}
+    assert adv.tx_power is None
