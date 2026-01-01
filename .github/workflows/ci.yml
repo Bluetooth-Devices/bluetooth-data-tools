@@ -147,14 +147,14 @@ jobs:
 
       # Do a dry run of PSR
       - name: Test release
-        uses: python-semantic-release/python-semantic-release@v10.5.2
+        uses: python-semantic-release/python-semantic-release@v10.5.3
         if: github.ref_name != 'main'
         with:
           root_options: --noop
 
       # On main branch: actual PSR + upload to PyPI & GitHub
       - name: Release
-        uses: python-semantic-release/python-semantic-release@v10.5.2
+        uses: python-semantic-release/python-semantic-release@v10.5.3
         id: release
         if: github.ref_name == 'main'
         with:
@@ -285,7 +285,7 @@ jobs:
           CIBW_SKIP: cp36-* cp37-* cp38-* cp39-* pp* ${{ matrix.musl == 'musllinux' && '*manylinux*' || '*musllinux*' }}
           REQUIRE_CYTHON: 1
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: wheels-${{ matrix.os }}-${{ matrix.musl }}-${{ matrix.pyver }}-${{ matrix.qemu }}
           path: ./wheelhouse/*.whl
@@ -298,7 +298,7 @@ jobs:
       id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
 
     steps:
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           # unpacks default artifact into dist/
           # if `name: artifact` is omitted, the action will create extra parent dir
