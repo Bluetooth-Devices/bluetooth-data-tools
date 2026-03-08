@@ -39,6 +39,96 @@ Install this via pip (or your favourite package manager):
 
 `pip install bluetooth-data-tools`
 
+## Usage
+
+### Parsing BLE GAP Advertisement Data
+
+Parse raw BLE advertisement bytes into structured data:
+
+```python
+from bluetooth_data_tools import parse_advertisement_data_bytes
+
+# Parse raw GAP advertisement bytes
+parsed = parse_advertisement_data_bytes(raw_bytes)
+local_name = parsed[0]        # str | None
+service_uuids = parsed[1]     # list[str]
+service_data = parsed[2]      # dict[str, bytes]
+manufacturer_data = parsed[3] # dict[int, bytes]
+tx_power = parsed[4]          # int | None
+```
+
+Or use the object-oriented interface:
+
+```python
+from bluetooth_data_tools import BLEGAPAdvertisement, parse_advertisement_data
+
+adv = parse_advertisement_data([raw_bytes1, raw_bytes2])
+print(adv.local_name)
+print(adv.service_uuids)
+print(adv.service_data)
+print(adv.manufacturer_data)
+print(adv.tx_power)
+```
+
+### Bluetooth Address Utilities
+
+```python
+from bluetooth_data_tools import (
+    int_to_bluetooth_address,
+    mac_to_int,
+    short_address,
+    human_readable_name,
+)
+
+# Convert integer to MAC address
+int_to_bluetooth_address(0x123456789ABC)
+# "12:34:56:78:9A:BC"
+
+# Convert MAC address to integer
+mac_to_int("FF:FF:FF:FF:FF:FF")
+# 281474976710655
+
+# Get short address (last 2 octets)
+short_address("AA:BB:CC:DD:EE:FF")
+# "EEFF"
+
+# Format a human-readable device name
+human_readable_name("My Sensor", "", "AA:BB:CC:DD:EE:FF")
+# "My Sensor (EEFF)"
+```
+
+### Distance Estimation
+
+Estimate distance from TX power and RSSI:
+
+```python
+from bluetooth_data_tools import calculate_distance_meters
+
+distance = calculate_distance_meters(power=-59, rssi=-60)
+# ~1.135 meters
+```
+
+### Monotonic Time
+
+A fast monotonic clock optimized for Bluetooth event timing. On Linux, uses `CLOCK_MONOTONIC_COARSE` via Cython for lower overhead:
+
+```python
+from bluetooth_data_tools import monotonic_time_coarse
+
+now = monotonic_time_coarse()
+```
+
+### Private Address Resolution (RPA)
+
+Resolve Bluetooth Low Energy random private addresses using an Identity Resolving Key:
+
+```python
+from bluetooth_data_tools import get_cipher_for_irk, resolve_private_address
+
+cipher = get_cipher_for_irk(irk_bytes)  # 16-byte Identity Resolving Key
+is_match = resolve_private_address(cipher, "40:01:02:0A:C4:A6")
+```
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
