@@ -8,7 +8,6 @@ cdef dict _EMPTY_SERVICE_DATA
 cdef list _EMPTY_SERVICE_UUIDS
 
 cdef object from_bytes
-cdef object from_bytes_little
 cdef object from_bytes_signed
 
 cdef object _cached_uint16_bytes_as_uuid

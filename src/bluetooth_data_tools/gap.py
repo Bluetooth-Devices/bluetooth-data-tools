@@ -76,7 +76,6 @@ class BLEGAPType(IntEnum):
 
 
 from_bytes = int.from_bytes
-from_bytes_little = partial(from_bytes, byteorder="little")
 from_bytes_signed = partial(from_bytes, byteorder="little", signed=True)
 
 TYPE_SHORT_LOCAL_NAME = BLEGAPType.TYPE_SHORT_LOCAL_NAME.value
@@ -112,7 +111,7 @@ _cached_from_bytes_signed = lru_cache(maxsize=256)(from_bytes_signed)
 @lru_cache(maxsize=256)
 def _uint128_bytes_as_uuid(uint128_bytes: bytes_) -> str:
     """Convert an integer to a UUID str."""
-    int_value = from_bytes_little(uint128_bytes)
+    int_value = int.from_bytes(uint128_bytes, byteorder="little")
     hex = f"{int_value:032x}"
     return f"{hex[:8]}-{hex[8:12]}-{hex[12:16]}-{hex[16:20]}-{hex[20:]}"
 
@@ -123,7 +122,7 @@ _cached_uint128_bytes_as_uuid = _uint128_bytes_as_uuid
 @lru_cache(maxsize=256)
 def _uint16_bytes_as_uuid(uuid16_bytes: bytes_) -> str:
     """Convert a 16-bit UUID to a UUID str."""
-    return f"0000{from_bytes_little(uuid16_bytes):04x}-{BLE_UUID}"
+    return f"0000{int.from_bytes(uuid16_bytes, byteorder='little'):04x}-{BLE_UUID}"
 
 
 _cached_uint16_bytes_as_uuid = _uint16_bytes_as_uuid
@@ -132,7 +131,7 @@ _cached_uint16_bytes_as_uuid = _uint16_bytes_as_uuid
 @lru_cache(maxsize=256)
 def _uint32_bytes_as_uuid(uuid32_bytes: bytes_) -> str:
     """Convert a 32-bit UUID to a UUID str."""
-    return f"{from_bytes_little(uuid32_bytes):08x}-{BLE_UUID}"
+    return f"{int.from_bytes(uuid32_bytes, byteorder='little'):08x}-{BLE_UUID}"
 
 
 _cached_uint32_bytes_as_uuid = _uint32_bytes_as_uuid
