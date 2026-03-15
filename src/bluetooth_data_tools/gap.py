@@ -221,10 +221,10 @@ def _uncached_parse_advertisement_bytes(
             manufacturer_data[gap_data[start] | (gap_data[start + 1] << 8)] = gap_data[
                 splice_pos:end
             ]
-        elif gap_type_num in {
-            TYPE_16BIT_SERVICE_UUID_COMPLETE,
-            TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE,
-        }:
+        elif (
+            gap_type_num == TYPE_16BIT_SERVICE_UUID_COMPLETE
+            or gap_type_num == TYPE_16BIT_SERVICE_UUID_MORE_AVAILABLE
+        ):
             if service_uuids is _EMPTY_SERVICE_UUIDS:
                 service_uuids = []
             # Parse multiple 16-bit UUIDs (each is 2 bytes)
@@ -233,10 +233,10 @@ def _uncached_parse_advertisement_bytes(
                     service_uuids.append(
                         _cached_uint16_bytes_as_uuid(gap_data[i : i + 2])
                     )
-        elif gap_type_num in {
-            TYPE_32BIT_SERVICE_UUID_COMPLETE,
-            TYPE_32BIT_SERVICE_UUID_MORE_AVAILABLE,
-        }:
+        elif (
+            gap_type_num == TYPE_32BIT_SERVICE_UUID_COMPLETE
+            or gap_type_num == TYPE_32BIT_SERVICE_UUID_MORE_AVAILABLE
+        ):
             if service_uuids is _EMPTY_SERVICE_UUIDS:
                 service_uuids = []
             # Parse multiple 32-bit UUIDs (each is 4 bytes)
@@ -245,10 +245,10 @@ def _uncached_parse_advertisement_bytes(
                     service_uuids.append(
                         _cached_uint32_bytes_as_uuid(gap_data[i : i + 4])
                     )
-        elif gap_type_num in {
-            TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
-            TYPE_128BIT_SERVICE_UUID_COMPLETE,
-        }:
+        elif (
+            gap_type_num == TYPE_128BIT_SERVICE_UUID_COMPLETE
+            or gap_type_num == TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE
+        ):
             if service_uuids is _EMPTY_SERVICE_UUIDS:
                 service_uuids = []
             service_uuids.append(_cached_uint128_bytes_as_uuid(gap_data[start:end]))
