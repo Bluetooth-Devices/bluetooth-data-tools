@@ -13,7 +13,6 @@ from .gap import (
 from .privacy import get_cipher_for_irk, resolve_private_address
 from .time import monotonic_time_coarse
 from .utils import (
-    address_to_bytes,
     human_readable_name,
     int_to_bluetooth_address,
     mac_to_int,
@@ -26,7 +25,6 @@ __version__ = "1.28.4"
 
 
 __all__ = [
-    "address_to_bytes",
     "manufacturer_data_to_raw",
     "newest_manufacturer_data",
     "human_readable_name",
