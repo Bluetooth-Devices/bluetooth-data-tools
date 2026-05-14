@@ -3,9 +3,6 @@
 from __future__ import annotations
 
 from functools import lru_cache
-from struct import Struct
-
-L_PACK = Struct(">L")
 
 try:
     from ._utils_impl import _int_to_bluetooth_address  # noqa: F811 F401
@@ -45,15 +42,6 @@ def newest_manufacturer_data(manufacturer_data: dict[int, bytes]) -> bytes | Non
     if manufacturer_data and (last_id := list(manufacturer_data)[-1]):
         return manufacturer_data[last_id]
     return None
-
-
-def address_to_bytes(address: str) -> bytes:
-    """Return the address as bytes."""
-    if ":" not in address:
-        address_as_int = 0
-    else:
-        address_as_int = mac_to_int(address)
-    return L_PACK.pack(address_as_int)
 
 
 def manufacturer_data_to_raw(manufacturer_id: int, manufacturer_data: bytes) -> bytes:
