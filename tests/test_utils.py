@@ -22,6 +22,13 @@ def test_newest_manufacturer_data():
     assert newest_manufacturer_data({}) is None
 
 
+def test_newest_manufacturer_data_id_zero():
+    """Manufacturer ID 0 is assigned (Ericsson Technology Licensing) and must
+    not be dropped by an accidental truthiness check on the dict key."""
+    assert newest_manufacturer_data({0: b"\x01\x02\x03\x04"}) == b"\x01\x02\x03\x04"
+    assert newest_manufacturer_data({1: b"first", 0: b"newest"}) == b"newest"
+
+
 def test_manufacturer_data_to_raw():
     assert (
         manufacturer_data_to_raw(1, b"\x01\x02\x03\x04")
