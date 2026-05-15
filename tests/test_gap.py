@@ -99,6 +99,21 @@ def test_parse_advertisement_data_ignores_invalid():
     assert adv.tx_power == 5
 
 
+def test_parse_advertisement_data_trailing_minimum_ad_struct(caplog):
+    # Manufacturer-data struct (5 bytes) followed by a trailing minimum-AD
+    # struct [length=1][type=0x09] (2 bytes). The loop must enter the trailing
+    # struct rather than silently skip it; preceding data must still parse.
+    import logging
+
+    data = [b"\x04\xff\x4c\x00\x10\x01\x09"]
+
+    with caplog.at_level(logging.DEBUG, logger="bluetooth_data_tools.gap"):
+        adv = parse_advertisement_data(data)
+
+    assert adv.manufacturer_data == {76: b"\x10"}
+    assert any("Invalid BLE GAP AD structure" in r.message for r in caplog.records)
+
+
 def test_parse_advertisement_data_ignores_zero_type():
     data = [
         b"\x02\x01\x1a\x02\n\x05\n\xffL\x00\x10\x05\n\x1cw\xf9[\x02\x00",
