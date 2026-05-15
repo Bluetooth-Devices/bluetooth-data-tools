@@ -15,7 +15,6 @@ cdef object _cached_uint16_bytes_as_uuid
 cdef object _cached_uint32_bytes_as_uuid
 cdef object _cached_uint128_bytes_as_uuid
 cdef object _cached_parse_advertisement_data
-cdef object _cached_parse_advertisement_data_tuple
 cdef object _cached_from_bytes_signed
 
 cdef object _LOGGER
@@ -46,7 +45,6 @@ cpdef parse_advertisement_data(object data)
 
 @cython.locals(
     gap_data="const unsigned char *",
-    gap_value=cython.bytes,
     gap_type_num="unsigned char",
     total_length=cython.uint,
     length="unsigned char",
@@ -57,6 +55,6 @@ cpdef parse_advertisement_data(object data)
 )
 cpdef _uncached_parse_advertisement_bytes(bytes gap_bytes)
 
-cpdef _uncached_parse_advertisement_data(bytes gap_bytes)
+cpdef _uncached_parse_advertisement_data(bytes data)
 
 cpdef _uncached_parse_advertisement_tuple(tuple data)
