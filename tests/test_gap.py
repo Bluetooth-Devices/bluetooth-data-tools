@@ -1042,6 +1042,8 @@ def test_parse_advertisement_data_128bit_uuid_malformed_length():
 
     # Length=0x12 (18 = 1 type + 17 bytes), type=0x07 — one valid UUID plus
     # a 1-byte tail that must be ignored, not folded into a second UUID.
-    one_and_a_half = b"\x12\x07" + bytes.fromhex("00112233445566778899aabbccddeeff") + b"\x42"
+    one_and_a_half = (
+        b"\x12\x07" + bytes.fromhex("00112233445566778899aabbccddeeff") + b"\x42"
+    )
     adv = parse_advertisement_data((one_and_a_half,))
     assert adv.service_uuids == ["ffeeddcc-bbaa-9988-7766-554433221100"]
