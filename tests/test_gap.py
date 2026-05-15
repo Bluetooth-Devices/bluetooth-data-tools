@@ -563,6 +563,19 @@ def test_out_of_bounds_length():
     )
 
 
+def test_invalid_ad_debug_log_renders_without_error(caplog):
+    """Malformed AD must produce a renderable debug log (regression: format-string mismatch)."""
+    # length=5 (claims 4 payload bytes after the type byte) but only 2 follow.
+    # Unique payload so the lru_cache doesn't return a previous result.
+    data = b"\x05\x09\xab\xcd"
+    with caplog.at_level("DEBUG", logger="bluetooth_data_tools.gap"):
+        adv = parse_advertisement_data((data,))
+    assert adv.local_name is None
+    # Render every captured record — a format-string mismatch raises here.
+    messages = [r.getMessage() for r in caplog.records]
+    assert any("Invalid BLE GAP AD structure" in m for m in messages)
+
+
 def test_out_of_bounds_length_by_one():
     """Test out of bound length by one."""
 
