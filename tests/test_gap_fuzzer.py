@@ -14,7 +14,10 @@ bytes through them adds cost without coverage.
 import os
 import random
 
-from bluetooth_data_tools.gap import _uncached_parse_advertisement_data, parse_advertisement_data
+from bluetooth_data_tools.gap import (
+    _uncached_parse_advertisement_data,
+    parse_advertisement_data,
+)
 
 _FUZZ_ITERATIONS = 1000
 
