@@ -39,9 +39,9 @@ def human_readable_name(name: str | None, local_name: str, address: str) -> str:
 
 def newest_manufacturer_data(manufacturer_data: dict[int, bytes]) -> bytes | None:
     """Return the raw data from manufacturer data."""
-    if manufacturer_data and (last_id := list(manufacturer_data)[-1]):
-        return manufacturer_data[last_id]
-    return None
+    if not manufacturer_data:
+        return None
+    return manufacturer_data[next(reversed(manufacturer_data))]
 
 
 def manufacturer_data_to_raw(manufacturer_id: int, manufacturer_data: bytes) -> bytes:
