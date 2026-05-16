@@ -143,10 +143,26 @@ jobs:
       newest_release_tag: ${{ steps.release.outputs.tag }}
 
     steps:
+      # Mint a short-lived installation token for the release-bot GitHub
+      # App, which is in the main ruleset's bypass_actors list so PSR's
+      # version-bump commit/tag push isn't blocked by required checks.
+      # Per PSR's docs, the same token must be passed to actions/checkout
+      # (via `token`) so its persisted http.extraheader doesn't override
+      # PSR's URL-embedded auth at push time and re-attribute the push
+      # to github-actions[bot].
+      - name: Generate release App token
+        if: github.ref_name == 'main'
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ github.ref }}
+          token: ${{ steps.app-token.outputs.token || github.token }}
 
       - name: Create local branch name
         run: git switch -C ${{ github.head_ref || github.ref_name }}
@@ -157,17 +173,6 @@ jobs:
         if: github.ref_name != 'main'
         with:
           no_operation_mode: true
-
-      # Mint a short-lived installation token for the release-bot GitHub
-      # App, which is in the main ruleset's bypass_actors list so PSR's
-      # version-bump commit/tag push isn't blocked by required checks.
-      - name: Generate release App token
-        if: github.ref_name == 'main'
-        id: app-token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ secrets.RELEASE_APP_ID }}
-          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
 
       # On main branch: actual PSR + upload to PyPI & GitHub
       - name: Release
