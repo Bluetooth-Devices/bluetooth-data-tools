@@ -1001,3 +1001,49 @@ def test_parse_advertisement_with_empty_service_data():
     assert adv.service_data == {"0000180a-0000-1000-8000-00805f9b34fb": b""}
     assert adv.manufacturer_data == {256: b"\x50\x90\x40\xa2"}
     assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_multiple_128bit_uuids():
+    """Two 128-bit UUIDs packed into a single AD struct must both be returned.
+
+    Per Core Spec Vol 3 Part C §11, the Complete/Incomplete List of 128-bit
+    Service UUIDs AD types carry a list (length = 1 + 16N), not a single UUID.
+    Larger packets (scan response / extended advertising) can carry more than one.
+    """
+    uuid1 = bytes.fromhex("00112233445566778899aabbccddeeff")
+    uuid2 = bytes.fromhex("0f1e2d3c4b5a69788796a5b4c3d2e1f0")
+    # Length = 0x21 (33 = 1 type byte + 32 UUID bytes), type = 0x07 (complete list)
+    data = b"\x21\x07" + uuid1 + uuid2
+
+    adv = parse_advertisement_data((data,))
+
+    assert adv.local_name is None
+    assert adv.service_uuids == [
+        # bytes are stored little-endian in BLE — reverse for canonical form
+        "ffeeddcc-bbaa-9988-7766-554433221100",
+        "f0e1d2c3-b4a5-9687-7869-5a4b3c2d1e0f",
+    ]
+    assert adv.service_data == {}
+    assert adv.manufacturer_data == {}
+    assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_128bit_uuid_malformed_length():
+    """Malformed 128-bit UUID payloads (length not 1 + 16N) must be skipped.
+
+    Previously the parser passed the truncated/excess bytes straight to the
+    UUID formatter, producing bogus UUID strings (all zeros for short, a
+    64-hex-char garbage string for double-length).
+    """
+    # Length=0x0a (10 = 1 type + 9 bytes), type=0x07 — only 9 bytes of "UUID"
+    short = b"\x0a\x07" + bytes(9)
+    adv = parse_advertisement_data((short,))
+    assert adv.service_uuids == []
+
+    # Length=0x12 (18 = 1 type + 17 bytes), type=0x07 — one valid UUID plus
+    # a 1-byte tail that must be ignored, not folded into a second UUID.
+    one_and_a_half = (
+        b"\x12\x07" + bytes.fromhex("00112233445566778899aabbccddeeff") + b"\x42"
+    )
+    adv = parse_advertisement_data((one_and_a_half,))
+    assert adv.service_uuids == ["ffeeddcc-bbaa-9988-7766-554433221100"]
