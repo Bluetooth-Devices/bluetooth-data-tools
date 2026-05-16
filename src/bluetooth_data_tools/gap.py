@@ -288,7 +288,11 @@ def _uncached_parse_advertisement_bytes(
                 gap_data[splice_pos:end]
             )
         elif gap_type_num == TYPE_TX_POWER_LEVEL:
-            tx_power = _cached_from_bytes_signed(gap_data[start:end])
+            # BLE Core Spec Vol 3 Part C §11: TX Power Level is exactly one
+            # signed octet. Anything else is malformed — skip instead of
+            # decoding the bytes as a wider little-endian signed integer.
+            if end - start == 1:
+                tx_power = _cached_from_bytes_signed(gap_data[start:end])
 
     return (local_name, service_uuids, service_data, manufacturer_data, tx_power)
 
