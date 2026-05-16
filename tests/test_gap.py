@@ -1047,3 +1047,26 @@ def test_parse_advertisement_data_128bit_uuid_malformed_length():
     )
     adv = parse_advertisement_data((one_and_a_half,))
     assert adv.service_uuids == ["ffeeddcc-bbaa-9988-7766-554433221100"]
+
+
+def test_parse_advertisement_data_tx_power_single_byte():
+    """Per BLE Core Spec Vol 3 Part C §11, TX Power Level is exactly 1 signed octet."""
+    # length=2 (1 type byte + 1 data byte), type=0x0a, tx_power=-50 (0xCE)
+    data = (b"\x02\x0a\xce",)
+    adv = parse_advertisement_data(data)
+    assert adv.tx_power == -50
+
+
+def test_parse_advertisement_data_tx_power_multibyte_rejected():
+    """Malformed multi-byte TX Power must be skipped, not folded into a multi-byte signed int.
+
+    The previous behaviour read the entire (variable-length) payload as a
+    little-endian signed integer, producing values like -32768 for what
+    should be invalid input.
+    """
+    # length=3 (1 type byte + 2 data bytes), type=0x0a, payload=\x00\x80.
+    # Old parser: from_bytes(b"\x00\x80", little, signed=True) = -32768.
+    # Spec-compliant parser: skip entirely, tx_power is None.
+    data = (b"\x03\x0a\x00\x80",)
+    adv = parse_advertisement_data(data)
+    assert adv.tx_power is None
