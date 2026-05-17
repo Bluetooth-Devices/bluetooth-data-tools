@@ -4,7 +4,7 @@
 /**
 * Sentinel returned by _bdaddr_to_uint64 to signal a parse failure.
 */
-#define BDADDR_PARSE_ERROR UINT64_MAX
+constexpr uint64_t BDADDR_PARSE_ERROR = UINT64_MAX;
 
 /**
 * Decode one hex character to its 4-bit value, or 0xFF on invalid input.
@@ -56,7 +56,7 @@ static inline uint64_t _bdaddr_to_uint64(const char *bdaddr, size_t length) {
 * The buffer passed in must accept at least 17 bytes. It will NOT be null-terminated.
 */
 void _uint64_to_bdaddr(uint64_t address, char bdaddr[17]) {
-    static const char hex_table[] = "0123456789ABCDEF";
+    static constexpr char hex_table[] = "0123456789ABCDEF";
     bdaddr[0] = hex_table[(address >> 44) & 0x0F];
     bdaddr[1] = hex_table[(address >> 40) & 0x0F];
     bdaddr[2] = ':';
