@@ -48,7 +48,7 @@ class BuildExt(build_ext):
         if self.parallel is None:  # type: ignore[has-type, unused-ignore]
             self.parallel = os.cpu_count() or 1
         std_flag = (
-            "/std:clatest" if self.compiler.compiler_type == "msvc" else "-std=c23"
+            "/std:clatest" if self.compiler.compiler_type == "msvc" else "-std=gnu23"
         )
         for ext in self.extensions:
             if std_flag not in ext.extra_compile_args:
