@@ -5,7 +5,10 @@ from __future__ import annotations
 from functools import lru_cache
 
 try:
-    from ._utils_impl import _int_to_bluetooth_address  # noqa: F811 F401
+    from ._utils_impl import (  # noqa: F811 F401
+        _int_to_bluetooth_address,
+        _mac_to_int,
+    )
 
 
 except ImportError:
@@ -15,13 +18,16 @@ except ImportError:
         mac_hex = f"{address:012X}"
         return f"{mac_hex[0:2]}:{mac_hex[2:4]}:{mac_hex[4:6]}:{mac_hex[6:8]}:{mac_hex[8:10]}:{mac_hex[10:12]}"  # noqa: E501
 
+    def _mac_to_int(address: str) -> int:
+        """Convert a mac address to an integer."""
+        length = len(address)
+        if length != 17 and length != 12:
+            raise ValueError(f"Invalid MAC address: {address!r}")
+        return int(address.replace(":", "").replace("-", ""), 16)
+
 
 int_to_bluetooth_address = lru_cache(maxsize=256)(_int_to_bluetooth_address)
-
-
-def mac_to_int(address: str) -> int:
-    """Convert a mac address to an integer."""
-    return int(address.replace(":", ""), 16)
+mac_to_int = lru_cache(maxsize=256)(_mac_to_int)
 
 
 def short_address(address: str) -> str:

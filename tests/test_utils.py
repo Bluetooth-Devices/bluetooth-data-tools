@@ -1,3 +1,5 @@
+import pytest
+
 from bluetooth_data_tools import (
     human_readable_name,
     int_to_bluetooth_address,
@@ -51,3 +53,43 @@ def test_mac_to_int():
     assert mac_to_int("00:00:00:00:00:00") == 0
     assert mac_to_int("00:00:00:00:00:01") == 1
     assert mac_to_int("FF:FF:FF:FF:FF:FF") == 0xFFFFFFFFFFFF
+
+
+def test_mac_to_int_hyphen_separator():
+    """Windows-style hyphen-separated addresses are accepted, matching short_address."""
+    assert mac_to_int("AA-BB-CC-DD-EE-FF") == 0xAABBCCDDEEFF
+    assert mac_to_int("00-00-00-00-00-00") == 0
+
+
+def test_mac_to_int_lowercase():
+    assert mac_to_int("aa:bb:cc:dd:ee:ff") == 0xAABBCCDDEEFF
+
+
+def test_mac_to_int_unseparated():
+    """Unseparated 12-char form is accepted."""
+    assert mac_to_int("AABBCCDDEEFF") == 0xAABBCCDDEEFF
+    assert mac_to_int("0123456789ab") == 0x0123456789AB
+
+
+@pytest.mark.parametrize(
+    "value",
+    [0, 1, 0xAB, 0xDEADBEEF, 0xFFFFFFFFFFFF, 0x123456789ABC],
+)
+def test_mac_to_int_round_trip(value):
+    """mac_to_int is the inverse of int_to_bluetooth_address."""
+    assert mac_to_int(int_to_bluetooth_address(value)) == value
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        "not-a-mac",
+        "AA:BB:CC:DD:EE:GG",
+        "AA/BB/CC/DD/EE/FF",
+        "",
+    ],
+)
+def test_mac_to_int_invalid(bad):
+    """Malformed input raises ValueError (matches int() fallback semantics)."""
+    with pytest.raises(ValueError):
+        mac_to_int(bad)
