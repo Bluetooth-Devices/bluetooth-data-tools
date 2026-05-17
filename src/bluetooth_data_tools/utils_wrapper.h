@@ -2,6 +2,11 @@
 #include <stdint.h>
 
 /**
+* Sentinel returned by _bdaddr_to_uint64 to signal a parse failure.
+*/
+#define BDADDR_PARSE_ERROR UINT64_MAX
+
+/**
 * Decode one hex character to its 4-bit value, or 0xFF on invalid input.
 */
 static inline uint8_t _hex_nibble(char c) {
@@ -16,8 +21,7 @@ static inline uint8_t _hex_nibble(char c) {
 *
 * Accepts either the 17-byte separated form ("AA:BB:CC:DD:EE:FF" — also
 * the "AA-BB-CC-DD-EE-FF" Windows form) or the 12-byte unseparated form
-* ("AABBCCDDEEFF"). Returns UINT64_MAX on any parse error so the caller
-* can fall back to Python (which raises a more informative ValueError).
+* ("AABBCCDDEEFF"). Returns BDADDR_PARSE_ERROR on any parse error.
 */
 static inline uint64_t _bdaddr_to_uint64(const char *bdaddr, size_t length) {
     size_t step;
@@ -26,7 +30,7 @@ static inline uint64_t _bdaddr_to_uint64(const char *bdaddr, size_t length) {
     } else if (length == 12) {
         step = 2;
     } else {
-        return UINT64_MAX;
+        return BDADDR_PARSE_ERROR;
     }
     uint64_t result = 0;
     for (size_t i = 0; i < 6; ++i) {
@@ -34,13 +38,13 @@ static inline uint64_t _bdaddr_to_uint64(const char *bdaddr, size_t length) {
         uint8_t hi = _hex_nibble(bdaddr[pos]);
         uint8_t lo = _hex_nibble(bdaddr[pos + 1]);
         if (hi == 0xFF || lo == 0xFF) {
-            return UINT64_MAX;
+            return BDADDR_PARSE_ERROR;
         }
         result = (result << 8) | (uint64_t)((hi << 4) | lo);
         if (step == 3 && i < 5) {
             char sep = bdaddr[pos + 2];
             if (sep != ':' && sep != '-') {
-                return UINT64_MAX;
+                return BDADDR_PARSE_ERROR;
             }
         }
     }
