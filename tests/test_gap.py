@@ -1070,3 +1070,62 @@ def test_parse_advertisement_data_tx_power_multibyte_rejected():
     data = (b"\x03\x0a\x00\x80",)
     adv = parse_advertisement_data(data)
     assert adv.tx_power is None
+
+
+def test_parse_advertisement_data_16bit_uuid_malformed_length():
+    """16-bit UUID list with a trailing odd byte must drop the remainder, not
+    emit a UUID built from a 1-byte slice.
+
+    Mirrors the 128-bit malformed-length protection (PR #226) for the
+    16-bit list branch.
+    """
+    # length=0x06 (6 = 1 type + 5 bytes), type=0x03 — two valid UUIDs plus a
+    # 1-byte tail that must not be folded into a third UUID.
+    payload = b"\x06\x03\xaa\xbb\xcc\xdd\xee"
+    adv = parse_advertisement_data((payload,))
+    assert adv.service_uuids == [
+        "0000bbaa-0000-1000-8000-00805f9b34fb",
+        "0000ddcc-0000-1000-8000-00805f9b34fb",
+    ]
+
+    # length=0x04 (4 = 1 type + 3 bytes), type=0x02 — one UUID + 1 trailing
+    # byte; the trailing byte must not be folded into a second UUID.
+    one_and_a_half = b"\x04\x02\x11\x22\x33"
+    adv = parse_advertisement_data((one_and_a_half,))
+    assert adv.service_uuids == ["00002211-0000-1000-8000-00805f9b34fb"]
+
+
+def test_parse_advertisement_data_32bit_uuid_malformed_length():
+    """32-bit UUID list with a tail < 4 bytes must drop the remainder.
+
+    Mirrors the 128-bit malformed-length protection (PR #226) for the
+    32-bit list branch.
+    """
+    # length=0x08 (8 = 1 type + 7 bytes), type=0x05 — one valid 32-bit UUID
+    # plus a 3-byte tail.
+    payload = b"\x08\x05\x11\x22\x33\x44\xaa\xbb\xcc"
+    adv = parse_advertisement_data((payload,))
+    assert adv.service_uuids == ["44332211-0000-1000-8000-00805f9b34fb"]
+
+    # length=0x06 (6 = 1 type + 5 bytes), type=0x04 — one UUID + 1 trailing
+    # byte; the trailing byte must not be folded into a second UUID.
+    one_and_a_quarter = b"\x06\x04\xde\xad\xbe\xef\x99"
+    adv = parse_advertisement_data((one_and_a_quarter,))
+    assert adv.service_uuids == ["efbeadde-0000-1000-8000-00805f9b34fb"]
+
+
+def test_parse_advertisement_data_multiple_manufacturer_entries():
+    """Two manufacturer-specific-data AD structs in one packet must both
+    survive into the resulting dict, keyed by company ID.
+
+    BLE Core Spec Vol 3 Part C §11 permits the Manufacturer Specific Data
+    AD type to appear more than once in a single advertisement.
+    """
+    # First MSD: company 0x004C (Apple), payload \x01\x02
+    # Second MSD: company 0x0059 (Nordic), payload \x03\x04\x05
+    payload = b"\x05\xff\x4c\x00\x01\x02" + b"\x06\xff\x59\x00\x03\x04\x05"
+    adv = parse_advertisement_data((payload,))
+    assert adv.manufacturer_data == {
+        0x004C: b"\x01\x02",
+        0x0059: b"\x03\x04\x05",
+    }
