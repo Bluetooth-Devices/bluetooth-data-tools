@@ -5,6 +5,19 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force a release of this version type (passes through to python-semantic-release)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - patch
+          - minor
+          - major
+          - prerelease
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}
@@ -181,6 +194,7 @@ jobs:
         if: github.ref_name == 'main'
         with:
           github_token: ${{ steps.app-token.outputs.token }}
+          force: ${{ inputs.force }}
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
