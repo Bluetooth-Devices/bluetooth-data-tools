@@ -21,10 +21,7 @@ except ImportError:
     def _mac_to_int(address: str) -> int:
         """Convert a mac address to an integer."""
         length = len(address)
-        if length == 17:
-            if any(address[i] not in ":-" for i in (2, 5, 8, 11, 14)):
-                raise ValueError(f"Invalid MAC address: {address!r}")
-        elif length != 12:
+        if length != 17 and length != 12:
             raise ValueError(f"Invalid MAC address: {address!r}")
         return int(address.replace(":", "").replace("-", ""), 16)
 
