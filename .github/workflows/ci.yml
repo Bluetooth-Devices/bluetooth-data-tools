@@ -147,7 +147,9 @@ jobs:
     # from main; PR dry-runs would otherwise be blocked by the env's
     # main-only branch policy.
     environment: ${{ github.ref_name == 'main' && 'release' || '' }}
-    concurrency: release
+    concurrency:
+      group: release-${{ github.head_ref || github.ref }}
+      cancel-in-progress: false
     permissions:
       id-token: write
       contents: write
