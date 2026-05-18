@@ -8,6 +8,7 @@ try:
     from ._utils_impl import (  # noqa: F811 F401
         _int_to_bluetooth_address,
         _mac_to_int,
+        _short_address,
     )
 
 
@@ -25,17 +26,20 @@ except ImportError:
             raise ValueError(f"Invalid MAC address: {address!r}")
         return int(address.replace(":", "").replace("-", ""), 16)
 
+    def _short_address(address: str) -> str:
+        """Convert a Bluetooth address to a short address."""
+        length = len(address)
+        if length == 17:
+            return (address[12:14] + address[15:17]).upper()
+        if length == 12:
+            return address[8:12].upper()
+        results = address.replace("-", ":").split(":")
+        return f"{results[-2].upper()}{results[-1].upper()}"[-4:]
+
 
 int_to_bluetooth_address = lru_cache(maxsize=256)(_int_to_bluetooth_address)
 mac_to_int = lru_cache(maxsize=256)(_mac_to_int)
-
-
-def short_address(address: str) -> str:
-    """Convert a Bluetooth address to a short address."""
-    results = address.replace("-", ":").split(":")
-    last: str = results[-1]
-    second_last: str = results[-2]
-    return f"{second_last.upper()}{last.upper()}"[-4:]
+short_address = lru_cache(maxsize=256)(_short_address)
 
 
 def human_readable_name(name: str | None, local_name: str, address: str) -> str:

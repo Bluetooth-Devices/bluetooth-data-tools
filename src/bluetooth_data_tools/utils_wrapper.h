@@ -52,6 +52,51 @@ static inline uint64_t _bdaddr_to_uint64(const char *bdaddr, size_t length) {
 }
 
 /**
+* Sentinel returned by _short_address_to_buf to signal an unsupported input length.
+*/
+constexpr int SHORT_ADDR_PARSE_ERROR = -1;
+
+/**
+* Uppercase one hex character (a-f -> A-F). Non-hex characters pass through
+* unchanged — callers are responsible for validating that the source character
+* is a hex digit if strict validation is required.
+*/
+static inline char _hex_upper(char c) {
+    if (c >= 'a' && c <= 'f') return (char)(c - 'a' + 'A');
+    return c;
+}
+
+/**
+* Write the short (last 4 hex characters) form of a bluetooth address into the
+* provided 4-byte buffer. The buffer is NOT null-terminated.
+*
+* Accepts either the 17-byte separated form ("AA:BB:CC:DD:EE:FF" — also
+* the "AA-BB-CC-DD-EE-FF" Windows form) or the 12-byte unseparated form
+* ("AABBCCDDEEFF"). For the 17-byte form the last 4 hex chars are taken
+* from positions 12, 13, 15 and 16 (skipping the separator). For the
+* 12-byte form they are taken from positions 8 through 11.
+*
+* Returns 0 on success, SHORT_ADDR_PARSE_ERROR for any other input length.
+*/
+static inline int _short_address_to_buf(const char *bdaddr, size_t length, char out[4]) {
+    if (length == 17) {
+        out[0] = _hex_upper(bdaddr[12]);
+        out[1] = _hex_upper(bdaddr[13]);
+        out[2] = _hex_upper(bdaddr[15]);
+        out[3] = _hex_upper(bdaddr[16]);
+        return 0;
+    }
+    if (length == 12) {
+        out[0] = _hex_upper(bdaddr[8]);
+        out[1] = _hex_upper(bdaddr[9]);
+        out[2] = _hex_upper(bdaddr[10]);
+        out[3] = _hex_upper(bdaddr[11]);
+        return 0;
+    }
+    return SHORT_ADDR_PARSE_ERROR;
+}
+
+/**
 * Convert the given integer bluetooth address to its hexadecimal string representation.
 * The buffer passed in must accept at least 17 bytes. It will NOT be null-terminated.
 */

@@ -42,6 +42,33 @@ def test_short_address():
     assert short_address("AA:BB:CC:DD:EE:FF") == "EEFF"
 
 
+def test_short_address_hyphen_separator():
+    """Windows-style hyphen-separated addresses are accepted."""
+    assert short_address("AA-BB-CC-DD-EE-FF") == "EEFF"
+
+
+def test_short_address_lowercase():
+    """Lowercase hex characters are normalised to uppercase."""
+    assert short_address("aa:bb:cc:dd:ee:ff") == "EEFF"
+    assert short_address("aA:bB:cC:dD:eE:fF") == "EEFF"
+
+
+def test_short_address_unseparated():
+    """The unseparated 12-char form is accepted, matching mac_to_int."""
+    assert short_address("AABBCCDDEEFF") == "EEFF"
+    assert short_address("0123456789ab") == "89AB"
+
+
+@pytest.mark.parametrize(
+    "value",
+    [0, 1, 0xAB, 0xDEADBEEF, 0xFFFFFFFFFFFF, 0x123456789ABC],
+)
+def test_short_address_round_trip(value):
+    """short_address returns the last 4 hex chars of int_to_bluetooth_address."""
+    expected = f"{value:012X}"[-4:]
+    assert short_address(int_to_bluetooth_address(value)) == expected
+
+
 def test_human_readable_name():
     assert (
         human_readable_name("My Device", "Your Device", "AA:BB:CC:DD:EE:FF")
