@@ -10,6 +10,7 @@ See https://www.mdpi.com/2227-7390/10/22/4346
 """
 
 import binascii
+import hmac
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
@@ -35,7 +36,4 @@ def resolve_private_address(
     encryptor = cipher.encryptor()
     ct = encryptor.update(pt) + encryptor.finalize()
 
-    if ct[13:] != rpa[3:]:
-        return False
-
-    return True
+    return hmac.compare_digest(ct[13:], rpa[3:])
