@@ -9,13 +9,11 @@ cdef list _EMPTY_SERVICE_UUIDS
 
 cdef object from_bytes
 cdef object from_bytes_little
-cdef object from_bytes_signed
 
 cdef object _cached_uint16_bytes_as_uuid
 cdef object _cached_uint32_bytes_as_uuid
 cdef object _cached_uint128_bytes_as_uuid
 cdef object _cached_parse_advertisement_data
-cdef object _cached_from_bytes_signed
 
 cdef object _LOGGER
 
@@ -52,6 +50,7 @@ cpdef parse_advertisement_data(object data)
     start=cython.uint,
     end=cython.uint,
     i=cython.uint,
+    tx_power_byte="unsigned char",
 )
 cpdef _uncached_parse_advertisement_bytes(bytes gap_bytes)
 

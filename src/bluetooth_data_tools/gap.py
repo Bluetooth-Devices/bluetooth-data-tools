@@ -77,7 +77,6 @@ class BLEGAPType(IntEnum):
 
 from_bytes = int.from_bytes
 from_bytes_little = partial(from_bytes, byteorder="little")
-from_bytes_signed = partial(from_bytes, byteorder="little", signed=True)
 
 TYPE_SHORT_LOCAL_NAME = BLEGAPType.TYPE_SHORT_LOCAL_NAME.value
 TYPE_COMPLETE_LOCAL_NAME = BLEGAPType.TYPE_COMPLETE_LOCAL_NAME.value
@@ -104,9 +103,6 @@ bytes_ = bytes
 BLEGAPAdvertisementTupleType = tuple[
     str | None, list[str], dict[str, bytes], dict[int, bytes], int | None
 ]
-
-
-_cached_from_bytes_signed = lru_cache(maxsize=256)(from_bytes_signed)
 
 
 @lru_cache(maxsize=256)
@@ -292,7 +288,10 @@ def _uncached_parse_advertisement_bytes(
             # signed octet. Anything else is malformed — skip instead of
             # decoding the bytes as a wider little-endian signed integer.
             if end - start == 1:
-                tx_power = _cached_from_bytes_signed(gap_data[start:end])
+                tx_power_byte = gap_data[start]
+                tx_power = (
+                    tx_power_byte - 256 if tx_power_byte >= 128 else tx_power_byte
+                )
 
     return (local_name, service_uuids, service_data, manufacturer_data, tx_power)
 
