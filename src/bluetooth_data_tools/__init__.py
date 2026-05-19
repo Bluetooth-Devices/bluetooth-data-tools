@@ -21,7 +21,7 @@ from .utils import (
     short_address,
 )
 
-__version__ = "1.29.9"
+__version__ = "1.29.10"
 
 
 __all__ = [
