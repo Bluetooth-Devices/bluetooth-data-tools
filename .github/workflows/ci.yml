@@ -82,7 +82,7 @@ jobs:
           path: |
             .venv
             src/bluetooth_data_tools/**/*.so
-          key: venv-v1-${{ runner.os }}-py${{ matrix.python-version }}-${{ matrix.extension }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd') }}
+          key: venv-v2-${{ runner.os }}-py${{ matrix.python-version }}-${{ matrix.extension }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd') }}
       - name: Install Dependencies
         if: steps.cache-venv.outputs.cache-hit != 'true'
         run: |
@@ -125,7 +125,7 @@ jobs:
           path: |
             .venv
             src/bluetooth_data_tools/**/*.so
-          key: venv-v1-${{ runner.os }}-benchmark-py${{ matrix.python-version }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd') }}
+          key: venv-v2-${{ runner.os }}-benchmark-py${{ matrix.python-version }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd') }}
       - name: Install Dependencies
         if: steps.cache-venv.outputs.cache-hit != 'true'
         run: poetry install --only=main,dev,benchmark
