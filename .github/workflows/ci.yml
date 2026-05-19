@@ -72,9 +72,14 @@ jobs:
         uses: astral-sh/setup-uv@v8.1.0
         with:
           enable-cache: true
-          python-version: ${{ matrix.python-version }}
       - name: Install poetry
         run: uv tool install poetry
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+          cache: "poetry"
       - name: Cache poetry venv
         id: cache-venv
         uses: actions/cache@v5
@@ -115,9 +120,13 @@ jobs:
         uses: astral-sh/setup-uv@v8.1.0
         with:
           enable-cache: true
-          python-version: ${{ matrix.python-version }}
       - name: Install poetry
         run: uv tool install poetry
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "poetry"
       - name: Cache poetry venv
         id: cache-venv
         uses: actions/cache@v5
