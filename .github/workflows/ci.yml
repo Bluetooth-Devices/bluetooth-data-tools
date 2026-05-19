@@ -68,12 +68,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          enable-cache: true
+      - name: Install poetry
+        run: uv tool install poetry
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
-      - uses: snok/install-poetry@v1.4.1
+          cache: "poetry"
       - name: Cache poetry venv
         id: cache-venv
         uses: actions/cache@v5
@@ -81,7 +87,7 @@ jobs:
           path: |
             .venv
             src/bluetooth_data_tools/**/*.so
-          key: venv-v1-${{ runner.os }}-py${{ matrix.python-version }}-${{ matrix.extension }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd') }}
+          key: venv-v2-${{ runner.os }}-py${{ matrix.python-version }}-${{ matrix.extension }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd') }}
       - name: Install Dependencies
         if: steps.cache-venv.outputs.cache-hit != 'true'
         run: |
@@ -110,11 +116,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          enable-cache: true
+      - name: Install poetry
+        run: uv tool install poetry
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: snok/install-poetry@v1.4.1
+          cache: "poetry"
       - name: Cache poetry venv
         id: cache-venv
         uses: actions/cache@v5
@@ -122,7 +134,7 @@ jobs:
           path: |
             .venv
             src/bluetooth_data_tools/**/*.so
-          key: venv-v1-${{ runner.os }}-benchmark-py${{ matrix.python-version }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd') }}
+          key: venv-v2-${{ runner.os }}-benchmark-py${{ matrix.python-version }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd') }}
       - name: Install Dependencies
         if: steps.cache-venv.outputs.cache-hit != 'true'
         run: poetry install --only=main,dev,benchmark
@@ -141,11 +153,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          enable-cache: true
+      - name: Install poetry
+        run: uv tool install poetry
       - name: Setup Python 3.13
         uses: actions/setup-python@v6
         with:
           python-version: 3.13
-      - uses: snok/install-poetry@v1.4.1
+          cache: "poetry"
       - name: Install Dependencies
         run: |
           REQUIRE_CYTHON=1 poetry install --only=main,dev
