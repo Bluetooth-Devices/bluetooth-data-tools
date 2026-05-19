@@ -78,6 +78,12 @@ class BLEGAPType(IntEnum):
 from_bytes = int.from_bytes
 from_bytes_little = partial(from_bytes, byteorder="little")
 
+# Signed-fold constants for the one-byte TX Power Level decode.
+# A uint8 value at or above _INT8_SIGN_THRESHOLD is negative when interpreted
+# as int8, and recovers its signed value via subtraction of _INT8_RANGE.
+_INT8_SIGN_THRESHOLD = 128
+_INT8_RANGE = 256
+
 TYPE_SHORT_LOCAL_NAME = BLEGAPType.TYPE_SHORT_LOCAL_NAME.value
 TYPE_COMPLETE_LOCAL_NAME = BLEGAPType.TYPE_COMPLETE_LOCAL_NAME.value
 TYPE_MANUFACTURER_SPECIFIC_DATA = BLEGAPType.TYPE_MANUFACTURER_SPECIFIC_DATA.value
@@ -290,7 +296,9 @@ def _uncached_parse_advertisement_bytes(
             if end - start == 1:
                 tx_power_byte = gap_data[start]
                 tx_power = (
-                    tx_power_byte - 256 if tx_power_byte >= 128 else tx_power_byte
+                    tx_power_byte - _INT8_RANGE
+                    if tx_power_byte >= _INT8_SIGN_THRESHOLD
+                    else tx_power_byte
                 )
 
     return (local_name, service_uuids, service_data, manufacturer_data, tx_power)

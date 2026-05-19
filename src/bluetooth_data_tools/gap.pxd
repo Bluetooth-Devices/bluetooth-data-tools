@@ -39,6 +39,9 @@ cdef cython.uint TYPE_SERVICE_DATA_32BIT_UUID
 cdef cython.uint TYPE_SERVICE_DATA_128BIT_UUID
 cdef cython.uint TYPE_TX_POWER_LEVEL
 
+cdef unsigned char _INT8_SIGN_THRESHOLD
+cdef cython.uint _INT8_RANGE
+
 cpdef parse_advertisement_data(object data)
 
 @cython.locals(
