@@ -183,7 +183,13 @@ def parse_advertisement_data(
 
 
 def _uncached_parse_advertisement_data(data: bytes) -> BLEGAPAdvertisement:
-    return BLEGAPAdvertisement(*_uncached_parse_advertisement_bytes(data))
+    # Route BLEGAPAdvertisement-cache misses through the bytes-keyed cache
+    # (symmetric with _uncached_parse_advertisement_tuple, see #261). Identical
+    # payloads reaching this miss path skip the full parse when the bytes-tuple
+    # cache already holds the result, and a true miss populates that cache so
+    # subsequent parse_advertisement_data_bytes / parse_advertisement_data_tuple
+    # calls on the same payload also win.
+    return BLEGAPAdvertisement(*parse_advertisement_data_bytes(data))
 
 
 def _uncached_parse_advertisement_tuple(
