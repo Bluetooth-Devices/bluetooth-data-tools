@@ -280,10 +280,7 @@ def _uncached_parse_advertisement_bytes(
                 uuid32_b2 = gap_data[i + 2]
                 uuid32_b3 = gap_data[i + 3]
                 uuid32_int = (
-                    uuid32_b0
-                    | (uuid32_b1 << 8)
-                    | (uuid32_b2 << 16)
-                    | (uuid32_b3 << 24)
+                    uuid32_b0 | (uuid32_b1 << 8) | (uuid32_b2 << 16) | (uuid32_b3 << 24)
                 )
                 service_uuids.append(_cached_uint32_int_as_uuid(uuid32_int))
         elif gap_type_num in {
@@ -324,10 +321,7 @@ def _uncached_parse_advertisement_bytes(
             uuid32_b2 = gap_data[start + 2]
             uuid32_b3 = gap_data[start + 3]
             uuid32_int = (
-                uuid32_b0
-                | (uuid32_b1 << 8)
-                | (uuid32_b2 << 16)
-                | (uuid32_b3 << 24)
+                uuid32_b0 | (uuid32_b1 << 8) | (uuid32_b2 << 16) | (uuid32_b3 << 24)
             )
             service_data[_cached_uint32_int_as_uuid(uuid32_int)] = gap_data[
                 splice_pos:end
