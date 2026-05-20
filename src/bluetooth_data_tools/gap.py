@@ -6,8 +6,6 @@ from enum import IntEnum
 from functools import lru_cache, partial
 from typing import TYPE_CHECKING
 
-import cython
-
 BLE_UUID = "0000-1000-8000-00805f9b34fb"
 _LOGGER = logging.getLogger(__name__)
 
@@ -271,16 +269,21 @@ def _uncached_parse_advertisement_bytes(
             # per-iteration bounds branch; any 1-3 byte tail is dropped.
             safe_end = start + ((end - start) & ~3)
             for i in range(start, safe_end, 4):
-                # Cast each byte to unsigned int before shifting: in C an
-                # `unsigned char` operand of `<<` is promoted to (signed)
-                # `int`, so `gap_data[i + 3] << 24` would be undefined
-                # behavior when bit 31 is set. Casting keeps the operation
-                # well-defined on `unsigned int`.
+                # Stage each byte through an unsigned-int local (declared in
+                # gap.pxd) before shifting: in C an `unsigned char` operand
+                # of `<<` is promoted to (signed) `int`, so
+                # `gap_data[i + 3] << 24` would be undefined behavior when
+                # bit 31 is set. Assigning to the typed local first keeps
+                # the shift well-defined on `unsigned int`.
+                uuid32_b0 = gap_data[i]
+                uuid32_b1 = gap_data[i + 1]
+                uuid32_b2 = gap_data[i + 2]
+                uuid32_b3 = gap_data[i + 3]
                 uuid32_int = (
-                    cython.cast(cython.uint, gap_data[i])
-                    | (cython.cast(cython.uint, gap_data[i + 1]) << 8)
-                    | (cython.cast(cython.uint, gap_data[i + 2]) << 16)
-                    | (cython.cast(cython.uint, gap_data[i + 3]) << 24)
+                    uuid32_b0
+                    | (uuid32_b1 << 8)
+                    | (uuid32_b2 << 16)
+                    | (uuid32_b3 << 24)
                 )
                 service_uuids.append(_cached_uint32_int_as_uuid(uuid32_int))
         elif gap_type_num in {
@@ -313,13 +316,18 @@ def _uncached_parse_advertisement_bytes(
                 continue
             if service_data is _EMPTY_SERVICE_DATA:
                 service_data = {}
-            # Cast each byte to unsigned int before shifting to keep the
-            # << 24 well-defined (see TYPE_32BIT_SERVICE_UUID_* branch above).
+            # Stage each byte through an unsigned-int local before shifting
+            # to keep the << 24 well-defined (see TYPE_32BIT_SERVICE_UUID_*
+            # branch above).
+            uuid32_b0 = gap_data[start]
+            uuid32_b1 = gap_data[start + 1]
+            uuid32_b2 = gap_data[start + 2]
+            uuid32_b3 = gap_data[start + 3]
             uuid32_int = (
-                cython.cast(cython.uint, gap_data[start])
-                | (cython.cast(cython.uint, gap_data[start + 1]) << 8)
-                | (cython.cast(cython.uint, gap_data[start + 2]) << 16)
-                | (cython.cast(cython.uint, gap_data[start + 3]) << 24)
+                uuid32_b0
+                | (uuid32_b1 << 8)
+                | (uuid32_b2 << 16)
+                | (uuid32_b3 << 24)
             )
             service_data[_cached_uint32_int_as_uuid(uuid32_int)] = gap_data[
                 splice_pos:end
