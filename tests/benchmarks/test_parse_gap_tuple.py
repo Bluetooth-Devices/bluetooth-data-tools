@@ -90,3 +90,24 @@ def test_parse_advertisement_data_tuple(benchmark: BenchmarkFixture) -> None:
 def test_parse_advertisement_data_tuple_uncached(benchmark: BenchmarkFixture) -> None:
     joined_advs = b"".join(advs)
     benchmark(lambda: _uncached_parse_advertisement_data(joined_advs))
+
+
+def test_parse_advertisement_data_tuple_bytes_cache_fallthrough(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """Tuple-cache misses must fall through to the bytes-keyed cache.
+
+    Simulates the steady-state case where bleak hands us a fresh tuple
+    identity per callback but the joined payload was already parsed (e.g.
+    same advertisement was seen via the bytes-form helper earlier).
+    """
+    from bluetooth_data_tools import parse_advertisement_data_bytes
+
+    joined = b"".join(advs)
+    parse_advertisement_data_bytes(joined)
+
+    def run() -> None:
+        parse_advertisement_data_tuple.cache_clear()
+        parse_advertisement_data_tuple(advs)
+
+    benchmark(run)

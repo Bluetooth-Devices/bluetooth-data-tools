@@ -89,3 +89,16 @@ def test_parse_advertisement_data_tuple(benchmark):
 def test_parse_advertisement_data_tuple_uncached(benchmark):
     joined_advs = b"".join(advs)
     benchmark(lambda: _uncached_parse_advertisement_data(joined_advs))
+
+
+def test_parse_advertisement_data_tuple_bytes_cache_fallthrough(benchmark):
+    from bluetooth_data_tools import parse_advertisement_data_bytes
+
+    joined = b"".join(advs)
+    parse_advertisement_data_bytes(joined)
+
+    def run():
+        parse_advertisement_data_tuple.cache_clear()
+        parse_advertisement_data_tuple(advs)
+
+    benchmark(run)
