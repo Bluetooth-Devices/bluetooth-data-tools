@@ -54,6 +54,7 @@ cpdef parse_advertisement_data(object data)
     end=cython.uint,
     i=cython.uint,
     tx_power_byte="unsigned char",
+    uuid32_int=cython.uint,
 )
 cpdef _uncached_parse_advertisement_bytes(bytes gap_bytes)
 
