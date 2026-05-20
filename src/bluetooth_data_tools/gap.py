@@ -236,9 +236,7 @@ def _uncached_parse_advertisement_bytes(
             for i in range(start, end, 2):
                 if i + 2 <= end:
                     service_uuids.append(
-                        _cached_uint16_int_as_uuid(
-                            gap_data[i] | (gap_data[i + 1] << 8)
-                        )
+                        _cached_uint16_int_as_uuid(gap_data[i] | (gap_data[i + 1] << 8))
                     )
         elif gap_type_num in {
             TYPE_32BIT_SERVICE_UUID_COMPLETE,
