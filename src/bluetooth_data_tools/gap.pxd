@@ -53,6 +53,7 @@ cpdef parse_advertisement_data(object data)
     offset=cython.uint,
     start=cython.uint,
     end=cython.uint,
+    safe_end=cython.uint,
     i=cython.uint,
     tx_power_byte="unsigned char",
     uuid32_int=cython.uint,

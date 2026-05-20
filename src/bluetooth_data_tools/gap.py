@@ -251,13 +251,13 @@ def _uncached_parse_advertisement_bytes(
             if service_uuids is _EMPTY_SERVICE_UUIDS:
                 service_uuids = []
             # Parse multiple 16-bit UUIDs (each is 2 little-endian bytes).
-            # Decode inline to an int and look up by int key to skip the
-            # per-iteration bytes-slice allocation.
-            for i in range(start, end, 2):
-                if i + 2 <= end:
-                    service_uuids.append(
-                        _cached_uint16_int_as_uuid(gap_data[i] | (gap_data[i + 1] << 8))
-                    )
+            # Truncate to a multiple-of-2 endpoint so the loop body has no
+            # per-iteration bounds branch; any odd tail is dropped.
+            safe_end = start + ((end - start) & ~1)
+            for i in range(start, safe_end, 2):
+                service_uuids.append(
+                    _cached_uint16_int_as_uuid(gap_data[i] | (gap_data[i + 1] << 8))
+                )
         elif gap_type_num in {
             TYPE_32BIT_SERVICE_UUID_COMPLETE,
             TYPE_32BIT_SERVICE_UUID_MORE_AVAILABLE,
@@ -265,33 +265,36 @@ def _uncached_parse_advertisement_bytes(
             if service_uuids is _EMPTY_SERVICE_UUIDS:
                 service_uuids = []
             # Parse multiple 32-bit UUIDs (each is 4 little-endian bytes).
-            for i in range(start, end, 4):
-                if i + 4 <= end:
-                    # Assemble via uint local: in Cython the shift-by-24 of an
-                    # unsigned char promotes to signed int and would yield a
-                    # negative value when bit 31 is set; assigning to a
-                    # cython.uint local recovers the unsigned 32-bit value.
-                    uuid32_int = (
-                        gap_data[i]
-                        | (gap_data[i + 1] << 8)
-                        | (gap_data[i + 2] << 16)
-                        | (gap_data[i + 3] << 24)
-                    )
-                    service_uuids.append(_cached_uint32_int_as_uuid(uuid32_int))
+            # Truncate to a multiple-of-4 endpoint so the loop body has no
+            # per-iteration bounds branch; any 1-3 byte tail is dropped.
+            safe_end = start + ((end - start) & ~3)
+            for i in range(start, safe_end, 4):
+                # Assemble via uint local: in Cython the shift-by-24 of an
+                # unsigned char promotes to signed int and would yield a
+                # negative value when bit 31 is set; assigning to a
+                # cython.uint local recovers the unsigned 32-bit value.
+                uuid32_int = (
+                    gap_data[i]
+                    | (gap_data[i + 1] << 8)
+                    | (gap_data[i + 2] << 16)
+                    | (gap_data[i + 3] << 24)
+                )
+                service_uuids.append(_cached_uint32_int_as_uuid(uuid32_int))
         elif gap_type_num in {
             TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
             TYPE_128BIT_SERVICE_UUID_COMPLETE,
         }:
             if service_uuids is _EMPTY_SERVICE_UUIDS:
                 service_uuids = []
-            # Parse multiple 128-bit UUIDs (each is 16 bytes). The AD length
-            # may not be a clean multiple of 16 for malformed input — skip
-            # any trailing remainder rather than emitting a truncated UUID.
-            for i in range(start, end, 16):
-                if i + 16 <= end:
-                    service_uuids.append(
-                        _cached_uint128_bytes_as_uuid(gap_data[i : i + 16])
-                    )
+            # Parse multiple 128-bit UUIDs (each is 16 bytes). Truncate to a
+            # multiple-of-16 endpoint so the loop body has no per-iteration
+            # bounds branch; any trailing remainder is dropped rather than
+            # emitting a truncated UUID.
+            safe_end = start + ((end - start) & ~15)
+            for i in range(start, safe_end, 16):
+                service_uuids.append(
+                    _cached_uint128_bytes_as_uuid(gap_data[i : i + 16])
+                )
         elif gap_type_num == TYPE_SERVICE_DATA:
             splice_pos = start + 2
             if splice_pos > end:
