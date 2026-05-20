@@ -156,14 +156,30 @@ def _parse_advertisement_data(
 _cached_parse_advertisement_data = _parse_advertisement_data
 
 
+@lru_cache(maxsize=256)
+def _parse_advertisement_data_from_tuple(
+    data: tuple[bytes, ...],
+) -> BLEGAPAdvertisement:
+    """Parse a multi-chunk advertisement tuple, caching on the tuple itself.
+
+    Hashing a tuple of bytes elements skips the per-call ``b"".join`` allocation
+    on cache hits, which is the hot path when the same scan callback delivers
+    the same (adv_data, scan_response_data) tuple repeatedly.
+    """
+    return _cached_parse_advertisement_data(b"".join(data))
+
+
+_cached_parse_advertisement_data_from_tuple = _parse_advertisement_data_from_tuple
+
+
 def parse_advertisement_data(
     data: Iterable[bytes],
 ) -> BLEGAPAdvertisement:
     """Parse advertisement data and return a BLEGAPAdvertisement."""
     if type(data) is tuple:
-        return _cached_parse_advertisement_data(
-            b"".join(data) if len(data) > 1 else data[0]
-        )
+        if len(data) == 1:
+            return _cached_parse_advertisement_data(data[0])
+        return _cached_parse_advertisement_data_from_tuple(data)
     return _cached_parse_advertisement_data(b"".join(data))
 
 

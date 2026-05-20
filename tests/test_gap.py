@@ -1129,3 +1129,33 @@ def test_parse_advertisement_data_multiple_manufacturer_entries():
         0x004C: b"\x01\x02",
         0x0059: b"\x03\x04\x05",
     }
+
+
+def test_parse_advertisement_data_multi_chunk_tuple_matches_bytes():
+    """A multi-chunk tuple input must produce the same result as the joined bytes.
+
+    This pins the parse_advertisement_data tuple fast-path that caches on the
+    tuple itself rather than on the joined bytes.
+    """
+    chunks = (
+        b"\x02\x01\x06\x03\x03\x12\x18",
+        b"\x10\tLOOKin_98F33163\x03\x19\xc1\x03",
+    )
+    joined = b"".join(chunks)
+
+    from_tuple = parse_advertisement_data(chunks)
+    from_bytes = parse_advertisement_data([joined])
+
+    assert from_tuple.local_name == from_bytes.local_name == "LOOKin_98F33163"
+    assert from_tuple.service_uuids == from_bytes.service_uuids
+    assert from_tuple.service_data == from_bytes.service_data
+    assert from_tuple.manufacturer_data == from_bytes.manufacturer_data
+    assert from_tuple.tx_power == from_bytes.tx_power
+
+
+def test_parse_advertisement_data_single_element_tuple_unwraps_to_bytes_cache():
+    """A 1-element tuple skips the join and uses the bytes-keyed cache directly."""
+    payload = b"\x02\x01\x06\x05\tRZSS"
+    from_tuple = parse_advertisement_data((payload,))
+    from_list = parse_advertisement_data([payload])
+    assert from_tuple.local_name == from_list.local_name == "RZSS"
