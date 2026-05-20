@@ -1,4 +1,5 @@
 import base64
+import logging
 
 import pytest
 
@@ -103,8 +104,6 @@ def test_parse_advertisement_data_trailing_minimum_ad_struct(caplog):
     # Manufacturer-data struct (5 bytes) followed by a trailing minimum-AD
     # struct [length=1][type=0x09] (2 bytes). The loop must enter the trailing
     # struct rather than silently skip it; preceding data must still parse.
-    import logging
-
     data = [b"\x04\xff\x4c\x00\x10\x01\x09"]
 
     with caplog.at_level(logging.DEBUG, logger="bluetooth_data_tools.gap"):

@@ -63,7 +63,7 @@ def build(setup_kwargs: Any) -> None:
     if os.environ.get("SKIP_CYTHON", False):
         return
     try:
-        from Cython.Build import cythonize
+        from Cython.Build import cythonize  # noqa: PLC0415
 
         setup_kwargs.update(
             dict(
