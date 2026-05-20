@@ -1,7 +1,10 @@
 #  cythonize -X language_level=3 -a -i  src/bluetooth_data_tools/gap.py
 from pytest_codspeed import BenchmarkFixture
 
-from bluetooth_data_tools import parse_advertisement_data_tuple
+from bluetooth_data_tools import (
+    parse_advertisement_data_bytes,
+    parse_advertisement_data_tuple,
+)
 from bluetooth_data_tools.gap import _uncached_parse_advertisement_data
 
 advs = (
@@ -101,8 +104,6 @@ def test_parse_advertisement_data_tuple_bytes_cache_fallthrough(
     identity per callback but the joined payload was already parsed (e.g.
     same advertisement was seen via the bytes-form helper earlier).
     """
-    from bluetooth_data_tools import parse_advertisement_data_bytes
-
     joined = b"".join(advs)
     parse_advertisement_data_bytes(joined)
 

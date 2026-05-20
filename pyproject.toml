@@ -129,6 +129,7 @@ extend-select = [
     "E",
     "F",
     "I", # isort
+    "PLC0415", # import-outside-toplevel
     "S", # security (bandit)
     "W",
     "UP", # pyupgrade
