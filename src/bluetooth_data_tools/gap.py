@@ -123,21 +123,21 @@ _cached_uint128_bytes_as_uuid = _uint128_bytes_as_uuid
 
 
 @lru_cache(maxsize=256)
-def _uint16_bytes_as_uuid(uuid16_bytes: bytes_) -> str:
-    """Convert a 16-bit UUID to a UUID str."""
-    return f"0000{from_bytes_little(uuid16_bytes):04x}-{BLE_UUID}"
+def _uint16_int_as_uuid(uuid16_int: int) -> str:
+    """Convert a 16-bit UUID integer to a UUID str."""
+    return f"0000{uuid16_int:04x}-{BLE_UUID}"
 
 
-_cached_uint16_bytes_as_uuid = _uint16_bytes_as_uuid
+_cached_uint16_int_as_uuid = _uint16_int_as_uuid
 
 
 @lru_cache(maxsize=256)
-def _uint32_bytes_as_uuid(uuid32_bytes: bytes_) -> str:
-    """Convert a 32-bit UUID to a UUID str."""
-    return f"{from_bytes_little(uuid32_bytes):08x}-{BLE_UUID}"
+def _uint32_int_as_uuid(uuid32_int: int) -> str:
+    """Convert a 32-bit UUID integer to a UUID str."""
+    return f"{uuid32_int:08x}-{BLE_UUID}"
 
 
-_cached_uint32_bytes_as_uuid = _uint32_bytes_as_uuid
+_cached_uint32_int_as_uuid = _uint32_int_as_uuid
 
 
 _EMPTY_MANUFACTURER_DATA: dict[int, bytes] = {}
@@ -230,11 +230,13 @@ def _uncached_parse_advertisement_bytes(
         }:
             if service_uuids is _EMPTY_SERVICE_UUIDS:
                 service_uuids = []
-            # Parse multiple 16-bit UUIDs (each is 2 bytes)
+            # Parse multiple 16-bit UUIDs (each is 2 little-endian bytes).
+            # Decode inline to an int and look up by int key to skip the
+            # per-iteration bytes-slice allocation.
             for i in range(start, end, 2):
                 if i + 2 <= end:
                     service_uuids.append(
-                        _cached_uint16_bytes_as_uuid(gap_data[i : i + 2])
+                        _cached_uint16_int_as_uuid(gap_data[i] | (gap_data[i + 1] << 8))
                     )
         elif gap_type_num in {
             TYPE_32BIT_SERVICE_UUID_COMPLETE,
@@ -242,12 +244,20 @@ def _uncached_parse_advertisement_bytes(
         }:
             if service_uuids is _EMPTY_SERVICE_UUIDS:
                 service_uuids = []
-            # Parse multiple 32-bit UUIDs (each is 4 bytes)
+            # Parse multiple 32-bit UUIDs (each is 4 little-endian bytes).
             for i in range(start, end, 4):
                 if i + 4 <= end:
-                    service_uuids.append(
-                        _cached_uint32_bytes_as_uuid(gap_data[i : i + 4])
+                    # Assemble via uint local: in Cython the shift-by-24 of an
+                    # unsigned char promotes to signed int and would yield a
+                    # negative value when bit 31 is set; assigning to a
+                    # cython.uint local recovers the unsigned 32-bit value.
+                    uuid32_int = (
+                        gap_data[i]
+                        | (gap_data[i + 1] << 8)
+                        | (gap_data[i + 2] << 16)
+                        | (gap_data[i + 3] << 24)
                     )
+                    service_uuids.append(_cached_uint32_int_as_uuid(uuid32_int))
         elif gap_type_num in {
             TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
             TYPE_128BIT_SERVICE_UUID_COMPLETE,
@@ -268,18 +278,24 @@ def _uncached_parse_advertisement_bytes(
                 continue
             if service_data is _EMPTY_SERVICE_DATA:
                 service_data = {}
-            service_data[_cached_uint16_bytes_as_uuid(gap_data[start:splice_pos])] = (
-                gap_data[splice_pos:end]
-            )
+            service_data[
+                _cached_uint16_int_as_uuid(gap_data[start] | (gap_data[start + 1] << 8))
+            ] = gap_data[splice_pos:end]
         elif gap_type_num == TYPE_SERVICE_DATA_32BIT_UUID:
             splice_pos = start + 4
             if splice_pos > total_length or splice_pos > end:
                 continue
             if service_data is _EMPTY_SERVICE_DATA:
                 service_data = {}
-            service_data[_cached_uint32_bytes_as_uuid(gap_data[start:splice_pos])] = (
-                gap_data[splice_pos:end]
+            uuid32_int = (
+                gap_data[start]
+                | (gap_data[start + 1] << 8)
+                | (gap_data[start + 2] << 16)
+                | (gap_data[start + 3] << 24)
             )
+            service_data[_cached_uint32_int_as_uuid(uuid32_int)] = gap_data[
+                splice_pos:end
+            ]
         elif gap_type_num == TYPE_SERVICE_DATA_128BIT_UUID:
             splice_pos = start + 16
             if splice_pos > total_length or splice_pos > end:
