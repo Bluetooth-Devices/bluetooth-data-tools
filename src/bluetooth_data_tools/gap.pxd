@@ -10,8 +10,8 @@ cdef list _EMPTY_SERVICE_UUIDS
 cdef object from_bytes
 cdef object from_bytes_little
 
-cdef object _cached_uint16_bytes_as_uuid
-cdef object _cached_uint32_bytes_as_uuid
+cdef object _cached_uint16_int_as_uuid
+cdef object _cached_uint32_int_as_uuid
 cdef object _cached_uint128_bytes_as_uuid
 cdef object _cached_parse_advertisement_data
 
