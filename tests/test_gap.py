@@ -1165,8 +1165,6 @@ def test_parse_advertisement_data_tuple_miss_falls_through_bytes_cache():
     a full parse, so identical content arriving via a fresh tuple identity
     still benefits from a previous bytes-form call.
     """
-    from bluetooth_data_tools import parse_advertisement_data_bytes
-
     payload = b"\x02\x01\x06\x05\tRZSS"
 
     # Prime the bytes cache only.
