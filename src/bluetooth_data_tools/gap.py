@@ -190,9 +190,13 @@ def _uncached_parse_advertisement_data(data: bytes) -> BLEGAPAdvertisement:
 def _uncached_parse_advertisement_tuple(
     data: tuple[bytes, ...],
 ) -> BLEGAPAdvertisementTupleType:
-    return _uncached_parse_advertisement_bytes(
-        b"".join(data) if len(data) > 1 else data[0]
-    )
+    # Route tuple-cache misses through the bytes-keyed cache so identical
+    # content arriving via a fresh tuple identity still skips the full parse.
+    # The outer lru_cache around parse_advertisement_data_tuple owns the
+    # hit-path (C-level hash on the tuple, no join).
+    if len(data) == 1:
+        return parse_advertisement_data_bytes(data[0])
+    return parse_advertisement_data_bytes(b"".join(data))
 
 
 def _uncached_parse_advertisement_bytes(

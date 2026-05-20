@@ -1159,3 +1159,23 @@ def test_parse_advertisement_data_single_element_tuple_unwraps_to_bytes_cache():
     from_tuple = parse_advertisement_data((payload,))
     from_list = parse_advertisement_data([payload])
     assert from_tuple.local_name == from_list.local_name == "RZSS"
+
+
+def test_parse_advertisement_data_tuple_miss_falls_through_bytes_cache():
+    """A tuple-cache miss must consult the bytes-keyed cache before paying for
+    a full parse, so identical content arriving via a fresh tuple identity
+    still benefits from a previous bytes-form call.
+    """
+    from bluetooth_data_tools import parse_advertisement_data_bytes
+
+    payload = b"\x02\x01\x06\x05\tRZSS"
+
+    # Prime the bytes cache only.
+    parse_advertisement_data_tuple.cache_clear()
+    expected = parse_advertisement_data_bytes(payload)
+
+    # Tuple cache is empty, so this call must miss the tuple cache and resolve
+    # via the bytes cache.
+    assert parse_advertisement_data_tuple((payload,)) == expected
+    # Multi-chunk path: same content, fresh tuple identity, still bytes-cached.
+    assert parse_advertisement_data_tuple((b"", payload)) == expected
