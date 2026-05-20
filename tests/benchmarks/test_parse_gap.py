@@ -2,7 +2,7 @@
 from pytest_codspeed import BenchmarkFixture
 
 from bluetooth_data_tools import parse_advertisement_data
-from bluetooth_data_tools.gap import _cached_parse_advertisement_data
+from bluetooth_data_tools.gap import _parse_advertisement_data
 
 advs = [
     b"\x02\x01\x06\x03\x03\x12\x18\x10\tLOOKin_98F33163\x03\x19\xc1\x03",
@@ -111,7 +111,7 @@ def test_parse_advertisement_data_bytes_cache_fallthrough(
     parse_advertisement_data(advs_as_single_tuple)
 
     def run() -> None:
-        _cached_parse_advertisement_data.cache_clear()
+        _parse_advertisement_data.cache_clear()
         parse_advertisement_data(advs_as_single_tuple)
 
     benchmark(run)
