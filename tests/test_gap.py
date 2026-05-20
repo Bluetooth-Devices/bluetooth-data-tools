@@ -1113,6 +1113,40 @@ def test_parse_advertisement_data_32bit_uuid_malformed_length():
     assert adv.service_uuids == ["efbeadde-0000-1000-8000-00805f9b34fb"]
 
 
+def test_parse_advertisement_data_32bit_uuid_high_bit_set():
+    """32-bit UUIDs with bit 31 set must decode as the unsigned value.
+
+    Guards the signed-shift UB fix: ``gap_data[i + 3] << 24`` on an
+    ``unsigned char`` promotes to (signed) ``int`` in C, so values >= 0x80
+    in the top byte would be undefined behavior under Cython without the
+    intermediate ``unsigned int`` staging. The decoded UUID must reflect
+    the full unsigned 32-bit value, not a sign-extended negative.
+    """
+    # length=0x09 (9 = 1 type + 8 bytes), type=0x05 — two 32-bit UUIDs
+    # in little-endian: 0xFF112233 -> 33 22 11 FF, 0x80000001 -> 01 00 00 80.
+    payload = b"\x09\x05\x33\x22\x11\xff\x01\x00\x00\x80"
+    adv = parse_advertisement_data((payload,))
+    assert adv.service_uuids == [
+        "ff112233-0000-1000-8000-00805f9b34fb",
+        "80000001-0000-1000-8000-00805f9b34fb",
+    ]
+
+
+def test_parse_advertisement_data_32bit_service_data_high_bit_set():
+    """32-bit service-data UUID with bit 31 set must key on the unsigned value.
+
+    Same UB guard as the list branch, applied to the
+    ``TYPE_SERVICE_DATA`` 32-bit decode.
+    """
+    # length=0x07 (7 = 1 type + 4 UUID bytes + 2 data bytes), type=0x20
+    # UUID little-endian: 0xFF112233 -> 33 22 11 FF; data: AA BB.
+    payload = b"\x07\x20\x33\x22\x11\xff\xaa\xbb"
+    adv = parse_advertisement_data((payload,))
+    assert adv.service_data == {
+        "ff112233-0000-1000-8000-00805f9b34fb": b"\xaa\xbb",
+    }
+
+
 def test_parse_advertisement_data_multiple_manufacturer_entries():
     """Two manufacturer-specific-data AD structs in one packet must both
     survive into the resulting dict, keyed by company ID.
