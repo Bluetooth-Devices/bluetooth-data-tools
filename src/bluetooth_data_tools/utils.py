@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from struct import Struct
 
 try:
     from ._utils_impl import (  # noqa: F811 F401
@@ -50,7 +51,12 @@ def newest_manufacturer_data(manufacturer_data: dict[int, bytes]) -> bytes | Non
     return manufacturer_data[next(reversed(manufacturer_data))]
 
 
+# Two pad bytes followed by a little-endian uint16 manufacturer ID.
+# Mirrors the on-the-wire MSD AD prefix so callers can splice the body in
+# without a separate concatenation step.
+_pack_manufacturer_prefix = Struct("<2xH").pack
+
+
 def manufacturer_data_to_raw(manufacturer_id: int, manufacturer_data: bytes) -> bytes:
     """Return the raw data from manufacturer data."""
-    init_bytes: bytes = int(manufacturer_id).to_bytes(2, byteorder="little")
-    return b"\x00" * 2 + init_bytes + manufacturer_data
+    return _pack_manufacturer_prefix(manufacturer_id) + manufacturer_data
