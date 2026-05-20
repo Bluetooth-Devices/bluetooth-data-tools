@@ -75,6 +75,7 @@ jobs:
       - name: Install poetry
         run: uv tool install poetry
       - name: Set up Python
+        id: setup-python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ matrix.python-version }}
@@ -87,7 +88,7 @@ jobs:
           path: |
             .venv
             src/bluetooth_data_tools/**/*.so
-          key: venv-v2-${{ runner.os }}-py${{ matrix.python-version }}-${{ matrix.extension }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd') }}
+          key: venv-v2-${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-${{ matrix.extension }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd') }}
       - name: Install Dependencies
         if: steps.cache-venv.outputs.cache-hit != 'true'
         run: |
@@ -123,6 +124,7 @@ jobs:
       - name: Install poetry
         run: uv tool install poetry
       - name: Set up Python
+        id: setup-python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ matrix.python-version }}
@@ -134,7 +136,7 @@ jobs:
           path: |
             .venv
             src/bluetooth_data_tools/**/*.so
-          key: venv-v2-${{ runner.os }}-benchmark-py${{ matrix.python-version }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd') }}
+          key: venv-v2-${{ runner.os }}-benchmark-py${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd') }}
       - name: Install Dependencies
         if: steps.cache-venv.outputs.cache-hit != 'true'
         run: poetry install --only=main,dev,benchmark
