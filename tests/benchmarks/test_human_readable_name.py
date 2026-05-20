@@ -15,3 +15,13 @@ def test_human_readable_name_with_name(benchmark: BenchmarkFixture) -> None:
 
 def test_human_readable_name_local_only(benchmark: BenchmarkFixture) -> None:
     benchmark(lambda: human_readable_name(None, _LOCAL_NAME, _ADDRESS))
+
+
+def test_human_readable_name_cached(benchmark: BenchmarkFixture) -> None:
+    human_readable_name("Sensor X", "Sensor X-1234", _ADDRESS)
+    benchmark(lambda: human_readable_name("Sensor X", "Sensor X-1234", _ADDRESS))
+
+
+def test_human_readable_name_name_none(benchmark: BenchmarkFixture) -> None:
+    human_readable_name(None, "Sensor X-1234", _ADDRESS)
+    benchmark(lambda: human_readable_name(None, "Sensor X-1234", _ADDRESS))
