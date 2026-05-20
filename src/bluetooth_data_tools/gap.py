@@ -237,7 +237,7 @@ def _uncached_parse_advertisement_bytes(
             local_name = gap_data[start:end].decode("utf-8", "replace")
         elif gap_type_num == TYPE_MANUFACTURER_SPECIFIC_DATA:
             splice_pos = start + 2
-            if splice_pos > total_length or splice_pos > end:
+            if splice_pos > end:
                 continue
             if manufacturer_data is _EMPTY_MANUFACTURER_DATA:
                 manufacturer_data = {}
@@ -294,7 +294,7 @@ def _uncached_parse_advertisement_bytes(
                     )
         elif gap_type_num == TYPE_SERVICE_DATA:
             splice_pos = start + 2
-            if splice_pos > total_length or splice_pos > end:
+            if splice_pos > end:
                 continue
             if service_data is _EMPTY_SERVICE_DATA:
                 service_data = {}
@@ -303,7 +303,7 @@ def _uncached_parse_advertisement_bytes(
             ] = gap_data[splice_pos:end]
         elif gap_type_num == TYPE_SERVICE_DATA_32BIT_UUID:
             splice_pos = start + 4
-            if splice_pos > total_length or splice_pos > end:
+            if splice_pos > end:
                 continue
             if service_data is _EMPTY_SERVICE_DATA:
                 service_data = {}
@@ -318,7 +318,7 @@ def _uncached_parse_advertisement_bytes(
             ]
         elif gap_type_num == TYPE_SERVICE_DATA_128BIT_UUID:
             splice_pos = start + 16
-            if splice_pos > total_length or splice_pos > end:
+            if splice_pos > end:
                 continue
             if service_data is _EMPTY_SERVICE_DATA:
                 service_data = {}
