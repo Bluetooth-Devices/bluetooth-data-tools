@@ -7,7 +7,7 @@
 project = "bluetooth-data-tools"
 copyright = "2023, J. Nick Koston"
 author = "J. Nick Koston"
-release = "1.29.14"
+release = "1.29.15"
 
 # General configuration
 extensions = [
