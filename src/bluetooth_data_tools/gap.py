@@ -6,6 +6,8 @@ from enum import IntEnum
 from functools import lru_cache, partial
 from typing import TYPE_CHECKING
 
+import cython
+
 BLE_UUID = "0000-1000-8000-00805f9b34fb"
 _LOGGER = logging.getLogger(__name__)
 
@@ -269,15 +271,16 @@ def _uncached_parse_advertisement_bytes(
             # per-iteration bounds branch; any 1-3 byte tail is dropped.
             safe_end = start + ((end - start) & ~3)
             for i in range(start, safe_end, 4):
-                # Assemble via uint local: in Cython the shift-by-24 of an
-                # unsigned char promotes to signed int and would yield a
-                # negative value when bit 31 is set; assigning to a
-                # cython.uint local recovers the unsigned 32-bit value.
+                # Cast each byte to unsigned int before shifting: in C an
+                # `unsigned char` operand of `<<` is promoted to (signed)
+                # `int`, so `gap_data[i + 3] << 24` would be undefined
+                # behavior when bit 31 is set. Casting keeps the operation
+                # well-defined on `unsigned int`.
                 uuid32_int = (
-                    gap_data[i]
-                    | (gap_data[i + 1] << 8)
-                    | (gap_data[i + 2] << 16)
-                    | (gap_data[i + 3] << 24)
+                    cython.cast(cython.uint, gap_data[i])
+                    | (cython.cast(cython.uint, gap_data[i + 1]) << 8)
+                    | (cython.cast(cython.uint, gap_data[i + 2]) << 16)
+                    | (cython.cast(cython.uint, gap_data[i + 3]) << 24)
                 )
                 service_uuids.append(_cached_uint32_int_as_uuid(uuid32_int))
         elif gap_type_num in {
@@ -310,11 +313,13 @@ def _uncached_parse_advertisement_bytes(
                 continue
             if service_data is _EMPTY_SERVICE_DATA:
                 service_data = {}
+            # Cast each byte to unsigned int before shifting to keep the
+            # << 24 well-defined (see TYPE_32BIT_SERVICE_UUID_* branch above).
             uuid32_int = (
-                gap_data[start]
-                | (gap_data[start + 1] << 8)
-                | (gap_data[start + 2] << 16)
-                | (gap_data[start + 3] << 24)
+                cython.cast(cython.uint, gap_data[start])
+                | (cython.cast(cython.uint, gap_data[start + 1]) << 8)
+                | (cython.cast(cython.uint, gap_data[start + 2]) << 16)
+                | (cython.cast(cython.uint, gap_data[start + 3]) << 24)
             )
             service_data[_cached_uint32_int_as_uuid(uuid32_int)] = gap_data[
                 splice_pos:end
