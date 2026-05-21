@@ -2,6 +2,7 @@
 from pytest_codspeed import BenchmarkFixture
 
 from bluetooth_data_tools import parse_advertisement_data
+from bluetooth_data_tools.gap import _parse_advertisement_data
 
 advs = [
     b"\x02\x01\x06\x03\x03\x12\x18\x10\tLOOKin_98F33163\x03\x19\xc1\x03",
@@ -94,3 +95,23 @@ def test_parse_advertisement_data_tuple(benchmark: BenchmarkFixture) -> None:
 
 def test_parse_advertisement_data(benchmark: BenchmarkFixture) -> None:
     benchmark(lambda: parse_advertisement_data(advs))
+
+
+def test_parse_advertisement_data_bytes_cache_fallthrough(
+    benchmark: BenchmarkFixture,
+) -> None:
+    """BLEGAPAdvertisement-cache misses should fall through to the bytes cache.
+
+    Mirrors the parse_advertisement_data_tuple fallthrough bench in
+    test_parse_gap_tuple.py: with the bytes-tuple cache hot, evicting the
+    BLEGAPAdvertisement entry should not pay the full parse cost again once
+    the wrapper rehydrates from the bytes cache.
+    """
+    advs_as_single_tuple = (b"".join(advs),)
+    parse_advertisement_data(advs_as_single_tuple)
+
+    def run() -> None:
+        _parse_advertisement_data.cache_clear()
+        parse_advertisement_data(advs_as_single_tuple)
+
+    benchmark(run)
