@@ -5,7 +5,7 @@ from bluetooth_data_tools import (
     parse_advertisement_data_bytes,
     parse_advertisement_data_tuple,
 )
-from bluetooth_data_tools.gap import _uncached_parse_advertisement_data
+from bluetooth_data_tools.gap import _parse_advertisement_data_miss_via_bytes
 
 advs = (
     b"\x02\x01\x06\x03\x03\x12\x18\x10\tLOOKin_98F33163\x03\x19\xc1\x03",
@@ -92,7 +92,7 @@ def test_parse_advertisement_data_tuple(benchmark: BenchmarkFixture) -> None:
 
 def test_parse_advertisement_data_tuple_uncached(benchmark: BenchmarkFixture) -> None:
     joined_advs = b"".join(advs)
-    benchmark(lambda: _uncached_parse_advertisement_data(joined_advs))
+    benchmark(lambda: _parse_advertisement_data_miss_via_bytes(joined_advs))
 
 
 def test_parse_advertisement_data_tuple_bytes_cache_fallthrough(

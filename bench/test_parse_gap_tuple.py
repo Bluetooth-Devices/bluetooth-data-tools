@@ -2,7 +2,7 @@ from bluetooth_data_tools import (
     parse_advertisement_data_bytes,
     parse_advertisement_data_tuple,
 )
-from bluetooth_data_tools.gap import _uncached_parse_advertisement_data
+from bluetooth_data_tools.gap import _parse_advertisement_data_miss_via_bytes
 
 #  cythonize -X language_level=3 -a -i  src/bluetooth_data_tools/gap.py
 
@@ -91,7 +91,7 @@ def test_parse_advertisement_data_tuple(benchmark):
 
 def test_parse_advertisement_data_tuple_uncached(benchmark):
     joined_advs = b"".join(advs)
-    benchmark(lambda: _uncached_parse_advertisement_data(joined_advs))
+    benchmark(lambda: _parse_advertisement_data_miss_via_bytes(joined_advs))
 
 
 def test_parse_advertisement_data_tuple_bytes_cache_fallthrough(benchmark):

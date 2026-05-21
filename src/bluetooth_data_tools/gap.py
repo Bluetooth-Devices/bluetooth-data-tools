@@ -149,7 +149,7 @@ def _parse_advertisement_data(
     data: bytes,
 ) -> BLEGAPAdvertisement:
     """Parse advertisement data and return a BLEGAPAdvertisement."""
-    return _uncached_parse_advertisement_data(data)
+    return _parse_advertisement_data_miss_via_bytes(data)
 
 
 _cached_parse_advertisement_data = _parse_advertisement_data
@@ -182,17 +182,17 @@ def parse_advertisement_data(
     return _cached_parse_advertisement_data(b"".join(data))
 
 
-def _uncached_parse_advertisement_data(data: bytes) -> BLEGAPAdvertisement:
+def _parse_advertisement_data_miss_via_bytes(data: bytes) -> BLEGAPAdvertisement:
     # Route BLEGAPAdvertisement-cache misses through the bytes-keyed cache
-    # (symmetric with _uncached_parse_advertisement_tuple, see #261). Identical
-    # payloads reaching this miss path skip the full parse when the bytes-tuple
-    # cache already holds the result, and a true miss populates that cache so
-    # subsequent parse_advertisement_data_bytes / parse_advertisement_data_tuple
-    # calls on the same payload also win.
+    # (symmetric with _parse_advertisement_tuple_miss_via_bytes, see #261).
+    # Identical payloads reaching this miss path skip the full parse when the
+    # bytes-tuple cache already holds the result, and a true miss populates
+    # that cache so subsequent parse_advertisement_data_bytes /
+    # parse_advertisement_data_tuple calls on the same payload also win.
     return BLEGAPAdvertisement(*parse_advertisement_data_bytes(data))
 
 
-def _uncached_parse_advertisement_tuple(
+def _parse_advertisement_tuple_miss_via_bytes(
     data: tuple[bytes, ...],
 ) -> BLEGAPAdvertisementTupleType:
     # Route tuple-cache misses through the bytes-keyed cache so identical
@@ -385,11 +385,11 @@ if TYPE_CHECKING:
         manufacturer_data: dict[int, bytes]
         tx_power: int | None
         """
-        return _uncached_parse_advertisement_tuple(data)
+        return _parse_advertisement_tuple_miss_via_bytes(data)
 else:
     parse_advertisement_data_bytes = lru_cache(maxsize=1024)(
         _uncached_parse_advertisement_bytes
     )
     parse_advertisement_data_tuple = lru_cache(maxsize=256)(
-        _uncached_parse_advertisement_tuple
+        _parse_advertisement_tuple_miss_via_bytes
     )

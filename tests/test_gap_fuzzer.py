@@ -15,7 +15,7 @@ import os
 import random
 
 from bluetooth_data_tools.gap import (
-    _uncached_parse_advertisement_data,
+    _parse_advertisement_data_miss_via_bytes,
     parse_advertisement_data,
 )
 
@@ -32,7 +32,7 @@ def test_gap_fuzzer_random_bytes_do_not_crash() -> None:
             bytes(rng.randint(0, 255) for _ in range(rng.randint(1, 31))),
             bytes(rng.randint(0, 255) for _ in range(rng.randint(1, 31))),
         )
-        _uncached_parse_advertisement_data(b"".join(adv))
+        _parse_advertisement_data_miss_via_bytes(b"".join(adv))
 
 
 def test_gap_fuzzer_truncated_length_does_not_crash() -> None:

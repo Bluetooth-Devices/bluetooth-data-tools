@@ -56,6 +56,6 @@ cpdef parse_advertisement_data(object data)
 )
 cpdef _uncached_parse_advertisement_bytes(bytes gap_bytes)
 
-cpdef _uncached_parse_advertisement_data(bytes data)
+cpdef _parse_advertisement_data_miss_via_bytes(bytes data)
 
-cpdef _uncached_parse_advertisement_tuple(tuple data)
+cpdef _parse_advertisement_tuple_miss_via_bytes(tuple data)
