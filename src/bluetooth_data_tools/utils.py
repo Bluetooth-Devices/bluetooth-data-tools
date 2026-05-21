@@ -39,6 +39,7 @@ def short_address(address: str) -> str:
     return f"{second_last.upper()}{last.upper()}"[-4:]
 
 
+@lru_cache(maxsize=512)
 def human_readable_name(name: str | None, local_name: str, address: str) -> str:
     """Return a human readable name for the given name, local_name, and address."""
     return f"{name or local_name} ({short_address(address)})"
