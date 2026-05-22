@@ -86,6 +86,16 @@ def test_parse_advertisement_data(benchmark):
     benchmark(lambda: parse_advertisement_data(advs))
 
 
+def test_parse_advertisement_single_tuple(benchmark):
+    advs_as_single_tuple = (b"".join(advs),)
+    benchmark(lambda: parse_advertisement_data(advs_as_single_tuple))
+
+
+def test_parse_advertisement_data_tuple(benchmark):
+    advs_as_tuple = tuple(advs)
+    benchmark(lambda: parse_advertisement_data(advs_as_tuple))
+
+
 def test_parse_advertisement_data_bytes_cache_fallthrough(benchmark):
     advs_as_single_tuple = (b"".join(advs),)
     parse_advertisement_data(advs_as_single_tuple)
