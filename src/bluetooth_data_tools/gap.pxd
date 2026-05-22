@@ -23,6 +23,7 @@ cdef class BLEGAPAdvertisement:
     cdef readonly object manufacturer_data
     cdef readonly object tx_power
 
+cdef cython.uint TYPE_FLAGS
 cdef cython.uint TYPE_SHORT_LOCAL_NAME
 cdef cython.uint TYPE_COMPLETE_LOCAL_NAME
 cdef cython.uint TYPE_MANUFACTURER_SPECIFIC_DATA
