@@ -219,6 +219,28 @@ def test_parse_advertisement_short_local_name():
     assert adv.tx_power is None
 
 
+def test_parse_advertisement_complete_overrides_short_local_name():
+    # SHORT (0x08) appears first then COMPLETE (0x09) follows; COMPLETE must
+    # overwrite the short form so callers always see the longer name when
+    # both are present.
+    data = [b"\x04\x08Bar\x04\x09Foo"]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name == "Foo"
+
+
+def test_parse_advertisement_short_local_name_ignored_after_complete():
+    # COMPLETE (0x09) appears first then SHORT (0x08) follows; the SHORT
+    # branch is gated on ``local_name is None``, so the previously-set
+    # complete name must survive.
+    data = [b"\x04\x09Foo\x04\x08Bar"]
+
+    adv = parse_advertisement_data(data)
+
+    assert adv.local_name == "Foo"
+
+
 def test_parse_advertisement_data_32bit_service_data():
     data = [
         b"\x07\x20\x1a\x02\n\x05\n\xff",
