@@ -122,9 +122,7 @@ def _build_random_advertisement(rng: random.Random) -> tuple[bytes, dict]:
         )
         if kind == "flags":
             # Common in real adverts and explicitly fast-skipped — no output.
-            chunks.append(
-                _encode_ad(_AD_TYPE_FLAGS, bytes([rng.randint(0, 0xFF)]))
-            )
+            chunks.append(_encode_ad(_AD_TYPE_FLAGS, bytes([rng.randint(0, 0xFF)])))
         elif kind == "appearance":
             # A type the parser does not handle — must fall through to nothing.
             body = bytes(rng.randint(0, 255) for _ in range(rng.randint(1, 4)))
