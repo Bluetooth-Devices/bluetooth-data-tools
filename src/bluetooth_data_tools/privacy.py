@@ -2,9 +2,10 @@
 
 This process uses 128bit IRK as encryption key for ECB AES.
 
-One half of address is used to store a random 24bit number
-(prand). This is encrypted to produce a "hash". The top 24 bits
-of the hash should math the other half of the MAC address.
+One half of the address stores a random 24bit number (prand).
+This is encrypted to produce a "hash": the least significant 24
+bits of the AES output. That hash should match the other half of
+the MAC address.
 
 See https://www.mdpi.com/2227-7390/10/22/4346
 """
