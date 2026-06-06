@@ -13,6 +13,7 @@ bytes through them adds cost without coverage.
 
 import os
 import random
+from typing import Any
 
 from bluetooth_data_tools.gap import (
     _uncached_parse_advertisement_data,
@@ -88,7 +89,7 @@ def test_gap_fuzzer_truncated_length_does_not_crash() -> None:
         assert adv.service_uuids == []
 
 
-def _build_random_advertisement(rng: random.Random) -> tuple[bytes, dict]:
+def _build_random_advertisement(rng: random.Random) -> tuple[bytes, dict[str, Any]]:
     """Build a well-formed advertisement and the output it must parse back to.
 
     Returns ``(gap_bytes, expected)`` where ``expected`` mirrors the parser's
@@ -98,7 +99,7 @@ def _build_random_advertisement(rng: random.Random) -> tuple[bytes, dict]:
     unhandled type are interleaved to assert they never corrupt the result.
     """
     chunks: list[bytes] = []
-    expected: dict = {
+    expected: dict[str, Any] = {
         "local_name": None,
         "service_uuids": [],
         "service_data": {},
