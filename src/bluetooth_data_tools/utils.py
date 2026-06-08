@@ -33,10 +33,11 @@ mac_to_int = lru_cache(maxsize=256)(_mac_to_int)
 
 def short_address(address: str) -> str:
     """Convert a Bluetooth address to a short address."""
-    results = address.replace("-", ":").split(":")
-    last: str = results[-1]
-    second_last: str = results[-2]
-    return f"{second_last.upper()}{last.upper()}"[-4:]
+    # Strip both separators (matching mac_to_int) so the colon, hyphen, and
+    # unseparated 12-char forms all resolve to the trailing two octets. The
+    # previous split-on-separator approach raised IndexError on the
+    # unseparated form that mac_to_int already accepts.
+    return address.replace(":", "").replace("-", "").upper()[-4:]
 
 
 @lru_cache(maxsize=512)

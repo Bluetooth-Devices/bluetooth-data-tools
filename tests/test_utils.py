@@ -42,6 +42,30 @@ def test_short_address():
     assert short_address("AA:BB:CC:DD:EE:FF") == "EEFF"
 
 
+def test_short_address_hyphen_separator():
+    """Windows-style hyphen-separated addresses are accepted, matching mac_to_int."""
+    assert short_address("AA-BB-CC-DD-EE-FF") == "EEFF"
+
+
+def test_short_address_unseparated():
+    """Unseparated 12-char form is accepted, matching mac_to_int."""
+    assert short_address("AABBCCDDEEFF") == "EEFF"
+
+
+def test_short_address_lowercase():
+    assert short_address("aa:bb:cc:dd:ee:ff") == "EEFF"
+
+
+@pytest.mark.parametrize(
+    "address",
+    ["AA:BB:CC:DD:EE:FF", "AA-BB-CC-DD-EE-FF", "AABBCCDDEEFF", "aabbccddeeff"],
+)
+def test_short_address_format_parity(address):
+    """Every address format mac_to_int accepts must also resolve via short_address."""
+    assert mac_to_int(address) == 0xAABBCCDDEEFF
+    assert short_address(address) == "EEFF"
+
+
 def test_human_readable_name():
     assert (
         human_readable_name("My Device", "Your Device", "AA:BB:CC:DD:EE:FF")
