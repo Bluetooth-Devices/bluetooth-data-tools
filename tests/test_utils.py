@@ -93,3 +93,27 @@ def test_mac_to_int_invalid(bad):
     """Malformed input raises ValueError (matches int() fallback semantics)."""
     with pytest.raises(ValueError):
         mac_to_int(bad)
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        "AABBCCDDEEFFA1234",  # 17 hex chars, no separators
+        "AABB-CCDDEEFF-123",  # 17 chars, separators in the wrong positions
+        "AA:BB:CC:DD:EE:F",  # 16 chars (too short by one)
+        "AA:BB:CC:DD:EE:FFF",  # 18 chars (too long by one)
+        "AABBCCDDEE_F",  # 12 chars with a non-hex underscore
+        "AABBCCDDEE F",  # 12 chars with embedded whitespace
+    ],
+)
+def test_mac_to_int_invalid_parity(bad):
+    """Inputs the native parser rejects must also be rejected by the
+    pure-Python fallback, so both build modes behave identically.
+
+    The old fallback (strip separators, then int(..., 16)) was looser than
+    the native C parser: it ignored separator position, accepted a fully
+    unseparated 17-char hex string as a 68-bit value, and let int() honor
+    underscore digit separators / surrounding whitespace.
+    """
+    with pytest.raises(ValueError):
+        mac_to_int(bad)
