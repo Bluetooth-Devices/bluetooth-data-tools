@@ -6,7 +6,7 @@ version: 2
 
 # Set the version of Python and other tools you might need
 build:
-  os: ubuntu-20.04
+  os: ubuntu-24.04
   tools:
     python: "3.12"
   jobs:
@@ -14,8 +14,10 @@ build:
       # Install poetry
       - pip install poetry
     post_install:
-      # Install dependencies
-      - VIRTUAL_ENV=$READTHEDOCS_VIRTUALENV_PATH poetry install --with docs
+      # The docs are Markdown-only (myst-parser, no autodoc), so they never
+      # import bluetooth_data_tools. Install just the docs group and skip the
+      # root package to avoid building the Cython extensions for nothing.
+      - VIRTUAL_ENV=$READTHEDOCS_VIRTUALENV_PATH poetry install --only docs --no-root
 
 # Build documentation in the docs directory with Sphinx
 sphinx:
