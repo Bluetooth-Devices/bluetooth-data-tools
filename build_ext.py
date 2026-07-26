@@ -60,6 +60,9 @@ class BuildExt(build_ext):
             probe = join(tmpdir, "probe.c")
             with open(probe, "w") as handle:
                 handle.write("#include <Python.h>\nint main(void) { return 0; }\n")
+            # The probe writes the compiler's own errors to the build log when
+            # the flag is unusable; say so, or a successful build looks broken.
+            print(f"probing {flag}; compiler errors below are expected if unusable")
             try:
                 self.compiler.compile(
                     [probe],
