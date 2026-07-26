@@ -16,7 +16,7 @@ TODO: Document usage
 
 `parse_advertisement_data`, `parse_advertisement_data_bytes` and
 `parse_advertisement_data_tuple` are all memoized. Two callers parsing the same
-payload receive the *same* `service_uuids` list, `service_data` dict and
+payload receive the _same_ `service_uuids` list, `service_data` dict and
 `manufacturer_data` dict — not copies. Advertisements that carry none of a given
 AD type get a shared module-level empty container, so the aliasing also spans
 unrelated payloads.
