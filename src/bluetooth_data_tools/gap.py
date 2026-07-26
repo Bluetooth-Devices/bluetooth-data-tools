@@ -254,7 +254,10 @@ def _uncached_parse_advertisement_bytes(
         if end > total_length or end - start <= 0:
             _LOGGER.debug(
                 "Invalid BLE GAP AD structure at offset %s: %s (length=%s)",
-                offset,
+                # ``offset`` has already advanced past this structure, so report
+                # where it actually started (``start`` is its offset plus the
+                # length and type bytes).
+                start - 2,
                 gap_bytes,
                 length,
             )
