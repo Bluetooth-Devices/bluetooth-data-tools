@@ -612,6 +612,19 @@ def test_invalid_ad_debug_log_renders_without_error(caplog):
     assert any("Invalid BLE GAP AD structure" in m for m in messages)
 
 
+def test_invalid_ad_debug_log_reports_structure_offset(caplog):
+    """The logged offset must locate the malformed AD, not the structure after it."""
+    # AD #0 at offset 0: valid flags. AD #1 at offset 3: length=0x20 overruns
+    # the 7-byte buffer. Unique payload so the lru_cache can't serve a hit.
+    data = b"\x02\x01\x06\x20\xff\xaa\xbb"
+    with caplog.at_level("DEBUG", logger="bluetooth_data_tools.gap"):
+        parse_advertisement_data((data,))
+    messages = [r.getMessage() for r in caplog.records]
+    assert any("Invalid BLE GAP AD structure at offset 3:" in m for m in messages), (
+        messages
+    )
+
+
 def test_out_of_bounds_length_by_one():
     """Test out of bound length by one."""
 
