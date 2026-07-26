@@ -1,0 +1,76 @@
+name: Release check
+
+# Nothing on this repo asserted "main == published", so two separate incidents
+# left main unreleased while every check on GitHub looked green: v1.29.19 was
+# tagged but its wheels failed, so it never reached PyPI; 1.29.22 was computed
+# but PSR lost the push race, and the follow-up merge that would have retried it
+# ran no workflow at all. Both are invisible from run conclusions alone -- the
+# release path fails after, or instead of, the checks that report status.
+#
+# This asserts the two properties directly:
+#   1. main has no releasable commits that PSR has not turned into a version.
+#   2. the newest released version actually exists on PyPI.
+
+on:
+  schedule:
+    # Daily; a backstop for anything the post-CI run below misses.
+    - cron: "17 6 * * *"
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  released:
+    name: main is published
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # PSR needs the full history and all tags to work out both versions.
+          fetch-depth: 0
+          ref: main
+      # Same pinned action as ci.yml's release job, so the verdict comes from
+      # the exact tool that cuts releases. --noop suppresses the commit/tag/push
+      # but still reports the version decision through the outputs.
+      - name: Determine the release state of main
+        id: psr
+        uses: python-semantic-release/python-semantic-release@39dd2052f2ce8282a5d932c31d58a2ca06d2550e # v10.6.1
+        with:
+          github_token: ${{ github.token }}
+          no_operation_mode: true
+
+      - name: Check main has no unreleased changes
+        if: steps.psr.outputs.released == 'true'
+        env:
+          CURRENT: ${{ steps.psr.outputs.previous_version }}
+          PENDING: ${{ steps.psr.outputs.version }}
+        run: |
+          echo "::error::main has unreleased changes: $CURRENT released, $PENDING pending. Run the CI workflow against main (workflow_dispatch) to cut it."
+          exit 1
+
+      # With nothing releasable, PSR reports the current version -- which is what
+      # the last release published, so it is the version that must exist on PyPI.
+      - name: Check the released version is on PyPI
+        env:
+          VERSION: ${{ steps.psr.outputs.version }}
+        run: |
+          set -euo pipefail
+          if [ -z "$VERSION" ]; then
+            echo "::error::PSR reported no version for main."
+            exit 1
+          fi
+          url="https://pypi.org/pypi/bluetooth-data-tools/${VERSION}/json"
+          if ! curl -sfL -o /dev/null "$url"; then
+            echo "::error::Version $VERSION is tagged but absent from PyPI -- the publish leg of its release failed."
+            exit 1
+          fi
+          echo "$VERSION is on PyPI."
