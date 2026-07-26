@@ -11,7 +11,13 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class BLEGAPAdvertisement:
-    """GATT Advertisement and Scan Response Data (GAP)."""
+    """GATT Advertisement and Scan Response Data (GAP).
+
+    Instances are produced by ``parse_advertisement_data`` and are cached, so
+    the same instance -- and the same ``service_uuids`` / ``service_data`` /
+    ``manufacturer_data`` containers -- is handed to every caller that parses
+    the same payload. Treat all attributes as read-only; copy before mutating.
+    """
 
     __slots__ = (
         "local_name",
@@ -140,6 +146,11 @@ def _uint32_int_as_uuid(uuid32_int: int) -> str:
 _cached_uint32_int_as_uuid = _uint32_int_as_uuid
 
 
+# Shared empty containers, returned as-is when an advertisement carries none of
+# the corresponding AD types (the common case) to avoid allocating on the parse
+# path. They are handed out unguarded, so mutating a returned container is
+# process-wide corruption, not a local mistake -- see the note on
+# parse_advertisement_data_bytes.
 _EMPTY_MANUFACTURER_DATA: dict[int, bytes] = {}
 _EMPTY_SERVICE_DATA: dict[str, bytes] = {}
 _EMPTY_SERVICE_UUIDS: list[str] = []
@@ -175,7 +186,10 @@ _cached_parse_advertisement_data_from_tuple = _parse_advertisement_data_from_tup
 def parse_advertisement_data(
     data: Iterable[bytes],
 ) -> BLEGAPAdvertisement:
-    """Parse advertisement data and return a BLEGAPAdvertisement."""
+    """Parse advertisement data and return a BLEGAPAdvertisement.
+
+    The result is cached and shared between callers -- see BLEGAPAdvertisement.
+    """
     if type(data) is tuple:
         if len(data) == 1:
             return _cached_parse_advertisement_data(data[0])
@@ -208,6 +222,14 @@ def _uncached_parse_advertisement_tuple(
 def _uncached_parse_advertisement_bytes(
     gap_bytes: bytes,
 ) -> BLEGAPAdvertisementTupleType:
+    """Parse raw advertisement bytes into a BLEGAPAdvertisementTupleType.
+
+    The returned containers are shared: the public entry points are cached, and
+    an advertisement carrying none of a given AD type yields a module-level
+    empty container. Callers MUST treat the result as read-only -- appending to
+    a returned ``service_uuids`` list mutates what every other caller sees,
+    including for unrelated payloads. Copy first if you need to modify.
+    """
     manufacturer_data = _EMPTY_MANUFACTURER_DATA
     service_data = _EMPTY_SERVICE_DATA
     service_uuids = _EMPTY_SERVICE_UUIDS
@@ -370,6 +392,9 @@ if TYPE_CHECKING:
         service_data: dict[str, bytes]
         manufacturer_data: dict[int, bytes]
         tx_power: int | None
+
+        The returned containers are shared between callers and MUST be treated
+        as read-only; see _uncached_parse_advertisement_bytes.
         """
         return _uncached_parse_advertisement_bytes(gap_bytes)
 
@@ -390,6 +415,9 @@ if TYPE_CHECKING:
         service_data: dict[str, bytes]
         manufacturer_data: dict[int, bytes]
         tx_power: int | None
+
+        The returned containers are shared between callers and MUST be treated
+        as read-only; see _uncached_parse_advertisement_bytes.
         """
         return _uncached_parse_advertisement_tuple(data)
 else:
