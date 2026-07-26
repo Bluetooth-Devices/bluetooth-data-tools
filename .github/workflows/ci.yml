@@ -88,14 +88,16 @@ jobs:
           path: |
             .venv
             src/bluetooth_data_tools/**/*.so
-          key: venv-v2-${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-${{ matrix.extension }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd') }}
+          key: venv-v2-${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-${{ matrix.extension }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd', 'src/bluetooth_data_tools/**/*.h') }}
       - name: Install Dependencies
         if: steps.cache-venv.outputs.cache-hit != 'true'
         run: |
           if [ "${{ matrix.extension }}" = "skip_cython" ]; then
             SKIP_CYTHON=1 poetry install --only=main,dev
           else
-            poetry install --only=main,dev
+            # Without this the extensions can silently fail to compile and the
+            # job still passes -- testing the pure-Python path a second time.
+            REQUIRE_CYTHON=1 poetry install --only=main,dev
           fi
         shell: bash
       - name: Test with Pytest
@@ -136,7 +138,7 @@ jobs:
           path: |
             .venv
             src/bluetooth_data_tools/**/*.so
-          key: venv-v2-${{ runner.os }}-benchmark-py${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd') }}
+          key: venv-v2-${{ runner.os }}-benchmark-py${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('poetry.lock', 'pyproject.toml', 'build_ext.py', 'src/bluetooth_data_tools/**/*.py', 'src/bluetooth_data_tools/**/*.pyx', 'src/bluetooth_data_tools/**/*.pxd', 'src/bluetooth_data_tools/**/*.h') }}
       - name: Install Dependencies
         if: steps.cache-venv.outputs.cache-hit != 'true'
         run: poetry install --only=main,dev,benchmark
@@ -272,6 +274,9 @@ jobs:
     name: Wheels for ${{ matrix.os }} (${{ matrix.musl == 'musllinux' && 'musllinux' || 'manylinux' }}) ${{ matrix.qemu }} ${{ matrix.pyver }}
     runs-on: ${{ matrix.os }}
     strategy:
+      # One broken target must not cancel the other 18 and hide which
+      # platforms are actually failing.
+      fail-fast: false
       matrix:
         os:
           [

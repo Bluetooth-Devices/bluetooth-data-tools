@@ -1,0 +1,47 @@
+name: Wheel smoke
+
+# The release wheel matrix in ci.yml only runs after a version bump has already
+# been tagged, so a build change that breaks a wheel target is discovered too
+# late to block: the tag exists, upload_pypi is skipped, and the version never
+# reaches PyPI. This builds the one target that has actually broken that way
+# (manylinux armv7l cp313, emulated) whenever a build input changes on a PR.
+
+on:
+  pull_request:
+    paths:
+      - "build_ext.py"
+      - "pyproject.toml"
+      - "src/**/*.pyx"
+      - "src/**/*.pxd"
+      - "src/**/*.h"
+      - ".github/workflows/wheel-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wheel-smoke-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  armv7l:
+    name: manylinux armv7l cp313 wheel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - uses: docker/setup-qemu-action@06116385d9baf250c9f4dcb4858b16962ea869c3 # v4.1.0
+        with:
+          platforms: all
+          # Keep in sync with ci.yml's build_wheels job
+          # xref https://github.com/docker/setup-qemu-action/issues/188
+          image: tonistiigi/binfmt:qemu-v8.1.5
+      - uses: pypa/cibuildwheel@8d2b08b68458a16aeb24b64e68a09ab1c8e82084 # v3.4.1
+        env:
+          CIBW_ARCHS_LINUX: armv7l
+          CIBW_BUILD: cp313-manylinux_armv7l
+          # Fail the build instead of silently shipping a pure-Python wheel
+          REQUIRE_CYTHON: 1
