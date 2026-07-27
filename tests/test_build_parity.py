@@ -1,6 +1,6 @@
 """Differential tests: the compiled build must behave like the pure-Python one.
 
-Two modules ship a second implementation that the test suite never compares
+Three modules ship a second implementation that the test suite never compares
 against the first:
 
 * ``utils.py`` picks the native ``_utils_impl`` parsers when the extension
@@ -15,6 +15,12 @@ against the first:
   promotes to *signed* int in C and would otherwise yield a negative 32-bit
   UUID. The raw pointer also means the compiled parser has no bounds-check
   safety net -- every check in the loop is manual.
+* ``time.py`` exports ``monotonic_time_coarse`` as one of *three* different
+  callables depending on platform and build: the native ``_time_impl``
+  cyfunction, a ``partial(time.clock_gettime, CLOCK_MONOTONIC_COARSE)``
+  fallback, or plain ``time.monotonic`` off Linux. It has no test file at all,
+  so the arithmetic in ``_time_impl.pyx`` -- which reassembles a ``timespec``
+  by hand -- is unasserted, on the hot path of every advertisement timestamp.
 
 CI runs the suite once with ``SKIP_CYTHON`` and once with ``REQUIRE_CYTHON``,
 but each run only ever asserts against a single build. These tests load the
@@ -29,6 +35,7 @@ from __future__ import annotations
 import importlib.util
 import random
 import sys
+import time
 from collections.abc import Callable
 from pathlib import Path
 from types import ModuleType
@@ -37,6 +44,7 @@ from typing import Any
 import pytest
 
 import bluetooth_data_tools.gap as gap_build
+import bluetooth_data_tools.time as time_build
 import bluetooth_data_tools.utils as utils_build
 
 _PACKAGE = "bluetooth_data_tools"
@@ -85,6 +93,7 @@ def _load_pure(name: str, *, block: str | None = None) -> ModuleType:
 
 pure_gap = _load_pure("gap")
 pure_utils = _load_pure("utils", block="_utils_impl")
+pure_time = _load_pure("time", block="_time_impl")
 
 
 def _outcome(func: Callable[..., Any], *args: Any) -> Any:
@@ -104,11 +113,16 @@ def test_pure_modules_are_distinct_objects() -> None:
     """Guard the harness itself: a no-op load would make every test vacuous."""
     assert pure_gap is not gap_build
     assert pure_utils is not utils_build
+    assert pure_time is not time_build
     assert pure_gap._uncached_parse_advertisement_bytes is not (
         gap_build._uncached_parse_advertisement_bytes
     )
     # The fallback must be the pure-Python def, never the native cyfunction.
     assert pure_utils._mac_to_int.__module__ != f"{_PACKAGE}._utils_impl"
+    assert (
+        getattr(pure_time.monotonic_time_coarse, "__module__", None)
+        != f"{_PACKAGE}._time_impl"
+    )
 
 
 def _encode_ad(ad_type: int, payload: bytes) -> bytes:
@@ -337,3 +351,79 @@ def test_int_to_bluetooth_address_round_trips_through_mac_to_int() -> None:
         address = utils_build._int_to_bluetooth_address(value)
         assert utils_build._mac_to_int(address) == value
         assert pure_utils._mac_to_int(address) == value
+
+
+# The native reader does ``tv_sec + tv_nsec / 1e9`` in C while CPython's
+# ``clock_gettime`` converts the same ``timespec`` through an int64 nanosecond
+# count, so two identical kernel readings can land one ULP apart. This epsilon
+# absorbs that last bit while staying ~1000x below the clock's own 1ms
+# resolution -- far too small to hide a units, scaling or clock-id error.
+_ULP_SLACK = 1e-6
+
+# ``time.py`` only installs the coarse clock after checking it agrees with
+# ``time.monotonic()`` to within a second, and that check runs under
+# ``suppress(Exception)`` -- a failure downgrades the export silently rather
+# than raising. This pins the same bound as an assertion instead.
+_COARSE_TOLERANCE = 1.0
+
+
+def test_builds_agree_on_which_clock_to_use() -> None:
+    """Blocking the extension must change the callable, not the decision.
+
+    ``_USE_COARSE_MONOTONIC_TIME`` is decided by probing the platform, before
+    the native import is attempted, so it cannot depend on the build. If it
+    does, the fallback is answering a different question than the native path.
+    """
+    assert pure_time._USE_COARSE_MONOTONIC_TIME == time_build._USE_COARSE_MONOTONIC_TIME
+    if not time_build._USE_COARSE_MONOTONIC_TIME:
+        # No coarse clock: both builds must fall all the way back to the
+        # stdlib, not to a half-configured partial.
+        assert time_build.monotonic_time_coarse is time.monotonic
+        assert pure_time.monotonic_time_coarse is time.monotonic
+
+
+def test_monotonic_time_coarse_reads_the_same_clock_as_the_pure_fallback() -> None:
+    """The built reader must land between two reads of the pure fallback.
+
+    Both read ``CLOCK_MONOTONIC_COARSE``, so sandwiching one between two calls
+    to the other is an exact ordering assertion rather than a tolerance guess:
+    any scaling, unit or clock-id mistake in ``_time_impl.pyx`` puts the value
+    outside the bracket, however small the drift.
+    """
+    if not time_build._USE_COARSE_MONOTONIC_TIME:
+        pytest.skip("platform has no usable CLOCK_MONOTONIC_COARSE")
+    built = time_build.monotonic_time_coarse
+    pure = pure_time.monotonic_time_coarse
+    for _ in range(1000):
+        before = pure()
+        value = built()
+        after = pure()
+        assert before - _ULP_SLACK <= value <= after + _ULP_SLACK
+        # And the same bracket in the other direction, so a broken *pure*
+        # fallback cannot widen the window it is being measured against.
+        before = built()
+        value = pure()
+        after = built()
+        assert before - _ULP_SLACK <= value <= after + _ULP_SLACK
+
+
+def test_monotonic_time_coarse_tracks_time_monotonic() -> None:
+    """Whatever got exported must still be a monotonic clock in seconds.
+
+    This is the invariant ``time.py``'s import-time probe assumes and then
+    swallows on failure -- and the only thing standing between a wrong
+    ``timespec`` conversion and every advertisement carrying a bogus timestamp.
+    """
+    for reader in (time_build.monotonic_time_coarse, pure_time.monotonic_time_coarse):
+        before = time.monotonic()
+        value = reader()
+        after = time.monotonic()
+        assert isinstance(value, float)
+        assert before - _COARSE_TOLERANCE <= value <= after + _COARSE_TOLERANCE
+
+
+def test_monotonic_time_coarse_never_goes_backwards() -> None:
+    """Successive reads must be non-decreasing in both builds."""
+    for reader in (time_build.monotonic_time_coarse, pure_time.monotonic_time_coarse):
+        readings = [reader() for _ in range(10000)]
+        assert readings == sorted(readings)
