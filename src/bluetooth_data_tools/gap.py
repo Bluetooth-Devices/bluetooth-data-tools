@@ -156,6 +156,32 @@ _EMPTY_SERVICE_DATA: dict[str, bytes] = {}
 _EMPTY_SERVICE_UUIDS: list[str] = []
 
 
+def _log_invalid_ad(
+    offset: int, reason: str, gap_type_num: int, length: int, gap_bytes: bytes_
+) -> None:
+    """Report one malformed AD structure at debug level.
+
+    Every rejection in the parse loop funnels through here so the fields are
+    always reported in the same order and mean the same thing -- in particular
+    ``offset`` is the malformed structure's own offset, not the parser's
+    already-advanced cursor. Per-site format strings are how that convention
+    drifted before.
+
+    Only ever called from a branch that malformed input reaches, so a
+    well-formed advertisement pays nothing for it. Repeats are bounded by the
+    lru_caches on the public entry points: a device spamming one bad payload
+    parses -- and logs -- once.
+    """
+    _LOGGER.debug(
+        "Invalid BLE GAP AD structure at offset %s: %s (type=0x%02X, length=%s, data=%s)",
+        offset,
+        reason,
+        gap_type_num,
+        length,
+        gap_bytes,
+    )
+
+
 @lru_cache(maxsize=256)
 def _parse_advertisement_data(
     data: bytes,
@@ -229,6 +255,12 @@ def _uncached_parse_advertisement_bytes(
     empty container. Callers MUST treat the result as read-only -- appending to
     a returned ``service_uuids`` list mutates what every other caller sees,
     including for unrelated payloads. Copy first if you need to modify.
+
+    Malformed input is never fatal: the offending AD structure is dropped and
+    every drop is reported once at DEBUG on ``bluetooth_data_tools.gap``. That
+    log is what an operator turns on when a device misbehaves, so silently
+    discarding a structure -- and with it a whole field of the result -- is a
+    defect even though the parse still succeeds.
     """
     manufacturer_data = _EMPTY_MANUFACTURER_DATA
     service_data = _EMPTY_SERVICE_DATA
@@ -246,20 +278,28 @@ def _uncached_parse_advertisement_bytes(
             offset += 1  # Handle zero padding
             continue
         if not (gap_type_num := gap_data[offset + 1]):
+            _log_invalid_ad(
+                offset, "0x00 is not a defined AD type", gap_type_num, length, gap_bytes
+            )
             offset += 1 + length  # Skip empty type
             continue
         start = offset + 2
         end = start + length - 1
         offset += 1 + length
         if end > total_length or end - start <= 0:
-            _LOGGER.debug(
-                "Invalid BLE GAP AD structure at offset %s: %s (length=%s)",
+            _log_invalid_ad(
                 # ``offset`` has already advanced past this structure, so report
                 # where it actually started (``start`` is its offset plus the
                 # length and type bytes).
                 start - 2,
-                gap_bytes,
+                (
+                    "declared length overruns the buffer"
+                    if end > total_length
+                    else "declared length leaves no payload"
+                ),
+                gap_type_num,
                 length,
+                gap_bytes,
             )
             continue
         # FLAGS (0x01) appears in nearly every legacy advertisement and is
@@ -274,6 +314,13 @@ def _uncached_parse_advertisement_bytes(
         elif gap_type_num == TYPE_MANUFACTURER_SPECIFIC_DATA:
             splice_pos = start + 2
             if splice_pos > end:
+                _log_invalid_ad(
+                    start - 2,
+                    "manufacturer-specific data needs a 2-byte company id",
+                    gap_type_num,
+                    length,
+                    gap_bytes,
+                )
                 continue
             if manufacturer_data is _EMPTY_MANUFACTURER_DATA:
                 manufacturer_data = {}
@@ -293,6 +340,17 @@ def _uncached_parse_advertisement_bytes(
                 if i + 2 <= end:
                     service_uuids.append(
                         _cached_uint16_int_as_uuid(gap_data[i] | (gap_data[i + 1] << 8))
+                    )
+                else:
+                    # Only the final iteration can land here, and only when the
+                    # payload is not a whole number of UUIDs -- the well-formed
+                    # path never takes this branch.
+                    _log_invalid_ad(
+                        start - 2,
+                        "16-bit service UUID list ends mid-UUID",
+                        gap_type_num,
+                        length,
+                        gap_bytes,
                     )
         elif gap_type_num in {
             TYPE_32BIT_SERVICE_UUID_COMPLETE,
@@ -314,6 +372,14 @@ def _uncached_parse_advertisement_bytes(
                         | (gap_data[i + 3] << 24)
                     )
                     service_uuids.append(_cached_uint32_int_as_uuid(uuid32_int))
+                else:
+                    _log_invalid_ad(
+                        start - 2,
+                        "32-bit service UUID list ends mid-UUID",
+                        gap_type_num,
+                        length,
+                        gap_bytes,
+                    )
         elif gap_type_num in {
             TYPE_128BIT_SERVICE_UUID_MORE_AVAILABLE,
             TYPE_128BIT_SERVICE_UUID_COMPLETE,
@@ -328,9 +394,24 @@ def _uncached_parse_advertisement_bytes(
                     service_uuids.append(
                         _cached_uint128_bytes_as_uuid(gap_data[i : i + 16])
                     )
+                else:
+                    _log_invalid_ad(
+                        start - 2,
+                        "128-bit service UUID list ends mid-UUID",
+                        gap_type_num,
+                        length,
+                        gap_bytes,
+                    )
         elif gap_type_num == TYPE_SERVICE_DATA:
             splice_pos = start + 2
             if splice_pos > end:
+                _log_invalid_ad(
+                    start - 2,
+                    "service data needs a 2-byte UUID",
+                    gap_type_num,
+                    length,
+                    gap_bytes,
+                )
                 continue
             if service_data is _EMPTY_SERVICE_DATA:
                 service_data = {}
@@ -340,6 +421,13 @@ def _uncached_parse_advertisement_bytes(
         elif gap_type_num == TYPE_SERVICE_DATA_32BIT_UUID:
             splice_pos = start + 4
             if splice_pos > end:
+                _log_invalid_ad(
+                    start - 2,
+                    "32-bit service data needs a 4-byte UUID",
+                    gap_type_num,
+                    length,
+                    gap_bytes,
+                )
                 continue
             if service_data is _EMPTY_SERVICE_DATA:
                 service_data = {}
@@ -355,6 +443,13 @@ def _uncached_parse_advertisement_bytes(
         elif gap_type_num == TYPE_SERVICE_DATA_128BIT_UUID:
             splice_pos = start + 16
             if splice_pos > end:
+                _log_invalid_ad(
+                    start - 2,
+                    "128-bit service data needs a 16-byte UUID",
+                    gap_type_num,
+                    length,
+                    gap_bytes,
+                )
                 continue
             if service_data is _EMPTY_SERVICE_DATA:
                 service_data = {}
@@ -372,6 +467,28 @@ def _uncached_parse_advertisement_bytes(
                     if tx_power_byte >= _INT8_SIGN_THRESHOLD
                     else tx_power_byte
                 )
+            else:
+                _log_invalid_ad(
+                    start - 2,
+                    "TX Power Level must be exactly 1 byte",
+                    gap_type_num,
+                    length,
+                    gap_bytes,
+                )
+
+    # A length byte with no type byte after it ends the loop early: the trailing
+    # structure is dropped whole, which is the most confusing malformation to
+    # debug from the output alone. A trailing 0x00 is legal zero padding, so the
+    # truthiness test is what separates the two. This is the only diagnostic on
+    # the well-formed path, and it short-circuits on the first comparison.
+    if offset < total_length and gap_data[offset]:
+        _LOGGER.debug(
+            "Invalid BLE GAP AD structure at offset %s: length byte is the last "
+            "byte with no type following (length=%s, data=%s)",
+            offset,
+            gap_data[offset],
+            gap_bytes,
+        )
 
     return (local_name, service_uuids, service_data, manufacturer_data, tx_power)
 
