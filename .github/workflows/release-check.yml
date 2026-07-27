@@ -1,15 +1,18 @@
 name: Release check
 
-# Nothing on this repo asserted "main == published", so two separate incidents
-# left main unreleased while every check on GitHub looked green: v1.29.19 was
-# tagged but its wheels failed, so it never reached PyPI; 1.29.22 was computed
-# but PSR lost the push race, and the follow-up merge that would have retried it
-# ran no workflow at all. Both are invisible from run conclusions alone -- the
-# release path fails after, or instead of, the checks that report status.
+# Nothing on this repo asserted "main == published", so separate incidents left
+# main unreleased, or released incompletely, while every check on GitHub looked
+# green: 1.29.22 was computed but PSR lost the push race, and the follow-up
+# merge that would have retried it ran no workflow at all; v1.29.21 published
+# its sdist and one wheel and then lost the whole `build_wheels` matrix. Both
+# are invisible from run conclusions alone -- the release path fails after, or
+# instead of, the checks that report status.
 #
-# This asserts the two properties directly:
+# This asserts the three properties directly:
 #   1. main has no releasable commits that PSR has not turned into a version.
 #   2. the newest released version actually exists on PyPI.
+#   3. that version carries every artifact family ci.yml is meant to build --
+#      "the version resolves" is satisfied by the sdist alone.
 
 on:
   schedule:
@@ -58,8 +61,9 @@ jobs:
           exit 1
 
       # With nothing releasable, PSR reports the current version -- which is what
-      # the last release published, so it is the version that must exist on PyPI.
-      - name: Check the released version is on PyPI
+      # the last release published, so it is the version that must exist on PyPI
+      # with a complete set of artifacts.
+      - name: Check the released version is complete on PyPI
         env:
           VERSION: ${{ steps.psr.outputs.version }}
         run: |
@@ -69,8 +73,16 @@ jobs:
             exit 1
           fi
           url="https://pypi.org/pypi/bluetooth-data-tools/${VERSION}/json"
-          if ! curl -sfL -o /dev/null "$url"; then
+          if ! meta=$(curl -sfL "$url"); then
             echo "::error::Version $VERSION is tagged but absent from PyPI -- the publish leg of its release failed."
             exit 1
           fi
-          echo "$VERSION is on PyPI."
+          # The `release` job publishes the sdist and its own runner's wheel
+          # before `build_wheels` starts, so reaching this line only proves the
+          # version resolves. Assert the wheel matrix actually landed too.
+          if ! echo "$meta" | jq -r '.urls[].filename' \
+              | scripts/check_release_artifacts.sh; then
+            echo "::error::Version $VERSION is on PyPI but incomplete -- upload_pypi did not publish the full wheel matrix. Re-run the CI workflow against main (workflow_dispatch) once the failing wheel target is fixed."
+            exit 1
+          fi
+          echo "$VERSION is complete on PyPI."
