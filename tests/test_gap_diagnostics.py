@@ -29,6 +29,7 @@ test ordering.
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 import pytest
 
@@ -146,7 +147,7 @@ def test_reporting_a_drop_does_not_change_the_parse(
     parser produced before any diagnostic existed: partially-valid input keeps
     the fields that did parse, and a dropped structure contributes nothing.
     """
-    expected = {
+    partially_valid: dict[bytes, tuple[Any, ...]] = {
         b"\x04\x03\x0d\x18\xaa": (
             None,
             ["0000180d-0000-1000-8000-00805f9b34fb"],
@@ -161,7 +162,8 @@ def test_reporting_a_drop_does_not_change_the_parse(
             {},
             None,
         ),
-    }.get(gap_bytes, (None, [], {}, {}, None))
+    }
+    expected = partially_valid.get(gap_bytes, (None, [], {}, {}, None))
 
     assert _uncached_parse_advertisement_bytes(gap_bytes) == expected
 
