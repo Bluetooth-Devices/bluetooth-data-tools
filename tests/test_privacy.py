@@ -110,7 +110,7 @@ def test_cipher_is_reusable_across_addresses():
         "40-01-02-B2-12-DA",
     ],
 )
-def test_resolve_accepts_every_address_form(address: str):
+def test_resolve_accepts_every_address_form(address: str) -> None:
     """All three address spellings the library accepts resolve identically.
 
     ``mac_to_int`` and ``short_address`` both take the colon form, the Windows
@@ -132,7 +132,7 @@ def test_resolve_accepts_every_address_form(address: str):
         "40:01:02:b2:12:d",
     ],
 )
-def test_resolve_rejects_anything_that_is_not_six_octets(address: str):
+def test_resolve_rejects_anything_that_is_not_six_octets(address: str) -> None:
     """A malformed address raises ``ValueError``, never a stray exception or ``False``.
 
     The address reaches the resolver from scan callbacks, so a caller passing a
