@@ -906,7 +906,7 @@ def test_zero_padded_out_of_bounds_length():
 def test_data_shorter_than_length() -> None:
     """Test data shorter than length."""
 
-    for len in range(0, 30):
+    for len in range(30):
         data = bytes((len,)) + b"!\x01"
 
         adv = parse_advertisement_data((data,))
