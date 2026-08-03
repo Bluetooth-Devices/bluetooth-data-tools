@@ -21,9 +21,9 @@ class BLEGAPAdvertisement:
 
     __slots__ = (
         "local_name",
-        "service_uuids",
-        "service_data",
         "manufacturer_data",
+        "service_data",
+        "service_uuids",
         "tx_power",
     )
 
@@ -267,9 +267,11 @@ def _uncached_parse_advertisement_bytes(
         # the common case doesn't pay for ten failed type comparisons.
         if gap_type_num == TYPE_FLAGS:
             continue
-        if gap_type_num == TYPE_SHORT_LOCAL_NAME and local_name is None:
-            local_name = gap_data[start:end].decode("utf-8", "replace")
-        elif gap_type_num == TYPE_COMPLETE_LOCAL_NAME:
+        if (
+            gap_type_num == TYPE_SHORT_LOCAL_NAME
+            and local_name is None
+            or gap_type_num == TYPE_COMPLETE_LOCAL_NAME
+        ):
             local_name = gap_data[start:end].decode("utf-8", "replace")
         elif gap_type_num == TYPE_MANUFACTURER_SPECIFIC_DATA:
             splice_pos = start + 2
