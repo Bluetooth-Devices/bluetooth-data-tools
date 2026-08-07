@@ -54,7 +54,7 @@ pytest-benchmark = ">=4,<6"
 
 [tool.poetry.group.dev.dependencies]
 pytest-codspeed = "^5.0.3"
-pytest = "^9.0"
+pytest = "^9.1"
 pytest-cov = "^7.1"
 
 [tool.poetry.group.docs]
