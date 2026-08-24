@@ -6,7 +6,7 @@ from functools import lru_cache
 from struct import Struct
 
 try:
-    from ._utils_impl import (  # noqa: F811 F401
+    from ._utils_impl import (
         _int_to_bluetooth_address,
         _mac_to_int,
     )
@@ -17,7 +17,7 @@ except ImportError:
     def _int_to_bluetooth_address(address: int) -> str:
         """Convert an integer to a bluetooth address."""
         mac_hex = f"{address:012X}"
-        return f"{mac_hex[0:2]}:{mac_hex[2:4]}:{mac_hex[4:6]}:{mac_hex[6:8]}:{mac_hex[8:10]}:{mac_hex[10:12]}"  # noqa: E501
+        return f"{mac_hex[0:2]}:{mac_hex[2:4]}:{mac_hex[4:6]}:{mac_hex[6:8]}:{mac_hex[8:10]}:{mac_hex[10:12]}"
 
     _HEX_DIGITS = frozenset("0123456789abcdefABCDEF")
 
