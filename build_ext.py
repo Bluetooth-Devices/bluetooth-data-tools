@@ -52,14 +52,26 @@ class BuildExt(build_ext):
         Not every toolchain that accepts ``-std=gnu2x`` implements C23: GCC 11
         and 12 set ``__STDC_VERSION__`` past C17 but do not provide ``nullptr``,
         which CPython 3.13+ ``pyport.h`` then uses -- and GCC below 11 rejects
-        the flag outright. Compiling a probe against ``Python.h`` is the only
-        reliable way to tell, so do that instead of guessing from a version.
+        the flag outright. MSVC accepts ``/std:clatest`` but then mis-parses
+        ``[[maybe_unused]] PyObject *const *x;``, the C23 spelling Cython 3.3+
+        uses for ``CYTHON_UNUSED`` once ``__STDC_VERSION__`` claims C23, as an
+        expression statement (C2275) when the attribute precedes a typedef
+        name; ``[[maybe_unused]] int x;`` is fine. Compiling a probe against
+        ``Python.h`` with that exact declaration is the only reliable way to
+        tell, so do that instead of guessing from a version.
         """
         flag = "/std:clatest" if self.compiler.compiler_type == "msvc" else "-std=gnu2x"
         with tempfile.TemporaryDirectory() as tmpdir:
             probe = join(tmpdir, "probe.c")
             with open(probe, "w") as handle:
-                handle.write("#include <Python.h>\nint main(void) { return 0; }\n")
+                handle.write(
+                    "#include <Python.h>\n"
+                    "int main(void) {\n"
+                    "    int first = 0;\n"
+                    "    [[maybe_unused]] PyObject *const *probe = NULL;\n"
+                    "    return first;\n"
+                    "}\n"
+                )
             # The probe writes the compiler's own errors to the build log when
             # the flag is unusable; say so, or a successful build looks broken.
             print(f"probing {flag}; compiler errors below are expected if unusable")
