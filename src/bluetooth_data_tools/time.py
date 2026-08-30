@@ -41,7 +41,7 @@ with suppress(Exception):
 
 if _USE_COARSE_MONOTONIC_TIME:
     with suppress(ImportError):
-        from ._time_impl import (  # type: ignore[no-redef] # noqa: F811 F401
+        from ._time_impl import (  # type: ignore[no-redef]
             _monotonic_time_coarse as monotonic_time_coarse,
         )
 
