@@ -9,6 +9,10 @@ from typing import TYPE_CHECKING
 BLE_UUID = "0000-1000-8000-00805f9b34fb"
 _LOGGER = logging.getLogger(__name__)
 
+# Alias Cython cannot resolve, so the tuple[...] annotation degrades to the
+# plain tuple declared in gap.pxd instead of being rejected by Cython 3.3.
+_bytes = bytes
+
 
 class BLEGAPAdvertisement:
     """GATT Advertisement and Scan Response Data (GAP).
@@ -208,7 +212,7 @@ def _uncached_parse_advertisement_data(data: bytes) -> BLEGAPAdvertisement:
 
 
 def _uncached_parse_advertisement_tuple(
-    data: tuple[bytes, ...],
+    data: tuple[_bytes, ...],
 ) -> BLEGAPAdvertisementTupleType:
     # Route tuple-cache misses through the bytes-keyed cache so identical
     # content arriving via a fresh tuple identity still skips the full parse.
