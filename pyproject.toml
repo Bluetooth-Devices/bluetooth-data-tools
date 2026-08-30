@@ -124,7 +124,10 @@ line-length = 88
 target-version = "py310"
 
 [tool.ruff.lint]
-extend-select = [
+# `select`, not `extend-select`: extending builds on whatever ruff ships as its
+# default selection, so a version bump can enable rules -- with autofixes -- that
+# this project never opted into. Adopt new rules by editing this list.
+select = [
     "B",
     "E",
     "F",
@@ -138,24 +141,11 @@ extend-ignore = [
     "E501", # formatter will take care of line lengths
 ]
 
-[tool.ruff.lint.extend-per-file-ignores]
-"tests/*" = [
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*" = [
     "S101", # assert ok in tests
+    "S311", # fuzzer seeding does not need a crypto RNG
 ]
 
 [tool.ruff.lint.isort]
 known-first-party = ["bluetooth_data_tools", "tests"]
-
-[tool.ruff.per-file-ignores]
-"tests/**/*" = [
-    "D100",
-    "D101",
-    "D102",
-    "D103",
-    "D104",
-    "S101",
-    "S311",
-]
-"setup.py" = ["D100"]
-"conftest.py" = ["D100"]
-"docs/conf.py" = ["D100"]
