@@ -39,7 +39,7 @@ jobs:
           # Keep in sync with ci.yml's build_wheels job
           # xref https://github.com/docker/setup-qemu-action/issues/188
           image: tonistiigi/binfmt:qemu-v8.1.5
-      - uses: pypa/cibuildwheel@4726cd35bb13f7bde50cf2761f2499ac7b3aa32c # v4.1.1
+      - uses: pypa/cibuildwheel@1828c10ab37f080699c7b81cea34097c684a7074 # v4.2.0
         env:
           CIBW_ARCHS_LINUX: armv7l
           CIBW_BUILD: cp313-manylinux_armv7l
