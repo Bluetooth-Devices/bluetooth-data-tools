@@ -111,10 +111,6 @@ module = "tests.*"
 allow_untyped_defs = true
 
 [[tool.mypy.overrides]]
-module = "bench.*"
-allow_untyped_defs = true
-
-[[tool.mypy.overrides]]
 module = "docs.*"
 ignore_errors = true
 
