@@ -15,7 +15,17 @@ try:
 except ImportError:
 
     def _int_to_bluetooth_address(address: int) -> str:
-        """Convert an integer to a bluetooth address."""
+        """Convert an integer to a bluetooth address.
+
+        Mirrors the native helper: a Bluetooth address is 48 bits, and
+        anything outside that range raises ValueError. Formatting a wider
+        value produces more than 12 hex digits, and the fixed slices below
+        would then return its *high* half as a plausible-looking address --
+        silently the wrong device, and not even the low-48-bit truncation
+        the native path used to produce.
+        """
+        if not 0 <= address <= 0xFFFFFFFFFFFF:
+            raise ValueError(f"Invalid Bluetooth address: {address!r}")
         mac_hex = f"{address:012X}"
         return f"{mac_hex[0:2]}:{mac_hex[2:4]}:{mac_hex[4:6]}:{mac_hex[6:8]}:{mac_hex[8:10]}:{mac_hex[10:12]}"
 
