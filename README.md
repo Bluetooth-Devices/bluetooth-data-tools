@@ -50,11 +50,11 @@ from bluetooth_data_tools import parse_advertisement_data_bytes
 
 # Parse raw GAP advertisement bytes
 parsed = parse_advertisement_data_bytes(raw_bytes)
-local_name = parsed[0]        # str | None
-service_uuids = parsed[1]     # list[str]
-service_data = parsed[2]      # dict[str, bytes]
-manufacturer_data = parsed[3] # dict[int, bytes]
-tx_power = parsed[4]          # int | None
+local_name = parsed[0]  # str | None
+service_uuids = parsed[1]  # list[str]
+service_data = parsed[2]  # dict[str, bytes]
+manufacturer_data = parsed[3]  # dict[int, bytes]
+tx_power = parsed[4]  # int | None
 ```
 
 Or use the object-oriented interface:
