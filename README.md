@@ -80,7 +80,7 @@ from bluetooth_data_tools import (
     human_readable_name,
 )
 
-# Convert integer to MAC address
+# Convert integer to MAC address (raises ValueError outside 0..0xFFFFFFFFFFFF)
 int_to_bluetooth_address(0x123456789ABC)
 # "12:34:56:78:9A:BC"
 

@@ -107,6 +107,37 @@ def test_mac_to_int_round_trip(value):
 @pytest.mark.parametrize(
     "bad",
     [
+        -1,
+        -(2**48),
+        2**48,  # first value that no longer fits in a Bluetooth address
+        2**48 + 1,
+        2**64 - 1,  # last value the native uint64_t cast used to truncate
+        2**64,
+        2**100,
+    ],
+)
+def test_int_to_bluetooth_address_out_of_range(bad):
+    """Only the 48-bit address space is representable.
+
+    A wider value has no address to return: the native path truncated it to
+    its low 48 bits and the pure-Python path returned its high half, so the
+    two disagreed and both handed back a plausible-looking address for a
+    device that was never asked about. 2**48 and 2**48 + 1 additionally
+    collided on the same string.
+    """
+    with pytest.raises(ValueError):
+        int_to_bluetooth_address(bad)
+
+
+def test_int_to_bluetooth_address_boundary():
+    """The last in-range value still round-trips."""
+    assert int_to_bluetooth_address(0xFFFFFFFFFFFF) == "FF:FF:FF:FF:FF:FF"
+    assert mac_to_int(int_to_bluetooth_address(0xFFFFFFFFFFFF)) == 0xFFFFFFFFFFFF
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
         "not-a-mac",
         "AA:BB:CC:DD:EE:GG",
         "AA/BB/CC/DD/EE/FF",
