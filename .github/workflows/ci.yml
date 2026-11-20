@@ -148,7 +148,7 @@ jobs:
           REQUIRE_CYTHON: 1
       - name: Run benchmarks
         run: |
-          poetry run pytest bench --benchmark-autosave
+          poetry run pytest tests/benchmarks --benchmark-autosave
           echo '# Benchmark Results' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           poetry run pytest-benchmark compare --columns=mean,ops >> $GITHUB_STEP_SUMMARY
