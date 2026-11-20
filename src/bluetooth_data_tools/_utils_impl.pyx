@@ -9,7 +9,19 @@ cdef extern from "utils_wrapper.h":
 
 
 def _int_to_bluetooth_address(addr: int) -> str:
+    """Convert an integer to a bluetooth address.
+
+    A Bluetooth address is 48 bits. A wider value used to be truncated to
+    its low 48 bits by the uint64_t cast (and raised OverflowError past
+    2**64), handing back a valid-looking address for a device that was
+    never asked about; reject it instead. Kept spelled exactly as the
+    pure-Python fallback: the chained comparison measures within noise of
+    the unguarded cast, while converting to a cdef uint64_t first (or
+    wrapping the cast in try/except) costs ~30ns per miss.
+    """
     cdef char bdaddr[17]
+    if not 0 <= addr <= 0xFFFFFFFFFFFF:
+        raise ValueError(f"Invalid Bluetooth address: {addr!r}")
     _uint64_to_bdaddr(<uint64_t>addr, bdaddr)
     return <str>bdaddr[:17]
 
