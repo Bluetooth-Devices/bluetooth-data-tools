@@ -129,6 +129,9 @@ cipher = get_cipher_for_irk(irk_bytes)  # 16-byte Identity Resolving Key
 is_match = resolve_private_address(cipher, "40:01:02:0A:C4:A6")
 ```
 
+The address may be colon-separated, hyphen-separated, or unseparated. Anything
+that is not six hex octets raises `ValueError`.
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
